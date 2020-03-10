@@ -2,32 +2,25 @@
 
 {% block content %}
 
-<div class="col-lg-5 float-left">
+<div class="col-7 float-left">
     <h1>Flask</h1>
     <p class="lead">Flask is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
     <p><a href="http://flask.pocoo.org/" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
 </div>
 
-<div class="col-lg-5 float-left">
-    <div>
-        <h2>Getting started</h2>
-        <p>
-            Flask gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://flask.pocoo.org/docs/">Learn more &raquo;</a></p>
-    </div>
-    <div>
-        <h2>Get more libraries</h2>
-        <p>The Python Package Index is a repository of software for the Python programming language.</p>
-        <p><a class="btn btn-default" href="https://pypi.python.org/pypi">Learn more &raquo;</a></p>
-    </div>
-    <div>
-        <h2>Microsoft Azure</h2>
-        <p>You can easily publish to Microsoft Azure using Visual Studio. Find out how you can host your application using a free trial today.</p>
-        <p><a class="btn btn-default" href="http://azure.microsoft.com">Learn more &raquo;</a></p>
-    </div>
+<div class="col-4 float-left" id="bm">
+
 </div>
+
+<form action='/success' method="POST">
+    <label for="username">USERNAME:</label>
+    <input type="text" name="username" id="username" size="15">
+    <input type="submit" name="submit" id="submit" />
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.6.6/lottie.min.js"></script>
+<script src="../static/scripts/JavaScript.js"></script>
+
+<!--<script src="../static/node_modules/@lottiefiles/lottie-player/dist/lottie-player.js"></script>-->
 
 {% endblock %}
