@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template
+from flask import render_template, request
 from r_d_video_project import app
 
 @app.route('/')
@@ -35,3 +35,9 @@ def about():
         year=datetime.now().year,
         message='Your application description page.'
     )
+
+@app.route('/success',methods = ['POST', 'GET'])  
+def print_data():  
+   if request.method == 'POST':  
+      result = request.form  
+      return render_template("index.html",result = result)  
