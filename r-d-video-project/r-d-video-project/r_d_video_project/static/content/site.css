@@ -41,7 +41,7 @@ input[type="checkbox"].input-validation-error {
 }
 
 
-
+/*          ----------            video edit template          ----------          */
 #pageTitleH{
     font-size: 1.7rem;
 }
@@ -65,5 +65,15 @@ input[type="checkbox"].input-validation-error {
 .rounded_right{
     border-bottom-right-radius: 50px;
     margin-bottom: 2%;
-height: 300%;
+}
+
+/* --- slideNav ----*/
+.slidetextSize{
+    font-size: 0.8vmax;
+}
+
+#minMenu{
+    float: left;
+    z-index: 2000;
+    margin-left: -29px;
 }
