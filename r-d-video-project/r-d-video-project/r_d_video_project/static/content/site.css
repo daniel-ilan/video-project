@@ -1,6 +1,5 @@
 body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -39,4 +38,42 @@ input[type="checkbox"].input-validation-error {
 
 .validation-summary-valid {
     display: none;
+}
+
+
+/*          ----------            video edit template          ----------          */
+#pageTitleH{
+    font-size: 1.7rem;
+}
+
+.sideNavUl{
+    padding-top:25%;
+}
+.svgFill{
+    fill: white;
+}
+
+.svgFillActive{
+    fill: #F87C2C;
+}
+
+.active{
+    color: #F87C2C;
+    font-weight:bold;
+}
+
+.rounded_right{
+    border-bottom-right-radius: 50px;
+    margin-bottom: 2%;
+}
+
+/* --- slideNav ----*/
+.slidetextSize{
+    font-size: 0.8vmax;
+}
+
+#minMenu{
+    float: left;
+    z-index: 2000;
+    margin-left: -29px;
 }
