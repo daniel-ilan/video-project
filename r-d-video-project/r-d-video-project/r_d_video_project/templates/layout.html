@@ -2,15 +2,17 @@
 <html dir="rtl" lang="he">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - My Flask Application</title>
-    <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css" integrity="sha384-vus3nQHTD+5mpDiZ4rkEPlnkcyTP+49BhJ4wJeJunw06ZAp+wzzeBPUXr42fi8If" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
-    <script src="/static/scripts/modernizr-2.6.2.js"></script>
+     <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css" integrity="sha384-vus3nQHTD+5mpDiZ4rkEPlnkcyTP+49BhJ4wJeJunw06ZAp+wzzeBPUXr42fi8If" crossorigin="anonymous">
+     <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
+     <script src="/static/scripts/modernizr-2.6.2.js"></script>
+    {% block head %}{% endblock %}
+
 </head>
 
 <body>
-<nav class="navbar navbar-dark sticky-top  flex-md-nowrap p-0">
+<nav class="navbar navbar-dark sticky-top  flex-md-nowrap p-0" style="height: 4vh">
     <a class="navbar-brand col-sm-3 col-md-1 mr-0 bg-dark" href="#">
         <img  src="../static/images/logo.svg" style="width:25%;" />
         ED video</a>
@@ -23,14 +25,14 @@
 </nav>
 
     <div class="container-fluid">
-        <div class="row bg-dark">
-            <nav class="col-md-1 d-none d-md-block bg-dark sidebar position-fixed  ">
+        <div class="row bg-dark " style="height:80vh">
+            <nav class="col-md-1 d-none d-md-block bg-dark sidebar position-fixed slidetextSize " >
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column text-light  sideNavUl">
                         <li class="nav-item">
                             <a class="nav-link active" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="svgFillActive" height="24"  viewBox="0 0 24 24" width="24" ><path d="M0 0h24v24H0V0z" fill="none"/><path d="M5 5.5C5 6.33 5.67 7 6.5 7h4v10.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V7h4c.83 0 1.5-.67 1.5-1.5S18.33 4 17.5 4h-11C5.67 4 5 4.67 5 5.5z"/></svg>
-                                תוכן
+                                <span>תוכן</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -67,15 +69,21 @@
                             </a>
                         </li>
                     </ul>
+                    <svg id="minMenu" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="14.5" cy="14" rx="14.5" ry="14" transform="rotate(-180 14.5 14)" fill="#282828"/>
+                        <ellipse cx="15.5" cy="14" rx="13.5" ry="13" transform="rotate(-180 15.5 14)" fill="white"/>
+                        <path d="M10.7582 20.2266L16.8584 14.8699L17.2863 14.4941L16.8584 14.1184L10.7582 8.76172L12.0099 7.66503L19.8038 14.4941L12.0099 21.3233L10.7582 20.2266Z" fill="#282828" stroke="#282828"/>
+                    </svg>
                 </div>
             </nav>
-
-            <main  role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 bg-white rounded_right">
+            <main  role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 bg-white rounded_right ">
+                <div class="overflow-auto">
                 {% block content %}{% endblock %}
+                </div>
             </main>
         </div>
-        <div class="flex-md-nowrap p-0" style="background-color: ghostwhite; height: 16%;">
-            <p>xxx</p>
+        <div class="flex-md-nowrap p-0 row" style="height:15vh; background-color: ghostwhite;">
+            <p>slides  area</p>
         </div>
     </div>
 

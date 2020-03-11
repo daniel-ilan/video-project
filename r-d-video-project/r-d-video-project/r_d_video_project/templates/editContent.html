@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>tinymce.init({ selector:'textarea' });</script>
+{% endblock %}
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+{% block content %}
+
+<p>Use this area to provide additional information.</p>
+<textarea>Next, get a free Tiny Cloud API key!</textarea>
+<h3>hello</h3>
+{% endblock %}

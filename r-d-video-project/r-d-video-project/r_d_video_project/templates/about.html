@@ -1,10 +1,24 @@
 {% extends "layout.html" %}
+{% block head %}
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 
-{% block content %}
+<script>
+    tinymce.init({
+        selector: '#mytextarea',
+        menubar: ''
+
+    });
+</script>
+{% endblock %}
+
+
+
+    {% block content %}
 
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
-
-<p>Use this area to provide additional information.</p>
-
+<h1>TinyMCE Quick Start Guide</h1>
+<form method="post">
+    <textarea id="mytextarea">Hello, World!</textarea>
+</form>
 {% endblock %}
