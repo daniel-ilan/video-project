@@ -18,14 +18,14 @@ var animation2 = bodymovin.loadAnimation({
 var animation3 = bodymovin.loadAnimation({
     container: document.getElementById('temp2'),
     renderer: 'svg',
-    loop: false,
+    loop: true,
     autoplay: true,
     path: '../static/content/temp2.json'
 });
 
 $('#temp2').click(function(){
-    animation3.stop();
-alert()
+    animation3.lottie.play();
+    //animation3.stop();
 });
 
 
