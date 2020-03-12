@@ -36,6 +36,26 @@ def about():
         message='Your application description page.'
     )
 
+@app.route('/editContent')
+def editContent():
+    """Renders the about page."""
+    return render_template(
+        'editContent.html',
+        title='תוכן',
+        year=datetime.now().year,
+        message='Your application description page.'
+    )
+
+    @app.route('/editColor')
+    def editColor():
+        """Renders the about page."""
+        return render_template(
+            'editColor.html',
+            title='צבע',
+            year=datetime.now().year,
+            message='Your application description page.'
+        )
+
 @app.route('/success',methods = ['POST', 'GET'])  
 def print_data():  
    if request.method == 'POST':  
