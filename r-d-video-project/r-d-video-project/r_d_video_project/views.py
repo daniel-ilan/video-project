@@ -43,21 +43,31 @@ def editContent():
         'editContent.html',
         title='תוכן',
         year=datetime.now().year,
-        message='Your application description page.'
+        message=''
     )
 
-    @app.route('/editColor')
-    def editColor():
-        """Renders the about page."""
-        return render_template(
-            'editColor.html',
-            title='צבע',
-            year=datetime.now().year,
-            message='Your application description page.'
-        )
+@app.route('/editColor')
+def editColor():
+    """Renders the about page."""
+    return render_template(
+        'editColor.html',
+        title='צבע',
+        year=datetime.now().year,
+        message=''
+    )
 
-@app.route('/success',methods = ['POST', 'GET'])  
-def print_data():  
-   if request.method == 'POST':  
-      result = request.form  
-      return render_template("index.html",result = result)  
+@app.route('/editTemplate')
+def editTemplate():
+    """Renders the about page."""
+    return render_template(
+        'editTemplate.html',
+        title='תבנית',
+        year=datetime.now().year,
+        message=''
+    )
+
+@app.route('/success',methods = ['POST', 'GET'])
+def print_data():
+   if request.method == 'POST':
+      result = request.form
+      return render_template("index.html",result = result)
