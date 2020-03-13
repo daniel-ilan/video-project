@@ -4,18 +4,15 @@
 {% endblock %}
 
 {% block content %}
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <h2>בחירה מתבניות המותג</h2>
 <p>לא קיימות תבניות</p>
 
 <h2>בחירה מתבניות כלליות</h2>
-<div id="temp1">
-</div>
-<div id="temp2">
-</div>
 
+<lottie-player src="../static/content/temp1.json" background="transparent" id="temp1" speed="1" style="width: 300px; height: 300px;" hover loop>
+</lottie-player>
+<lottie-player src="../static/content/temp2.json" background="transparent" id="temp2" speed="1" style="width: 300px; height: 300px;" hover loop>
+</lottie-player>
 
-<!--<div id="temp2">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.6.6/lottie.min.js"></script>
-    <script src="../static/scripts/JavaScript.js"></script>
-</div>-->
 {% endblock %}

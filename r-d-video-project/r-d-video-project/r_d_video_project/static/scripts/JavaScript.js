@@ -1,47 +1,4 @@
-var animation = bodymovin.loadAnimation({
-    container: document.getElementById('bm'),
-    renderer: 'svg',
-    loop: true,
-    autoplay: true,
-    path: '../static/content/test1.json'
-});
 
-var animation2 = bodymovin.loadAnimation({
-    container: document.getElementById('temp1'),
-    renderer: 'svg',
-    loop: true,
-    autoplay: true,
-    path: '../static/content/temp1.json'
-});
-
-
-var animation3 = bodymovin.loadAnimation({
-    container: document.getElementById('temp2'),
-    renderer: 'svg',
-    loop: true,
-    autoplay: true,
-    path: '../static/content/temp2.json'
-});
-
-$('#temp2').click(function(){
-    animation3.lottie.play();
-    //animation3.stop();
-});
-
-
-/*
-//Even when targeting the ID only, it still plays all animations
-$('#temp2').mouseenter(function(){
-    var bodymovin_data = $(this).value;
-    bodymovin.play(bodymovin_data);
-});
-
-$('#temp2').mouseleave(function(){
-    var bodymovin_data = $(this).value;
-console.log(bodymovin_data);
-    bodymovin.pause(bodymovin_data);
-});
-*/
 
 
 $(".sideNavUl").click(
