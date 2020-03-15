@@ -90,3 +90,19 @@ input[type="checkbox"].input-validation-error {
     margin: 1% 1%;
     display: inline-block;
 }
+
+
+/*          ----------            Layout Template Page          ----------          */
+
+/* --- Lottie player  ----*/
+
+.lottiePlayer{
+width:70%;
+height:70%;
+align-self:center;
+}
+
+.main-container{
+height: 100%;
+display: flex;
+}

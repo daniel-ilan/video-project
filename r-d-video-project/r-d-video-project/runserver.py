@@ -5,6 +5,7 @@ This script runs the r_d_video_project application using a development server.
 from os import environ
 from r_d_video_project import app
 
+print()
 if __name__ == '__main__':
     HOST = environ.get('SERVER_HOST', 'localhost')
     try:

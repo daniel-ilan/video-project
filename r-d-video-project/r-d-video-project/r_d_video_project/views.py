@@ -4,8 +4,11 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from flask import render_template, request
-from r_d_video_project import app
+from flask import Flask
+from os import environ
 
+
+app = Flask(__name__)
 @app.route('/')
 @app.route('/home')
 def home():
@@ -15,6 +18,7 @@ def home():
         title='Home Page',
         year=datetime.now().year,
     )
+
 
 @app.route('/contact')
 def contact():
@@ -26,6 +30,7 @@ def contact():
         message='Your contact page.'
     )
 
+
 @app.route('/about')
 def about():
     """Renders the about page."""
@@ -35,6 +40,7 @@ def about():
         year=datetime.now().year,
         message='Your application description page.'
     )
+
 
 @app.route('/editContent')
 def editContent():
@@ -46,6 +52,7 @@ def editContent():
         message=''
     )
 
+
 @app.route('/editColor')
 def editColor():
     """Renders the about page."""
@@ -55,6 +62,7 @@ def editColor():
         year=datetime.now().year,
         message=''
     )
+
 
 @app.route('/editTemplate')
 def editTemplate():
@@ -66,8 +74,20 @@ def editTemplate():
         message=''
     )
 
+
 @app.route('/success',methods = ['POST', 'GET'])
 def print_data():
-   if request.method == 'POST':
-      result = request.form
-      return render_template("index.html",result = result)
+    if request.method == 'POST':
+        result = request.form
+        return render_template("index.html", result = result)
+
+
+
+
+if __name__ == '__main__':
+    HOST = environ.get('SERVER_HOST', 'localhost')
+    try:
+        PORT = int(environ.get('SERVER_PORT', '5555'))
+    except ValueError:
+        PORT = 5555
+    app.run(HOST, PORT, debug=True)
