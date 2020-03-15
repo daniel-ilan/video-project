@@ -1,14 +1,23 @@
 """
 Routes and views for the flask application.
 """
+from videoProject import app
 
+
+import os
 from datetime import datetime
-from flask import render_template, request
-from flask import Flask
 from os import environ
 
+from flask import render_template, request, make_response
+from tgs import Color
+from tgs import objects
+from tgs.parsers.tgs import parse_tgs
+from tgs.utils import script
+from tgs import exporters
 
-app = Flask(__name__)
+
+
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -75,13 +84,22 @@ def editTemplate():
     )
 
 
-@app.route('/success',methods = ['POST', 'GET'])
+@app.route('/success', methods=['POST', 'GET'])
 def print_data():
+    os.path.join(os.path.dirname(os.path.abspath(__file__)))
     if request.method == 'POST':
-        result = request.form
-        return render_template("index.html", result = result)
-
-
+        result = request.form['username'].split(",")
+        result = [float(i) for i in result]
+        print(result)
+        an = parse_tgs("static/content/temp2.json")
+        layers = an.layers
+        print(layers)
+        for layer in layers:
+            layer.effects = [objects.effects.FillEffect(color=Color(result[0], result[1], result[2]), opacity=1)]
+            print(layer)
+        exporters.export_lottie(an, "static/content/temp2.json")
+        # script.script_main(an, path="/tmp", formats=["json"])
+        return render_template("index.html", result=result)
 
 
 if __name__ == '__main__':

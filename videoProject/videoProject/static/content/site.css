@@ -96,13 +96,15 @@ input[type="checkbox"].input-validation-error {
 
 /* --- Lottie player  ----*/
 
-.lottiePlayer{
-    width:70%;
-    height:70%;
-    align-self:center;
-}
-
+/*testing*/
 .main-container{
     height: 100%;
+    width: 100%;
     display: flex;
+}
+
+.animation-container{
+    align-self: center;
+    display: flex;
+    flex-direction: column;
 }
