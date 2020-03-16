@@ -110,9 +110,9 @@
                     {% block content %}{% endblock %}
                 </div>
 
-                <div class="col-5 animation-container" id="bm">
-                    <lottie-player src="{{ url_for('static', filename='content/temp2.json') }}" background="transparent" controls speed="1" loop
-                                   class="lottiePlayer">
+                <div class="col-5 animation-container">
+                    <lottie-player src="{{file}}" background="transparent" controls speed="1" loop
+                                   class="lottiePlayer" id="mainAnimation">
                     </lottie-player>
                     <script src="../static/scripts/JavaScript.js"></script>
                 </div>
