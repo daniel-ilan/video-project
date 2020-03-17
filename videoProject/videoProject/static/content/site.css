@@ -42,38 +42,69 @@ input[type="checkbox"].input-validation-error {
 
 
 /*          ----------            video edit template          ----------          */
-#pageTitleH{
+#pageTitleH {
     font-size: 1.7rem;
 }
 
-.sideNavUl{
-    padding-top:25%;
+.sideNavUl {
+    padding-top: 25%;
 }
-.svgFill{
+
+.svgFill {
     fill: white;
 }
 
-.svgFillActive{
+.svgFillActive {
     fill: #F87C2C;
 }
 
-.active{
+.active {
     color: #F87C2C;
-    font-weight:bold;
+    font-weight: bold;
 }
 
-.rounded_right{
+.rounded_right {
     border-bottom-right-radius: 50px;
     margin-bottom: 2%;
 }
 
 /* --- slideNav ----*/
-.slidetextSize{
+.slidetextSize {
     font-size: 0.8vmax;
 }
 
-#minMenu{
+#minMenu {
     float: left;
     z-index: 2000;
     margin-left: -29px;
+}
+
+/*          ----------            edit Template Page          ----------          */
+
+#temp1, #temp2 {
+    width: 35%;
+    height: 35%;
+    border: 1px solid #F87C2C;
+    border-radius: 5%;
+    padding: 1% 1%;
+    margin: 1% 1%;
+    display: inline-block;
+}
+
+
+/*          ----------            Layout Template Page          ----------          */
+
+/* --- Lottie player  ----*/
+
+/*testing*/
+.main-container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.animation-container{
+    align-self: center;
+    display: flex;
+    flex-direction: column;
 }
