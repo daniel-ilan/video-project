@@ -1,0 +1,8 @@
+setup.py
+videoProject/__init__.py
+videoProject/views.py
+videoProject.egg-info/PKG-INFO
+videoProject.egg-info/SOURCES.txt
+videoProject.egg-info/dependency_links.txt
+videoProject.egg-info/requires.txt
+videoProject.egg-info/top_level.txt
