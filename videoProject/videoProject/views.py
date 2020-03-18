@@ -13,6 +13,7 @@ from tgs import Color
 from tgs import objects
 from tgs.parsers.tgs import parse_tgs
 from tgs import exporters
+from matplotlib import colors
 
 
 file = "static/content/temp2.json"
@@ -52,9 +53,13 @@ def about():
     )
 
 
-@app.route('/editContent')
+@app.route('/editContent',  methods=['POST', 'GET'])
 def editContent():
     """Renders the about page."""
+
+    if request.method == 'POST':
+        result = request.form['animText']
+        change_text(result)
     return render_template(
         'editContent.html',
         title='תוכן',
@@ -63,10 +68,37 @@ def editContent():
         file=file
     )
 
+def change_text(text):
+    global file
+    an = parse_tgs(file)
+    layers = an.layers
+    file_to_check = "static/content/temp1.json"
+    an_to_check = parse_tgs(file_to_check)
+    print(an_to_check)
+    for layer in layers:
+        if layer.type == 5:
+            if len(layer.data.data.keyframes[0].start.text) < 24:
+                layer.data.data.keyframes[0].start.text = text
 
-@app.route('/editColor')
+    new_name = "temp" + str(int(time.time())) + ".json"
+    exporters.export_lottie(an, "static/content/" + new_name)
+    new_json = "static/content/" + new_name
+    if file[-6:-9:-1].isdigit():
+        os.remove(file)
+    file = new_json
+
+
+
+
+@app.route('/editColor', methods=['POST', 'GET'])
 def editColor():
     """Renders the about page."""
+    if request.method == 'POST':
+        result = request.form['animColor']
+        correct_color = colors.to_rgba(result,float)
+        # print(result)
+
+        change_color(correct_color)
     return render_template(
         'editColor.html',
         title='צבע',
@@ -76,13 +108,29 @@ def editColor():
     )
 
 
+def change_color(color):
+    global file
+    # os.path.join(os.path.dirname(os.path.abspath(__file__)))
+    an = parse_tgs(file)
+    layers = an.layers
+    for layer in layers:
+        if layer.type != 5:
+            layer.effects = [objects.effects.FillEffect(color=Color(color[0], color[1], color[2]), opacity=1)]
+    new_name = "temp" + str(int(time.time())) + ".json"
+    exporters.export_lottie(an, "static/content/" + new_name)
+    new_json = "static/content/" + new_name
+    if file[-6:-9:-1].isdigit():
+        os.remove(file)
+    file = new_json
+
+
 @app.route("/")
 @app.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     """
     gets an ajax request and changes the json file attached to the lottie-player
     todo: this is not secure now and needs to be written correctly
-    :return:
+    :return: nothing. It just changes the file associated with the main animation lottie-player
     """
     print("I am here")
     """Renders the about page."""
@@ -90,6 +138,7 @@ def editTemplate():
         a = request.data
         change_animation(a.decode("utf-8"))
         print(a)
+        pass
     return render_template(
         'editTemplate.html',
         title='תבנית',
@@ -126,8 +175,9 @@ def print_data():
 
 def change_animation(path):
     global file
-    file = path
-    return render_template("editTemplate.html", file=file)
+    file = path[3:]
+    pass
+    # return render_template("editTemplate.html", file=file)
 
 
 if __name__ == '__main__':

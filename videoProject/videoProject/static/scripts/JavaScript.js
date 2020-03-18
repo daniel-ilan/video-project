@@ -36,7 +36,6 @@ $(document).ready(function(){
     const animation_templates = $('.animation-template');
 
     animation_templates.on('click', changeAnimation);
-
     // animation_templates.forEach(function () {
     //     $(this).addEventListener('click', changeAnimation(this, main_animation))
     // });
