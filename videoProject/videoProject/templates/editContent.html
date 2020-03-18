@@ -1,22 +1,14 @@
 {% extends "layout.html" %}
 {% block head %}
-<script src="https://cdn.tiny.cloud/1/9qmyuras9x4yq515khqusog6szrp6rw9v99akx0edstiba1r/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-<script>
-    tinymce.init({
-        selector: '#mytextarea',
-        menubar: '',
-        directionality: 'rtl',
-        language: 'he_IL',
-        plugins: "advlist lists",
-        toolbar: 'undo redo | fontselect fontsizeselect | bold italic underline strikethrough  | alignleft aligncenter alignright alignjustify  | forecolor |  numlist bullist checklist ',
-
-    });
-</script>
 {% endblock %}
-
+  
 {% block content %}
 <h3>{{ message }}</h3>
-<form method="post">
-    <textarea id="mytextarea">Hello, World!</textarea>
+<form action="editContent" method="post">
+    <div class="form-group">
+        <label for="animText"> הכנס טקסט</label>
+        <input type="text" maxlength="24" id="animText" name="animText">
+        <input type="submit" name="submit" id="submitText" class="btn btn-primary" value="שנה">
+    </div>
 </form>
 {% endblock %}

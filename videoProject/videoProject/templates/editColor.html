@@ -2,12 +2,16 @@
 {% block head %}
 
 {% endblock %}
-
 {% block content %}
 
 <div>
-    <input type="color" id="head" name="head"
-           value="#e66465">
-    <label for="head">Head</label>
+    <form action="editColor" method="post">
+        <div class="form-group">
+            <label for="animColor">בחר צבע רקע לאנימציה</label>
+            <input type="color" id="animColor" name="animColor"
+                   value="#e66465" class="form-control">
+            <input type="submit" name="submit" id="submitColor" class="btn btn-primary" value="שנה"/>
+        </div>
+    </form>
 </div>
 {% endblock %}
