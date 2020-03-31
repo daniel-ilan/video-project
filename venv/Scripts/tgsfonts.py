@@ -1,4 +1,4 @@
-#!D:\Final project tests\video-project\venv\Scripts\python.exe
+#!C:\video-project\venv\Scripts\python.exe
 
 import json
 import sys
