@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block head %}
+{% endblock %}
+  
+{% block content %}
+<h3>{{ message }}</h3>
+<div class="color-form-container">
+    <form action="editContent" method="post">
+        <div class="form-group text-form">
+            <label for="animText"> הכנס טקסט</label>
+            <input type="text" maxlength="24" id="animText" name="animText" value="{{textContent}}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="textColor">בחר צבע</label>
+            <input type="color" id="textColor" name="textColor" value={{textColor}} class="form-control">
+        </div>
+        <button type="submit" name="submit" id="submitText" class="btn btn-primary color-submit-btn">">שנה</button>
+    </form>
+</div>
+{% endblock %}

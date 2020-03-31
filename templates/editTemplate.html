@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<h2>בחירת תבנית לעריכה</h2>
+
+<lottie-player  class="tinyLottie" src="../static/content/temp1_anim3.json" background="transparent" id="temp1" speed="1"
+               style="width: 300px; height: 300px;" hover loop>
+</lottie-player>
+<lottie-player class="tinyLottie" src="../static/content/temp1_anim2.json" background="transparent" id="temp2" speed="1"
+               style="width: 300px; height: 300px;" hover loop>
+</lottie-player>
+
+{% endblock %}
