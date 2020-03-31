@@ -28,10 +28,11 @@ def readable(path):
 
 
 def get_anim_props(anim):
+    print(anim.find('.primaryColor').find('Rectangle Path 1'))
     text_color = anim.find('.myText').data.data.keyframes[0].start.color
     text_content = anim.find('.myText').data.data.keyframes[0].start.text
-    color = anim.find('.primaryColor').find('Group 1').find('Fill 1').color.value.components
-    out_color = anim.find('.baseColor').find('Group 1').find('Fill 1').color.value.components
+    color = anim.find('.primaryColor').find('Fill 1').color.value.components
+    out_color = anim.find('.baseColor').find('Fill 1').color.value.components
     anim_props = {'text':{'color':list(text_color[0:3] + [1]),
                           'content': text_content},
                   'shapes':{'background':color,
@@ -42,6 +43,9 @@ changing_path = "static/content/temp1_anim1.json"
 an = readable(changing_path)
 anim_properties = get_anim_props(an)
 
+myLoAr = ["../static/content/temp1_anim1.json","../static/content/temp1_anim2.json"]
+lottiePlayersArray = [["temp1_anim1.json","שקיפות"],["temp1_anim2.json","בהדרגה מימין"],["temp1_anim3.json","מצד ימין"],["temp1_anim4.json","שלום"],["temp2_anim1.json","שקיפות"],["temp2_anim2.json","בהדרגה מימין"],["temp2_anim3.json","מצד ימין"],["temp2_anim4.json","שלום"]]
+lottiePlayersArrayPath ="../static/content/"
 
 @application.route('/home')
 def home():
@@ -102,11 +106,11 @@ def change_text(text, color):
     global anim_properties
     if len(text) >= 1:
         text = correct_text(text)
-        an.find('text').data.data.keyframes[0].start.text = text
+        an.find('.myText').data.data.keyframes[0].start.text = text
         anim_properties['text']['content'] = text
 
     correct_color = colors.to_rgba(color, float)
-    an.find('text').data.data.keyframes[0].start.color[0:3] = list(correct_color[0:3] + (1,))
+    an.find('.myText').data.data.keyframes[0].start.color[0:3] = list(correct_color[0:3] + (1,))
 
 
     new_name = "temp" + str(int(time.time())) + ".json"
@@ -208,7 +212,9 @@ def editTemplate():
         title='תבנית',
         year=datetime.now().year,
         message='',
-        anim_path=changing_path
+        anim_path=changing_path,
+        lottiePlayersArray = lottiePlayersArray,
+    lottiePlayersArrayPath=lottiePlayersArrayPath
     )
 
 
@@ -225,3 +231,4 @@ def change_animation(path):
 
 if __name__ == '__main__':
     application.run()
+

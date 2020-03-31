@@ -86,9 +86,9 @@ input[type="checkbox"].input-validation-error {
 
 /*          ----------            edit Template Page          ----------          */
 
-#temp1, #temp2 {
-    width: 35%;
-    height: 35%;
+.tinyLottie {
+    width: 10vw;
+    height: 15vh;
     border: 1px solid #F87C2C;
     border-radius: 5%;
     padding: 1% 1%;
@@ -101,6 +101,15 @@ input[type="checkbox"].input-validation-error {
     -moz-box-shadow: 3px 13px 23px 0px rgba(199,190,175,0.63);
     box-shadow: 3px 13px 23px 0px rgba(199,190,175,0.63);
     border-width: 2px !important;
+    color: black;
+    font-weight:bold;
+}
+
+.tinyLottieDescription{
+    color: #485F6E;
+    text-align: center;
+    margin-bottom: 8%;
+    margin-top: -10%;
 }
 
 /*          ----------            Layout Template Page          ----------          */
