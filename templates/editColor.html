@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block head %}
+
+{% endblock %}
+{% block content %}
+
+<div class="color-form-container">
+    <form action="editColor" method="post" class="d-flex">
+        <div class="form-group color-form">
+            <label for="animColor">בחר צבע רקע לאנימציה</label>
+            <input type="color" id="animColor" name="animColor"
+                   value="{{mainColor}}" class="form-control">
+            <label for="outlineColor">בחר צבע מסגרת לאנימציה</label>
+            <input type="color" id="outlineColor" name="outlineColor"
+                   value="{{outlineColor}}" class="form-control">
+            <input type="submit" name="submit" id="submitColor" class="btn btn-primary color-submit-btn" value="שנה"/>
+        </div>
+    </form>
+</div>
+{% endblock %}
