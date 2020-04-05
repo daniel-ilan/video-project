@@ -3,8 +3,13 @@
 body {
     background: linear-gradient(1.37deg, #2F1359 2.49%, #6515DD 93.78%);
     /*background-color: #F3F5F8;*/
-    padding-right: 1%;
+    padding-right: 0.6%;
     font-family: 'Rubik', sans-serif;
+}
+
+h1::selection ,p::selection, a::selection , h2::selection{
+    color: #5715ad;
+    background: rgba(54, 253, 252, 0.45);
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -50,6 +55,12 @@ h2{
     font-size: 1.5rem;
 }
 
+h1 {
+    font-size: 2.5rem;
+    color: #2F1359;
+    font-weight: 500;
+}
+
 /*          ----------            video edit template          ----------          */
 .sidebar{
     height: fit-content;
@@ -93,11 +104,6 @@ h2{
     background-color: transparent;
 }
 
-h1 {
-    font-size: 2.5rem;
-    color: #2F1359;
-    font-weight: 500;
-}
 
 
 .svgFill {
@@ -108,14 +114,23 @@ h1 {
     fill: white;
 }
 
+.svgFillHover {
+    fill: #00B6DE;
+}
+
 .nav-link {
     color: #282828;
     font-weight: 500;
     font-size: 16px;
 }
 
-.nav-link:hover{
-color: #6515DD;
+.nav-link:hover {
+    color: #00B6DE;
+
+}
+
+.nav-linkHover{
+    color: #00B6DE;
     font-weight: bold;
 }
 
@@ -168,14 +183,16 @@ color: #6515DD;
 }
 
 .tinyLottie:hover {
-    -webkit-box-shadow: 3px 13px 23px 0px rgba(199, 190, 175, 0.63);
-    -moz-box-shadow: 3px 13px 23px 0px rgba(199, 190, 175, 0.63);
-    box-shadow: 3px 13px 23px 0px rgba(199, 190, 175, 0.63);
+    -webkit-box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
+    -moz-box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
+    box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
     border-width: 2px !important;
     color: black;
     border-color: #00B6DE;
     font-weight: bold;
 }
+
+
 
 .tinyLottieDescription {
     color: #485F6E;
