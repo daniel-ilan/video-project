@@ -7,33 +7,33 @@
     <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css"
           integrity="sha384-vus3nQHTD+5mpDiZ4rkEPlnkcyTP+49BhJ4wJeJunw06ZAp+wzzeBPUXr42fi8If" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../static/content/site.css"/>
+
     <script src="/static/scripts/modernizr-2.6.2.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     {% block head %}{% endblock %}
-
 </head>
 
 <body>
-<nav class="navbar navbar-dark sticky-top  flex-md-nowrap p-0" style="height: 5vh">
-    <a class="navbar-brand col-sm-3 col-md-1 mr-0 bg-dark" href="home">
-        <img src="../static/images/logo.svg" style="width:25%;"/>
-        ED video</a>
-    <h1 id="pageTitleH" class="font-weight-bold mr-auto pl-4 ">{{ title }}</h1>
-    <ul class="navbar-nav px-3">
-<!--        <li class="nav-item text-nowrap pr-5">-->
-<!--            <a class="nav-link" href="#" style="color:black;">אודות</a>-->
-<!--        </li>-->
-    </ul>
+<nav class="navbar sticky-top  flex-md-nowrap p-0 " style="height: 5vh; align-items:normal">
+    <a class="navbar-brand col-sm-3 col-md-1 mr-0 pt-2  whiteBG" href="home">
+        <img src="../static/images/logo.svg" style="width:100%;"/>
+       </a>
+    <div class="greyBG">
+        <h1 id="pageTitleH" class="mr-auto pl-4 pt-2   ">{{ title }}</h1>
+
+    </div>
 </nav>
 
 <div class="container-fluid">
-    <div class="row bg-dark " style="height:80vh">
-        <nav class="col-md-1 d-none d-md-block bg-dark sidebar position-fixed slidetextSize ">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column text-light  sideNavUl">
+
+    <div class="row" style="height:80vh">
+        <div class="sidebarCol col-md-1 ml-sm-auto col-lg-1">
+            <nav class="sidebar slidetextSize  ">
+                <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link text-white " href="editContent">
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="editContent">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -43,7 +43,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white link_notActive" href="#">
+                        <a class="nav-link  link_notActive" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -52,8 +52,8 @@
                             גודל
                         </a>
                     </li>
-                    <li class="nav-item mb-5">
-                        <a class="nav-link text-white link_notActive" href="#">
+                    <li class="nav-item ">
+                        <a class="nav-link link_notActive" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -64,8 +64,10 @@
                             אנימציה
                         </a>
                     </li>
+                    <li class="nav-item">
+                    </li>
                     <li class="nav-item ">
-                        <a class="nav-link text-white" href="editColor">
+                        <a class="nav-link " href="editColor">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0z" fill="none"/>
@@ -75,7 +77,7 @@
                         </a>
                     </li>
                     <li class="nav-item ">
-                        <a class="nav-link text-white" href="editTemplate">
+                        <a class="nav-link " href="editTemplate">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -85,7 +87,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white link_notActive" href="#">
+                        <a class="nav-link link_notActive" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M0 0h24v24H0V0z" fill="none"/>
@@ -94,33 +96,38 @@
                             הגדרות
                         </a>
                     </li>
+                    <li class="nav-item">
+                    </li>
                 </ul>
-                <svg id="minMenu" width="29" height="28" viewBox="0 0 29 28" fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="14.5" cy="14" rx="14.5" ry="14" transform="rotate(-180 14.5 14)" fill="#282828"/>
-                    <ellipse cx="15.5" cy="14" rx="13.5" ry="13" transform="rotate(-180 15.5 14)" fill="white"/>
-                    <path d="M10.7582 20.2266L16.8584 14.8699L17.2863 14.4941L16.8584 14.1184L10.7582 8.76172L12.0099 7.66503L19.8038 14.4941L12.0099 21.3233L10.7582 20.2266Z"
-                          fill="#282828" stroke="#282828"/>
-                </svg>
+            </nav>
+            <div class="inner_remaining">
+<!--                <svg id="minMenu" width="29" height="28" viewBox="0 0 29 28" fill="none"-->
+<!--                     xmlns="http://www.w3.org/2000/svg">-->
+<!--                    <ellipse cx="14.5" cy="14" rx="14.5" ry="14" transform="rotate(-180 14.5 14)" fill="#282828"/>-->
+<!--                    <ellipse cx="15.5" cy="14" rx="13.5" ry="13" transform="rotate(-180 15.5 14)" fill="white"/>-->
+<!--                    <path d="M10.7582 20.2266L16.8584 14.8699L17.2863 14.4941L16.8584 14.1184L10.7582 8.76172L12.0099 7.66503L19.8038 14.4941L12.0099 21.3233L10.7582 20.2266Z"-->
+<!--                          fill="#282828" stroke="#282828"/>-->
+<!--                </svg>-->
+
             </div>
-        </nav>
-        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 bg-white rounded_right ">
+        </div>
+
+        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 greyBG ">
             <div class="overflow-auto main-container">
-                <div class="col-7 float-left pt-3">
+                <div id="mainContent" class="col-7 float-left pt-4">
                     {% block content %}{% endblock %}
                 </div>
 
                 <div class="col-5 animation-container">
-                    <lottie-player src="{{anim_path}}" background="transparent" controls speed="1"  autoplay count="1"
+                    <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
                                    class="lottiePlayer" id="mainAnimation">
                     </lottie-player>
-                    <script src="../static/scripts/JavaScript.js"></script>
                 </div>
 
             </div>
         </main>
     </div>
-    <div class="flex-md-nowrap p-0 row" style="height:15vh; background-color: ghostwhite;">
+    <div  id="slidesArea"  class="flex-md-nowrap p-0 row"  style="height:15vh;">
         <p>slides area</p>
     </div>
 </div>
@@ -134,6 +141,8 @@
 <script src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"
         integrity="sha384-a9xOd0rz8w0J8zqj1qJic7GPFfyMfoiuDjC9rqXlVOcGO/dmRqzMn34gZYDTel8k"
         crossorigin="anonymous"></script>
+<script src="../static/scripts/JavaScript.js"></script>
+
 {% block scripts %}{% endblock %}
 
 </body>
