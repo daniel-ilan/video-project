@@ -88,10 +88,10 @@ def about():
             #get user info
             dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
             print(dataFromDB)
-            person_name = dataFromDB[0]
-            person_last_name = dataFromDB[1]
-            email = dataFromDB[2]
-            password = dataFromDB[3]
+            person_name = dataFromDB[1]
+            person_last_name = dataFromDB[2]
+            email = dataFromDB[3]
+            password = dataFromDB[4]
         else:
             #new user
             person_name = request.form['person_name']
@@ -140,7 +140,8 @@ def newProject():
         'newProject.html',
         title='newProject',
         year=datetime.now().year,
-        message='Your contact page.'
+        message='Your contact page.',
+        username = "xxxx"
     )
 
 
@@ -279,96 +280,93 @@ def editTemplate():
         lottiePlayersArrayPath=lottiePlayersArrayPath
     )
 
-
-def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
+def update_query(query:str):
     cursor = mysql.get_db().cursor()
     con = mysql.get_db()
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def select_one_query(query:str):
+    cursor = mysql.get_db().cursor()
+    cursor.execute(query)
+    query_data = cursor.fetchone()
+    cursor.close()
+    return query_data
+
+def select_many_query(query:str, some:str):
+    cursor = mysql.get_db().cursor()
+    cursor.execute(query)
+    query_data = cursor.fetchmany(some)
+    cursor.close()
+    return query_data
+
+def select_all_query(query:str):
+    cursor = mysql.get_db().cursor()
+    cursor.execute(query)
+    query_data = cursor.fetchall()
+    cursor.close()
+    return query_data
+
+def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
     person_name = email.strip()
     person_last_name = password.strip()
     email = email.strip()
     password = password.strip()
     query = f"INSERT INTO users (person_name ,person_last_name,email ,password ,image,total_storage ,in_use_storage) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image},DEFAULT,DEFAULT);"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
 
 def get_user(email: str, password: str):
     email = email.strip()
     password = password.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
-    cursor.execute(query)
-    query_data = cursor.fetchone()
-    cursor.close()
-    return query_data
+    return select_one_query(query)
 
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     image = f"'{image}'" if image else 'null'
     query = f"INSERT INTO projects(user_id ,project_name,image) VALUES({user_id},'{project_name}', {image});"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
 
 
 def get_project_info(user_id: str):
     user_id = user_id.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"SELECT * FROM projects WHERE user_id='{user_id}';"
-    cursor.execute(query)
-    query_data = cursor.fetchall()
-    cursor.close()
-    return query_data
+    return select_all_query(query)
+
 
 def update_project_name(project_id: str, new_name:str):
     project_id = project_id.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id='{project_id}'  ;"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
+
 
 def update_project_image(project_id: str, new_img:str):
     project_id = project_id.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"UPDATE projects SET image='{new_img}' WHERE project_id='{project_id}'  ;"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
+
 
 def update_project_last_update(project_id: str):
     project_id = project_id.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"UPDATE projects SET last_update= (CURRENT_DATE) WHERE project_id='{project_id}'  ;"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
+
 
 def update_project_status(project_id: str, status:str):
     status = status.strip()
     project_id = project_id.strip()
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"UPDATE projects SET status='{status}' WHERE project_id='{project_id}'  ;"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
+
 
 def new_doc(project_id: int, doc_url: str, doc_name:str):
     cursor = mysql.get_db().cursor()
     con = mysql.get_db()
     query = f"INSERT INTO docs(project_id, doc_url, doc_name) VALUES({project_id}, '{doc_url}', '{doc_name}');"
-    cursor.execute(query)
-    con.commit()
-    cursor.close()
+    update_query(query)
+
 
 def change_animation(path):
     global an
