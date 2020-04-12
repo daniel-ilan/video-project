@@ -94,15 +94,12 @@ def about():
             password = dataFromDB[3]
         else:
             #new user
-            print("new user")
             person_name = request.form['person_name']
             person_last_name = request.form['person_last_name']
             email = request.form['email']
             password = request.form['password']
-            image = None
-                #request.form['image']
+            image = None  #request.form['image']
             create_new_user(person_name, person_last_name, email, password, image)
-            print("done")
     else:
          person_name=""
          person_last_name=""
@@ -119,6 +116,34 @@ def about():
         email=email,
         password=password
     )
+
+
+@application.route("/")
+@application.route('/newProject', methods=['POST', 'GET'])
+def newProject():
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'submit_id':
+            # get user info
+            userID = request.form['userID']
+            update_project_last_update("1")
+            data = get_project_info(userID)
+            print(data)
+        else:
+            # new user
+            userID = int(request.form['project_owner'])
+            project_name = request.form['project_name']
+            project_image = None  # request.form['project_image']
+            create_new_project(userID, project_name, project_image)
+
+    """Renders the contact page."""
+    return render_template(
+        'newProject.html',
+        title='newProject',
+        year=datetime.now().year,
+        message='Your contact page.'
+    )
+
+
 
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
@@ -231,7 +256,7 @@ def change_color(color, outline_color):
     anim_properties['shapes']['outline'] = list(correct_outline_color[0:3] + (1,))
 
 
-@application.route("/")
+# @application.route("/")
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     global changing_path
@@ -285,6 +310,54 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
     con = mysql.get_db()
     image = f"'{image}'" if image else 'null'
     query = f"INSERT INTO projects(user_id ,project_name,image) VALUES({user_id},'{project_name}', {image});"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+
+def get_project_info(user_id: str):
+    user_id = user_id.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"SELECT * FROM projects WHERE user_id='{user_id}';"
+    cursor.execute(query)
+    query_data = cursor.fetchall()
+    cursor.close()
+    return query_data
+
+def update_project_name(project_id: str, new_name:str):
+    project_id = project_id.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id='{project_id}'  ;"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def update_project_image(project_id: str, new_img:str):
+    project_id = project_id.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"UPDATE projects SET image='{new_img}' WHERE project_id='{project_id}'  ;"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def update_project_last_update(project_id: str):
+    project_id = project_id.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"UPDATE projects SET last_update= (CURRENT_DATE) WHERE project_id='{project_id}'  ;"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def update_project_status(project_id: str, status:str):
+    status = status.strip()
+    project_id = project_id.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"UPDATE projects SET status='{status}' WHERE project_id='{project_id}'  ;"
     cursor.execute(query)
     con.commit()
     cursor.close()

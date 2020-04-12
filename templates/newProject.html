@@ -1,0 +1,27 @@
+{% extends "user_layout.html" %}
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+<div class="color-form-container">
+
+    <form action="newProject" method="post" class="d-flex">
+        <div class="form-group text-form m-4">
+            <label for="userID"> הכנס את ה-ID של המשתמש: לדוגמא 13,15</label>
+            <input type="text" id="userID" name="userID" class="form-control">
+            <input type="submit" name="submit_button" value="submit_id">
+        </div>
+        <div class="form-group text-form m-4">
+            <label for="project_owner">הבעלים של הפרויקט</label>
+            <input type="text" id="project_owner" name="project_owner" class="form-control">
+            <label for="project_name">שם הפרויקט</label>
+            <input type="text" id="project_name" name="project_name" class="form-control">
+                        <label for="project_image">תמונה</label>
+            <input type="image" id="project_image" name="project_image" class="form-control">
+                    <button type="submit" name="submit_button" id="submitNew" value="submitNew" class="btn btn-primary color-submit-btn">צור פרויקט חדש
+        </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
