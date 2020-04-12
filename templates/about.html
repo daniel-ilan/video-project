@@ -7,4 +7,43 @@
 
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
+
+<div class="color-form-container">
+    <form lang="he" dir="rtl" action="about" method="post" class="d-flex">
+        <div class="form-group color-form">
+            <label for="existUserEmail">משתמש קיים-מייל</label>
+            <input type="text" id="existUserEmail" name="existUserEmail"
+                   class="form-control">
+            <label for="existUserPass">משתמש קיים-סיסמא</label>
+            <input type="password" id="existUserPass" name="existUserPass"
+                   class="form-control">
+            <p><br>
+                <br>
+                <br></p>
+
+            <label for="person_name">שם פרטי</label>
+            <input type="text" id="person_name" name="person_name"
+                   value="{{person_name}}" class="form-control">
+            <br/>
+            <label for="person_last_name">שם משפחה</label>
+            <input type="text" id="person_last_name" name="person_last_name"
+                   value="{{person_last_name}}" class="form-control">
+            <br/>
+            <label for="person_last_name">אימייל</label>
+            <input type="text" id="email" name="email"
+                   value="{{email}}" class="form-control">
+            <br/>
+            <label for="password">סיסמא</label>
+            <input type="password" id="password" name="password"
+                   value="{{password}}" class="form-control">
+            <br/>
+            <label for="image">תמונה</label>
+            <input type="image" id="image" name="image"
+                   value="{{image}}" class="form-control">
+            <br/>
+            <input type="submit" name="submit" id="submitUser" class="btn btn-primary color-submit-btn"
+                   value="התחלת עבודה"/>
+        </div>
+    </form>
+</div>
 {% endblock %}

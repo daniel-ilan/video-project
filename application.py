@@ -2,18 +2,23 @@
 Routes and views for the flask application.
 """
 
-from flask import Flask
 import os
 from datetime import datetime
-import time
-from flask import render_template, request
+from flask import render_template, request, Flask
+from flaskext.mysql import MySQL
+from matplotlib import colors
 from tgs import Color
 from tgs import objects
 from tgs.parsers.tgs import parse_tgs
 from tgs import exporters
-from matplotlib import colors
+import time
 
 application = Flask(__name__)
+application.config['MYSQL_DATABASE_USER'] = 'admin'
+application.config['MYSQL_DATABASE_PASSWORD'] = 'Password1'
+application.config['MYSQL_DATABASE_DB'] = 'edvideo'
+mysql = MySQL()
+mysql.init_app(application)
 
 
 def readable(path):
@@ -28,24 +33,28 @@ def readable(path):
 
 
 def get_anim_props(anim):
-    print(anim.find('.primaryColor').find('Rectangle Path 1'))
     text_color = anim.find('.myText').data.data.keyframes[0].start.color
     text_content = anim.find('.myText').data.data.keyframes[0].start.text
     color = anim.find('.primaryColor').find('Fill 1').color.value.components
     out_color = anim.find('.baseColor').find('Fill 1').color.value.components
-    anim_props = {'text':{'color':list(text_color[0:3] + [1]),
-                          'content': text_content},
-                  'shapes':{'background':color,
-                            'outline':out_color}}
+    anim_props = {'text': {'color': list(text_color[0:3] + [1]),
+                           'content': text_content},
+                  'shapes': {'background': color,
+                             'outline': out_color}}
     return anim_props
+
 
 changing_path = "static/content/temp1_anim1.json"
 an = readable(changing_path)
 anim_properties = get_anim_props(an)
 
-myLoAr = ["../static/content/temp1_anim1.json","../static/content/temp1_anim2.json"]
-lottiePlayersArray = [["temp1_anim1.json","שקיפות"],["temp1_anim2.json","בהדרגה מימין"],["temp1_anim3.json","מצד ימין"],["temp1_anim4.json","שלום"],["temp2_anim1.json","שקיפות"],["temp2_anim2.json","בהדרגה מימין"],["temp2_anim3.json","מצד ימין"],["temp2_anim4.json","שלום"]]
-lottiePlayersArrayPath ="../static/content/"
+myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim2.json"]
+lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
+                      ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
+                      ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
+                      ["temp2_anim4.json", "שלום"]]
+lottiePlayersArrayPath = "../static/content/"
+
 
 @application.route('/home')
 def home():
@@ -68,17 +77,48 @@ def contact():
         message='Your contact page.'
     )
 
-
-@application.route('/about')
+@application.route('/about', methods=['POST', 'GET'])
 def about():
+    global person_name
+    global person_last_name
+    global email
+    global password
+    if request.method == 'POST':
+        if request.form['existUserEmail'] != '' and request.form['existUserPass'] !='':
+            #get user info
+            dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+            print(dataFromDB)
+            person_name = dataFromDB[0]
+            person_last_name = dataFromDB[1]
+            email = dataFromDB[2]
+            password = dataFromDB[3]
+        else:
+            #new user
+            print("new user")
+            person_name = request.form['person_name']
+            person_last_name = request.form['person_last_name']
+            email = request.form['email']
+            password = request.form['password']
+            image = None
+                #request.form['image']
+            create_new_user(person_name, person_last_name, email, password, image)
+            print("done")
+    else:
+         person_name=""
+         person_last_name=""
+         email=""
+         password=""
     """Renders the about page."""
     return render_template(
         'about.html',
         title='About',
         year=datetime.now().year,
-        message='Your application description page.'
+        message='Your application description page.',
+        person_name= person_name,
+        person_last_name=person_last_name,
+        email=email,
+        password=password
     )
-
 
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
@@ -111,7 +151,6 @@ def change_text(text, color):
 
     correct_color = colors.to_rgba(color, float)
     an.find('.myText').data.data.keyframes[0].start.color[0:3] = list(correct_color[0:3] + (1,))
-
 
     new_name = "temp" + str(int(time.time())) + ".json"
     exporters.export_lottie(an, "static/content/" + new_name)
@@ -200,9 +239,7 @@ def editTemplate():
     gets an ajax request and changes the json file attached to the lottie-player
     todo: this is not secure now and needs to be written correctly
     :return: nothing. It just changes the file associated with the main animation lottie-player
-    """
-    print("I am here")
-    """Renders the about page."""
+    """    """Renders the about page."""
     if request.method == 'POST':
         a = request.data
         change_animation(a.decode("utf-8"))
@@ -213,10 +250,52 @@ def editTemplate():
         year=datetime.now().year,
         message='',
         anim_path=changing_path,
-        lottiePlayersArray = lottiePlayersArray,
-    lottiePlayersArrayPath=lottiePlayersArrayPath
+        lottiePlayersArray=lottiePlayersArray,
+        lottiePlayersArrayPath=lottiePlayersArrayPath
     )
 
+
+def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    image = f"'{image}'" if image else 'null'
+    person_name = email.strip()
+    person_last_name = password.strip()
+    email = email.strip()
+    password = password.strip()
+    query = f"INSERT INTO users (person_name ,person_last_name,email ,password ,image,total_storage ,in_use_storage) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image},DEFAULT,DEFAULT);"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def get_user(email: str, password: str):
+    email = email.strip()
+    password = password.strip()
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
+    cursor.execute(query)
+    query_data = cursor.fetchone()
+    cursor.close()
+    return query_data
+
+
+def create_new_project(user_id: int, project_name: str, image: str = None):
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    image = f"'{image}'" if image else 'null'
+    query = f"INSERT INTO projects(user_id ,project_name,image) VALUES({user_id},'{project_name}', {image});"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
+
+def new_doc(project_id: int, doc_url: str, doc_name:str):
+    cursor = mysql.get_db().cursor()
+    con = mysql.get_db()
+    query = f"INSERT INTO docs(project_id, doc_url, doc_name) VALUES({project_id}, '{doc_url}', '{doc_name}');"
+    cursor.execute(query)
+    con.commit()
+    cursor.close()
 
 def change_animation(path):
     global an
@@ -228,7 +307,5 @@ def change_animation(path):
     pass
 
 
-
 if __name__ == '__main__':
     application.run()
-
