@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block head %}
+{% endblock %}
 
-</body>
-</html>
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+<div class="color-form-container">
+
+    <form lang="he" dir="rtl" action="homePage" method="post" class="d-flex">
+        <div class="form-group color-form">
+            <label for="existUserEmail">משתמש קיים-מייל</label>
+            <input type="text" id="existUserEmail" name="existUserEmail"
+                   class="form-control">
+            <label for="existUserPass">משתמש קיים-סיסמא</label>
+            <input type="password" id="existUserPass" name="existUserPass"
+                   class="form-control">
+            <input type="submit" name="log_in" id="log_in" class="btn btn-primary color-submit-btn"
+                   value="התחלת עבודה"/>
+        </div>
+    </form>
+    <div class="alert alert-danger" role="alert">
+        {{alertMessage}}
+    </div>
+</div>
+{% endblock %}

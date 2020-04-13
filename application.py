@@ -5,8 +5,8 @@ Routes and views for the flask application.
 import os
 from datetime import datetime
 from flask import render_template, request, Flask
-from flaskext.mysql import MySQL
 from matplotlib import colors
+import pyodbc
 from tgs import Color
 from tgs import objects
 from tgs.parsers.tgs import parse_tgs
@@ -14,12 +14,6 @@ from tgs import exporters
 import time
 
 application = Flask(__name__)
-application.config['MYSQL_DATABASE_USER'] = 'admin'
-application.config['MYSQL_DATABASE_PASSWORD'] = 'Password1'
-application.config['MYSQL_DATABASE_DB'] = 'edvideo'
-mysql = MySQL()
-mysql.init_app(application)
-
 
 def readable(path):
     """
@@ -84,22 +78,20 @@ def about():
     global email
     global password
     if request.method == 'POST':
-        if request.form['existUserEmail'] != '' and request.form['existUserPass'] !='':
-            #get user info
-            dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
-            print(dataFromDB)
-            person_name = dataFromDB[1]
-            person_last_name = dataFromDB[2]
-            email = dataFromDB[3]
-            password = dataFromDB[4]
-        else:
-            #new user
-            person_name = request.form['person_name']
-            person_last_name = request.form['person_last_name']
-            email = request.form['email']
-            password = request.form['password']
-            image = None  #request.form['image']
-            create_new_user(person_name, person_last_name, email, password, image)
+        #new user
+        person_name = request.form['person_name']
+        person_last_name = request.form['person_last_name']
+        email = request.form['email']
+        password = request.form['password']
+        image = None  #request.form['image']
+        create_new_user(person_name, person_last_name, email, password, image)
+        # get user info
+        # dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+        # print(dataFromDB)
+        # person_name = dataFromDB[1]
+        # person_last_name = dataFromDB[2]
+        # email = dataFromDB[3]
+        # password = dataFromDB[4]
     else:
          person_name=""
          person_last_name=""
@@ -118,7 +110,6 @@ def about():
     )
 
 
-@application.route("/")
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
     if request.method == 'POST':
@@ -144,6 +135,30 @@ def newProject():
         username = "xxxx"
     )
 
+@application.route("/")
+@application.route('/homePage', methods=['POST', 'GET'])
+def homePage():
+    global alertM
+    if request.method == 'POST':
+        if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
+            dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+            print(dataFromDB)
+            if dataFromDB[0] is True and dataFromDB[1] is False:
+                alertM= "סיסמא שגויה"
+            elif dataFromDB[0] is True and dataFromDB[1] is True:
+                alertM= "התחברות הצליחה"
+            else:
+                alertM= "שם משתמש או סימא שגויים"
+    else:
+        alertM=""
+    """Renders the contact page."""
+    return render_template(
+        'homePage.html',
+        title='homePage',
+        year=datetime.now().year,
+        message='Your contact page.',
+        alertMessage=alertM
+    )
 
 
 @application.route('/editContent', methods=['POST', 'GET'])
@@ -280,30 +295,39 @@ def editTemplate():
         lottiePlayersArrayPath=lottiePlayersArrayPath
     )
 
+def create_conn():
+    connStr = (
+        r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
+        r"DBQ=C:\Users\rubi\WebstormProjects\video-project\static\db.accdb;"
+    )
+    conn = pyodbc.connect(connStr)
+    cursor = conn.cursor()
+    return (conn, cursor)
+
+def get_row(query:str):
+    conn, cursor= create_conn()
+    return cursor.rowcount
+
 def update_query(query:str):
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
+    conn, cursor= create_conn()
     cursor.execute(query)
-    con.commit()
+    conn.commit()
     cursor.close()
 
 def select_one_query(query:str):
-    cursor = mysql.get_db().cursor()
-    cursor.execute(query)
+    conn, cursor= create_conn()
     query_data = cursor.fetchone()
     cursor.close()
     return query_data
 
 def select_many_query(query:str, some:str):
-    cursor = mysql.get_db().cursor()
-    cursor.execute(query)
+    conn, cursor= create_conn()
     query_data = cursor.fetchmany(some)
     cursor.close()
     return query_data
 
 def select_all_query(query:str):
-    cursor = mysql.get_db().cursor()
-    cursor.execute(query)
+    conn, cursor= create_conn()
     query_data = cursor.fetchall()
     cursor.close()
     return query_data
@@ -320,8 +344,15 @@ def create_new_user(person_name: str, person_last_name: str, email: str, passwor
 def get_user(email: str, password: str):
     email = email.strip()
     password = password.strip()
+    exsistUser = False
+    match = False
+    query = f"SELECT * FROM users WHERE email= '{email}';"
+    if get_row(query) == 1:
+        exsistUser = True
     query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
-    return select_one_query(query)
+    if get_row(query) == 1:
+        match = True
+    return (exsistUser, match)
 
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
@@ -362,8 +393,6 @@ def update_project_status(project_id: str, status:str):
 
 
 def new_doc(project_id: int, doc_url: str, doc_name:str):
-    cursor = mysql.get_db().cursor()
-    con = mysql.get_db()
     query = f"INSERT INTO docs(project_id, doc_url, doc_name) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
 
