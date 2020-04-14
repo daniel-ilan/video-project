@@ -298,7 +298,7 @@ def editTemplate():
 def create_conn():
     connStr = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
-        r"DBQ=C:\Users\rubi\WebstormProjects\video-project\static\db.accdb;"
+        r"DBQ=static\db\db.accdb;"
     )
     conn = pyodbc.connect(connStr)
     cursor = conn.cursor()
