@@ -116,7 +116,7 @@ def newProject():
         if request.form['submit_button'] == 'submit_id':
             # get user info
             userID = request.form['userID']
-            update_project_last_update("1")
+            update_project_last_update("2")
             data = get_project_info(userID)
             print(data)
         else:
@@ -306,7 +306,10 @@ def create_conn():
 
 def get_row(query:str):
     conn, cursor= create_conn()
-    return cursor.rowcount
+    cursor.execute(query)
+    data = len(cursor.fetchall())
+    cursor.close()
+    return data
 
 def update_query(query:str):
     conn, cursor= create_conn()
@@ -316,18 +319,21 @@ def update_query(query:str):
 
 def select_one_query(query:str):
     conn, cursor= create_conn()
+    cursor.execute(query)
     query_data = cursor.fetchone()
     cursor.close()
     return query_data
 
 def select_many_query(query:str, some:str):
     conn, cursor= create_conn()
+    cursor.execute(query)
     query_data = cursor.fetchmany(some)
     cursor.close()
     return query_data
 
 def select_all_query(query:str):
     conn, cursor= create_conn()
+    cursor.execute(query)
     query_data = cursor.fetchall()
     cursor.close()
     return query_data
@@ -338,7 +344,7 @@ def create_new_user(person_name: str, person_last_name: str, email: str, passwor
     person_last_name = password.strip()
     email = email.strip()
     password = password.strip()
-    query = f"INSERT INTO users (person_name ,person_last_name,email ,password ,image,total_storage ,in_use_storage) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image},DEFAULT,DEFAULT);"
+    query = f"INSERT INTO users ([person_name] ,[person_last_name],[email] ,[password] ,[image]) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image});"
     update_query(query)
 
 def get_user(email: str, password: str):
@@ -346,7 +352,7 @@ def get_user(email: str, password: str):
     password = password.strip()
     exsistUser = False
     match = False
-    query = f"SELECT * FROM users WHERE email= '{email}';"
+    query = f"SELECT COUNT (*) FROM users WHERE email= '{email}';"
     if get_row(query) == 1:
         exsistUser = True
     query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
@@ -357,43 +363,43 @@ def get_user(email: str, password: str):
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    query = f"INSERT INTO projects(user_id ,project_name,image) VALUES({user_id},'{project_name}', {image});"
+    query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
     update_query(query)
 
 
 def get_project_info(user_id: str):
-    user_id = user_id.strip()
-    query = f"SELECT * FROM projects WHERE user_id='{user_id}';"
+    user_id = int(user_id.strip())
+    query = f"SELECT * FROM projects WHERE user_id={user_id};"
     return select_all_query(query)
 
 
 def update_project_name(project_id: str, new_name:str):
-    project_id = project_id.strip()
-    query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id='{project_id}'  ;"
+    project_id = int(project_id.strip())
+    query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id={project_id}  ;"
     update_query(query)
 
 
 def update_project_image(project_id: str, new_img:str):
-    project_id = project_id.strip()
-    query = f"UPDATE projects SET image='{new_img}' WHERE project_id='{project_id}'  ;"
+    project_id = int(project_id.strip())
+    query = f"UPDATE projects SET image='{new_img}' WHERE project_id={project_id}  ;"
     update_query(query)
 
 
 def update_project_last_update(project_id: str):
-    project_id = project_id.strip()
-    query = f"UPDATE projects SET last_update= (CURRENT_DATE) WHERE project_id='{project_id}'  ;"
+    project_id = int(project_id.strip())
+    query = f"UPDATE projects SET last_update= Date() WHERE project_id={project_id}  ;"
     update_query(query)
 
 
 def update_project_status(project_id: str, status:str):
     status = status.strip()
-    project_id = project_id.strip()
-    query = f"UPDATE projects SET status='{status}' WHERE project_id='{project_id}'  ;"
+    project_id = int(project_id.strip())
+    query = f"UPDATE projects SET status='{status}' WHERE project_id={project_id}  ;"
     update_query(query)
 
 
 def new_doc(project_id: int, doc_url: str, doc_name:str):
-    query = f"INSERT INTO docs(project_id, doc_url, doc_name) VALUES({project_id}, '{doc_url}', '{doc_name}');"
+    query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
 
 
