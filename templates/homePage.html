@@ -5,25 +5,107 @@
 
 {% block content %}
 
-<h2>{{ title }}.</h2>
-<h3>{{ message }}</h3>
-
+<div style="margin-bottom: 4rem"></div>
 <div class="color-form-container">
 
     <form lang="he" dir="rtl" action="homePage" method="post" class="d-flex">
-        <div class="form-group color-form">
-            <label for="existUserEmail">משתמש קיים-מייל</label>
-            <input type="text" id="existUserEmail" name="existUserEmail"
-                   class="form-control">
-            <label for="existUserPass">משתמש קיים-סיסמא</label>
-            <input type="password" id="existUserPass" name="existUserPass"
-                   class="form-control">
-            <input type="submit" name="log_in" id="log_in" class="btn btn-primary color-submit-btn"
-                   value="התחלת עבודה"/>
+        <div class="form-group xxx">
+            <div class="form-group ">
+                <label for="existUserEmail">משתמש קיים-מייל</label>
+                <input type="text" id="existUserEmail" name="existUserEmail"
+                       class="form-control">
+            </div>
+            <div class="form-group ">
+                <label for="existUserPass">משתמש קיים-סיסמא</label>
+                <input type="password" id="existUserPass" name="existUserPass"
+                       class="form-control">
+            </div>
+            <div class="form-group ">
+                <input type="submit" name="submit_button" value="log_in" id="log_in"
+                       class="btn btn-primary color-submit-btn" value="התחלת עבודה"/>
+            </div>
+            <div class="alert alert-danger" role="alert">
+                {{alertMessage}}
+            </div>
         </div>
+
+
+        <div class="form-group xxx">
+            <div class="form-group ">
+                <label for="add_color">add_color</label>
+                <input type="color" id="add_color" name="add_color" class="form-control">
+            </div>
+
+            <div class="form-group  ">
+                <label for="kind">kind</label>
+                <input type="text" name="kind" id="kind">
+                <input type="submit" name="submit_button" id="submit_new_Color" value="submit_new_Color"
+                       class="btn btn-primary color-submit-btn" value="שנה"/>
+            </div>
+        </div>
+
+        <div class="form-group xxx ">
+
+            <div class="form-group ">
+                <label for="kind">search_palte_id</label>
+                <input type="text" name="search_palte_id" id="search_palte_id">
+                <div class="form-group ">
+                </div>
+
+                <input type="submit" name="submit_button" id="submit_search_palte_id" value="submit_search_palte_id"
+                       class="btn btn-primary color-submit-btn" value="שנה"/>
+            </div>
+            <div class="form-group ">
+                <label for="kind">palte_name</label>
+                <input type="text" name="palte_name" id="palte_name" value="{{palte_name}}">
+            </div>
+
+            <div class="form-group ">
+                <label for="add_color">color</label>
+
+                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">primary</div>
+                        </div>
+                        <input type="color" id="color1" name="color1" value="{{color1}}" class="form-control">
+                    </div>
+                </div>
+
+                                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">secondary</div>
+                        </div>
+                <input type="color" id="color2" name="color2" value="{{color2}}" class="form-control">
+                    </div>
+                </div>
+
+                                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">bg</div>
+                        </div>
+                <input type="color" id="color3" name="color3" value="{{color3}}" class="form-control">
+                    </div>
+                </div>
+
+                                <div class="col-auto">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">text</div>
+                        </div>
+                <input type="color" lang="ng" id="color4" name="color4" value="{{color4}}" class="form-control">
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
     </form>
-    <div class="alert alert-danger" role="alert">
-        {{alertMessage}}
-    </div>
 </div>
+
 {% endblock %}

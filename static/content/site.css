@@ -261,12 +261,12 @@ h1 {
     align-content: space-around;
 }
 
-.primaryBTN{
+input[type=button], input[type=submit], .primaryBTN{
     background-color: #6515DD;
+    border: solid 0.125rem #6515DD;
     color: white;
-    padding:0.5rem 1rem;
+    padding:0.4rem 0.75rem;
     border-radius: 0.5rem;
-    border: none;
     font-weight: 500;
     font-size: 1rem;
     display: flex;
@@ -274,4 +274,16 @@ h1 {
     text-align: center;
     letter-spacing: 0.03em;
     margin: 3rem 0;
+}
+
+input[type=button]:hover, input[type=submit]:hover, .primaryBTN:hover{
+    background-color: #00B6DE;
+    border: solid 0.125rem #00A7CC;
+    box-shadow: 5px 6px 12px rgba(0, 83, 101, 0.12);
+}
+
+.xxx{
+display: block;
+width: max-content;
+margin-left: 5%;
 }

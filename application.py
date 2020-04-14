@@ -139,16 +139,40 @@ def newProject():
 @application.route('/homePage', methods=['POST', 'GET'])
 def homePage():
     global alertM
+    global color1
+    global color2
+    global color3
+    global color4
+    global palteName
+    palteName=""
+    color1 = color2 = color3 = color4 = "#000000"
+
     if request.method == 'POST':
-        if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
-            dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
-            print(dataFromDB)
-            if dataFromDB[0] is True and dataFromDB[1] is False:
-                alertM= "סיסמא שגויה"
-            elif dataFromDB[0] is True and dataFromDB[1] is True:
-                alertM= "התחברות הצליחה"
-            else:
-                alertM= "שם משתמש או סימא שגויים"
+        if request.form['submit_button'] == 'submit_new_Color':
+            color = request.form['add_color']
+            kind = request.form['kind']
+            create_color(color, kind)
+        elif request.form['submit_button'] == 'submit_search_palte_id':
+            search_palte_id = request.form['search_palte_id']
+            data = get_palte(search_palte_id)
+            palteName = data[2]
+            colors_data = get_colors_by_plate(search_palte_id)
+            color1 = colors_data[0][0]
+            color2 = colors_data[1][0]
+            color3 = colors_data[2][0]
+            color4 = colors_data[3][0]
+
+            print(colors_data)
+        else:
+            if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
+                dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+                print(dataFromDB)
+                if dataFromDB[0] is True and dataFromDB[1] is False:
+                    alertM= "סיסמא שגויה"
+                elif dataFromDB[0] is True and dataFromDB[1] is True:
+                    alertM= "התחברות הצליחה"
+                else:
+                    alertM= "שם משתמש או סימא שגויים"
     else:
         alertM=""
     """Renders the contact page."""
@@ -157,7 +181,13 @@ def homePage():
         title='homePage',
         year=datetime.now().year,
         message='Your contact page.',
-        alertMessage=alertM
+        alertMessage=alertM,
+        color1=color1,
+        color2=color2,
+        color3=color3,
+        color4=color4,
+        palte_name=palteName
+
     )
 
 
@@ -249,7 +279,6 @@ def editColor():
         anim_path=changing_path,
         mainColor=main_color,
         outlineColor=outline_color
-
     )
 
 
@@ -295,6 +324,7 @@ def editTemplate():
         lottiePlayersArrayPath=lottiePlayersArrayPath
     )
 
+
 def create_conn():
     connStr = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
@@ -304,12 +334,14 @@ def create_conn():
     cursor = conn.cursor()
     return (conn, cursor)
 
+
 def get_row(query:str):
     conn, cursor= create_conn()
     cursor.execute(query)
     data = len(cursor.fetchall())
     cursor.close()
     return data
+
 
 def update_query(query:str):
     conn, cursor= create_conn()
@@ -324,6 +356,7 @@ def select_one_query(query:str):
     cursor.close()
     return query_data
 
+
 def select_many_query(query:str, some:str):
     conn, cursor= create_conn()
     cursor.execute(query)
@@ -337,6 +370,7 @@ def select_all_query(query:str):
     query_data = cursor.fetchall()
     cursor.close()
     return query_data
+
 
 def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
@@ -397,6 +431,29 @@ def update_project_status(project_id: str, status:str):
     query = f"UPDATE projects SET status='{status}' WHERE project_id={project_id}  ;"
     update_query(query)
 
+
+def create_color(hex:str, kind: str, palte_id: str):
+    hex = hex.strip()
+    kind = kind.strip()
+    palte_id = int(palte_id.strip())
+    query = f"INSERT INTO colors ([hex],[kind],[palte_id]) VALUES('{hex}','{kind}', {palte_id});"
+    update_query(query)
+
+
+def create_palte(project_id: str, palte_name: str):
+    project_id = int(project_id.strip())
+    query = f"INSERT INTO paltes ([project_id],[palte_name]) VALUES({project_id},'{palte_name}');"
+    update_query(query)
+
+def get_palte(palte_id: str):
+    palte_id = int(palte_id.strip())
+    query = f"SELECT * FROM paltes WHERE palte_id={palte_id};"
+    return select_one_query(query)
+
+def get_colors_by_plate(palte_id: str):
+    palte_id = int(palte_id.strip())
+    query = f"SELECT hex,kind FROM colors WHERE palte_id={palte_id};"
+    return select_all_query(query)
 
 def new_doc(project_id: int, doc_url: str, doc_name:str):
     query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
