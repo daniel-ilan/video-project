@@ -1,6 +1,6 @@
 $(document).ready(function(){
     /*          ----            side-nav change color           ----            */
-    $(".sideNavUl").click(
+    $('.sideNavUl').click(
         function (event) {
             $(this).find("a").forEach(
                 function () {
@@ -19,13 +19,13 @@ $(document).ready(function(){
 
     $(`a[href='${page}']`).addClass('active');
     $(`a[href='${page}']`).removeClass('text-white');
-    const animation_templates = $('.tinyLottie');
+    const animation_templates = $('.tinyLottiePlayer');
     animation_templates.on('click', changeAnimation);
 
 
-    // animation_templates.forEach(function () {
-    //     $(this).addEventListener('click', changeAnimation(this, main_animation))
-    // });
+
+    const selected_alignment = document.querySelector("#selectedAlignment");
+    selected_alignment.selectedIndex = selected_alignment.attributes["data-selected"].value;
 });
 
 function changeAnimation(event) {
