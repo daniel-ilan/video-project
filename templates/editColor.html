@@ -13,7 +13,14 @@
             <label for="outlineColor">בחר צבע מסגרת לאנימציה</label>
             <input type="color" id="outlineColor" name="outlineColor"
                    value="{{outlineColor}}" class="form-control">
+            <label for="opacityRange">בחר רמת שקיפות</label>
+            <div class="d-flex w-100">
+                <span class="px-2">0%</span>
+                <input type="range" name="opacityRange" value="{{opacity}}" class="custom-range w-50" id="opacityRange" min="0" max="100">
+                <span class="px-2">100%</span>
+            </div>
             <input type="submit" name="submit" id="submitColor" class="btn btn-primary color-submit-btn" value="שנה"/>
+
         </div>
     </form>
 </div>
