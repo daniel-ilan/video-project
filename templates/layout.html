@@ -17,7 +17,7 @@
 <nav class="navbar sticky-top  flex-md-nowrap p-0 " style="height: 5vh; align-items:normal">
     <a class="navbar-brand col-sm-3 col-md-1 mr-0 pt-2  whiteBG" href="about">
         <img src="../static/images/logo.svg" style="width:100%;"/>
-       </a>
+    </a>
     <div class="greyBG">
         <h1 id="pageTitleH" class="mr-auto pl-4 pt-2   ">{{ title }}</h1>
 
@@ -101,13 +101,13 @@
                 </ul>
             </nav>
             <div class="inner_remaining">
-<!--                <svg id="minMenu" width="29" height="28" viewBox="0 0 29 28" fill="none"-->
-<!--                     xmlns="http://www.w3.org/2000/svg">-->
-<!--                    <ellipse cx="14.5" cy="14" rx="14.5" ry="14" transform="rotate(-180 14.5 14)" fill="#282828"/>-->
-<!--                    <ellipse cx="15.5" cy="14" rx="13.5" ry="13" transform="rotate(-180 15.5 14)" fill="white"/>-->
-<!--                    <path d="M10.7582 20.2266L16.8584 14.8699L17.2863 14.4941L16.8584 14.1184L10.7582 8.76172L12.0099 7.66503L19.8038 14.4941L12.0099 21.3233L10.7582 20.2266Z"-->
-<!--                          fill="#282828" stroke="#282828"/>-->
-<!--                </svg>-->
+                <!--                <svg id="minMenu" width="29" height="28" viewBox="0 0 29 28" fill="none"-->
+                <!--                     xmlns="http://www.w3.org/2000/svg">-->
+                <!--                    <ellipse cx="14.5" cy="14" rx="14.5" ry="14" transform="rotate(-180 14.5 14)" fill="#282828"/>-->
+                <!--                    <ellipse cx="15.5" cy="14" rx="13.5" ry="13" transform="rotate(-180 15.5 14)" fill="white"/>-->
+                <!--                    <path d="M10.7582 20.2266L16.8584 14.8699L17.2863 14.4941L16.8584 14.1184L10.7582 8.76172L12.0099 7.66503L19.8038 14.4941L12.0099 21.3233L10.7582 20.2266Z"-->
+                <!--                          fill="#282828" stroke="#282828"/>-->
+                <!--                </svg>-->
 
             </div>
         </div>
@@ -122,12 +122,23 @@
                     <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
                                    class="lottiePlayer" id="mainAnimation">
                     </lottie-player>
+                    <div>
+                        show colors:
+                        {% for n in colorsArray %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">{{n[1]}}</div>
+                        </div>
+                <input type="color" id="color{{n}}" name="color{{n}}" value="{{n[0]}}" class="form-control">
+                    </div>
+                        {% endfor %}
+                    </div>
                 </div>
 
             </div>
         </main>
     </div>
-    <div  id="slidesArea"  class="flex-md-nowrap p-0 row"  style="height:15vh;">
+    <div id="slidesArea" class="flex-md-nowrap p-0 row" style="height:15vh;">
         <p>slides area</p>
     </div>
 </div>

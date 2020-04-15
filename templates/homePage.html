@@ -71,33 +71,14 @@
                         <input type="color" id="color1" name="color1" value="{{color1}}" class="form-control">
                     </div>
                 </div>
-
-                                <div class="col-auto">
+                   {% for n in my_colors %}
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <div class="input-group-text">secondary</div>
+                            <div class="input-group-text">{{n[1]}}</div>
                         </div>
-                <input type="color" id="color2" name="color2" value="{{color2}}" class="form-control">
+                <input type="color" id="color{{n}}" name="color{{n}}" value="{{n[0]}}" class="form-control">
                     </div>
-                </div>
-
-                                <div class="col-auto">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">bg</div>
-                        </div>
-                <input type="color" id="color3" name="color3" value="{{color3}}" class="form-control">
-                    </div>
-                </div>
-
-                                <div class="col-auto">
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">text</div>
-                        </div>
-                <input type="color" lang="ng" id="color4" name="color4" value="{{color4}}" class="form-control">
-                    </div>
-                </div>
+                        {% endfor %}
 
             </div>
 

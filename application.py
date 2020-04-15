@@ -38,17 +38,70 @@ def get_anim_props(anim):
     return anim_props
 
 
+def create_conn():
+    connStr = (
+        r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
+        r"DBQ=static\db\db.accdb;"
+    )
+    conn = pyodbc.connect(connStr)
+    cursor = conn.cursor()
+    return (conn, cursor)
+
+
+def get_row(query:str):
+    conn, cursor= create_conn()
+    cursor.execute(query)
+    data = len(cursor.fetchall())
+    cursor.close()
+    return data
+
+
+def update_query(query:str):
+    conn, cursor= create_conn()
+    cursor.execute(query)
+    conn.commit()
+    cursor.close()
+
+def select_one_query(query:str):
+    conn, cursor= create_conn()
+    cursor.execute(query)
+    query_data = cursor.fetchone()
+    cursor.close()
+    return query_data
+
+
+def select_many_query(query:str, some:str):
+    conn, cursor= create_conn()
+    cursor.execute(query)
+    query_data = cursor.fetchmany(some)
+    cursor.close()
+    return query_data
+
+def select_all_query(query:str):
+    conn, cursor= create_conn()
+    cursor.execute(query)
+    query_data = cursor.fetchall()
+    cursor.close()
+    return query_data
+
+
+def get_all_animations():
+    query = f"SELECT [animation_url],[animation_name] FROM animations"
+    return select_all_query(query)
+
 changing_path = "static/content/temp1_anim1.json"
 an = readable(changing_path)
 anim_properties = get_anim_props(an)
+# lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
+#                       ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
+#                       ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
+#                       ["temp2_anim4.json", "שלום"]]
 
-myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim2.json"]
-lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
-                      ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
-                      ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
-                      ["temp2_anim4.json", "שלום"]]
+lottiePlayersArray = get_all_animations()
+    #get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
 
+colorsArray= []
 
 @application.route('/home')
 def home():
@@ -145,7 +198,8 @@ def homePage():
     global color4
     global palteName
     palteName=""
-    color1 = color2 = color3 = color4 = "#000000"
+    colors_data =["#000000"]
+    # color1 = color2 = color3 = color4 = "#000000"
 
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_new_Color':
@@ -157,10 +211,10 @@ def homePage():
             data = get_palte(search_palte_id)
             palteName = data[2]
             colors_data = get_colors_by_plate(search_palte_id)
-            color1 = colors_data[0][0]
-            color2 = colors_data[1][0]
-            color3 = colors_data[2][0]
-            color4 = colors_data[3][0]
+            # color1 = colors_data[0][0]
+            # color2 = colors_data[1][0]
+            # color3 = colors_data[2][0]
+            # color4 = colors_data[3][0]
 
             print(colors_data)
         else:
@@ -182,10 +236,11 @@ def homePage():
         year=datetime.now().year,
         message='Your contact page.',
         alertMessage=alertM,
-        color1=color1,
-        color2=color2,
-        color3=color3,
-        color4=color4,
+        # color1=color1,
+        # color2=color2,
+        # color3=color3,
+        # color4=color4,
+        my_colors= colors_data,
         palte_name=palteName
 
     )
@@ -304,6 +359,8 @@ def change_color(color, outline_color):
 # @application.route("/")
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
+    colorsArray = get_colors_by_plate("1")
+    print(colorsArray)
     global changing_path
     """
     gets an ajax request and changes the json file attached to the lottie-player
@@ -321,55 +378,12 @@ def editTemplate():
         message='',
         anim_path=changing_path,
         lottiePlayersArray=lottiePlayersArray,
-        lottiePlayersArrayPath=lottiePlayersArrayPath
+        lottiePlayersArrayPath=lottiePlayersArrayPath,
+        colorsArray=colorsArray
     )
 
 
-def create_conn():
-    connStr = (
-        r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
-        r"DBQ=static\db\db.accdb;"
-    )
-    conn = pyodbc.connect(connStr)
-    cursor = conn.cursor()
-    return (conn, cursor)
 
-
-def get_row(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    data = len(cursor.fetchall())
-    cursor.close()
-    return data
-
-
-def update_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-
-def select_one_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchone()
-    cursor.close()
-    return query_data
-
-
-def select_many_query(query:str, some:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchmany(some)
-    cursor.close()
-    return query_data
-
-def select_all_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchall()
-    cursor.close()
-    return query_data
 
 
 def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
@@ -389,9 +403,9 @@ def get_user(email: str, password: str):
     query = f"SELECT COUNT (*) FROM users WHERE email= '{email}';"
     if get_row(query) == 1:
         exsistUser = True
-    query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
-    if get_row(query) == 1:
-        match = True
+        query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
+        if get_row(query) == 1:
+            match = True
     return (exsistUser, match)
 
 
@@ -445,19 +459,35 @@ def create_palte(project_id: str, palte_name: str):
     query = f"INSERT INTO paltes ([project_id],[palte_name]) VALUES({project_id},'{palte_name}');"
     update_query(query)
 
+
 def get_palte(palte_id: str):
     palte_id = int(palte_id.strip())
     query = f"SELECT * FROM paltes WHERE palte_id={palte_id};"
     return select_one_query(query)
+
 
 def get_colors_by_plate(palte_id: str):
     palte_id = int(palte_id.strip())
     query = f"SELECT hex,kind FROM colors WHERE palte_id={palte_id};"
     return select_all_query(query)
 
+
+def get_animations_by_kind(kind: str):
+    kind = kind.strip()
+    query = f"SELECT [animation_url],[animation_name] FROM animations WHERE animation_kind='{kind}';"
+    return select_all_query(query)
+
+
+def get_animations_by_template(template_id: str):
+    template_id = int(template_id.strip())
+    query = f"SELECT animation_url,animation_name,animation_kind FROM animations WHERE template_id={template_id};"
+    return select_all_query(query)
+
+
 def new_doc(project_id: int, doc_url: str, doc_name:str):
     query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
+
 
 
 def change_animation(path):
