@@ -8,6 +8,16 @@
     <form action="editContent" method="post">
         <div class="form-group text-form">
             <label for="animText"> הכנס טקסט</label>
+            <div class="input-group mb-3 w-75">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="selectedAlignment">יישור</label>
+                </div>
+                <select name="selectedAlignment" class="custom-select" id="selectedAlignment" data-selected="{{alignment}}">
+                    <option value="0">שמאל</option>
+                    <option value="1">ימין</option>
+                    <option value="2">מרכז</option>
+                </select>
+            </div>
             <input type="text" maxlength="24" id="animText" name="animText" value="{{textContent}}" class="form-control">
         </div>
         <div class="form-group">
