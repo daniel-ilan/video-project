@@ -1,5 +1,15 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+body {
+    background: linear-gradient(1.37deg, #2F1359 2.49%, #6515DD 93.78%);
+    /*background-color: #F3F5F8;*/
+    padding-right: 0.6%;
+    font-family: 'Rubik', sans-serif;
+}
+
+h1::selection ,p::selection, a::selection , h2::selection{
+    color: #5715ad;
+    background: rgba(54, 253, 252, 0.45);
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -40,27 +50,94 @@ input[type="checkbox"].input-validation-error {
     display: none;
 }
 
+h2{
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #2F1359;
+    font-weight: 500;
+}
 
 /*          ----------            video edit template          ----------          */
-#pageTitleH {
-    font-size: 1.7rem;
+.sidebar{
+    height: fit-content;
 }
 
-.sideNavUl {
-    padding-top: 25%;
+.sidebarCol{
+    padding: 0 0;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
+
+.inner_remaining{
+    background-color: white;
+    flex-grow : 1;
+}
+
+.nav-item {
+    background-color: white;
+    padding: 4% 0;
+}
+
+
+.whiteBG {
+    background-color: white;
+}
+
+.upNavUI {
+    border-bottom-right-radius: 22pt 25pt;
+}
+
+.downNavUI {
+    border-top-right-radius: 22pt 25pt;
+
+}
+
+.activeNav {
+    background-image: url("../images/UnionBG2.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+
 
 .svgFill {
-    fill: white;
+    fill: #282828;
 }
 
 .svgFillActive {
-    fill: #F87C2C;
+    fill: white;
+}
+
+.svgFillHover {
+    fill: #00B6DE;
+}
+
+.nav-link {
+    color: #282828;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    color: #00B6DE;
+
+}
+
+.nav-linkHover{
+    color: #00B6DE;
+    font-weight: bold;
 }
 
 .active {
-    color: #F87C2C;
+    color: white;
     font-weight: bold;
+    font-size: 18px;
 }
 
 .rounded_right {
@@ -68,7 +145,15 @@ input[type="checkbox"].input-validation-error {
     margin-bottom: 2%;
 }
 
+
 /* --- slideNav ----*/
+
+
+.greyBG {
+    background-color: #F3F5F8;
+    width: 100%;
+}
+
 .slidetextSize {
     font-size: 0.8vmax;
 }
@@ -79,7 +164,7 @@ input[type="checkbox"].input-validation-error {
     margin-left: -29px;
 }
 
-.link_notActive{
+.link_notActive {
     cursor: not-allowed;
 
 }
@@ -89,23 +174,27 @@ input[type="checkbox"].input-validation-error {
 .tinyLottie {
     width: 10vw;
     height: 15vh;
-    border: 1px solid #F87C2C;
+    border: 1px solid rgba(0, 182, 222, 0.07);
     border-radius: 5%;
     padding: 1% 1%;
     margin: 1% 1%;
     display: inline-block;
+    background-color: white;
 }
 
-.tinyLottie:hover{
-    -webkit-box-shadow: 3px 13px 23px 0px rgba(199,190,175,0.63);
-    -moz-box-shadow: 3px 13px 23px 0px rgba(199,190,175,0.63);
-    box-shadow: 3px 13px 23px 0px rgba(199,190,175,0.63);
+.tinyLottie:hover {
+    -webkit-box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
+    -moz-box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
+    box-shadow: 3px 13px 23px 0px rgba(182, 195, 199, 0.63);
     border-width: 2px !important;
     color: black;
-    font-weight:bold;
+    border-color: #00B6DE;
+    font-weight: bold;
 }
 
-.tinyLottieDescription{
+
+
+.tinyLottieDescription {
     color: #485F6E;
     text-align: center;
     margin-bottom: 8%;
@@ -115,23 +204,37 @@ input[type="checkbox"].input-validation-error {
 /*          ----------            Layout Template Page          ----------          */
 
 /* --- Lottie player  ----*/
+#mainContent{
+    padding-right: 0 ;
+}
+
 
 /*testing*/
-.main-container{
+.main-container {
     height: 100%;
     width: 100%;
     display: flex;
 }
 
-.animation-container{
+.animation-container {
     align-self: center;
     display: flex;
     flex-direction: column;
 }
 
+#slidesArea{
+    background: white;
+   /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
+    position: relative;
+}
+
+
+
+
+
 
 /*          ----------            editColor Template Page          ----------          */
-.color-form{
+.color-form {
     height: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -139,18 +242,18 @@ input[type="checkbox"].input-validation-error {
 
 }
 
-.color-form-container{
+.color-form-container {
     display: flex;
     height: 60%;
     width: 50%;
     align-items: center;
 }
 
-.color-submit-btn{
+.color-submit-btn {
     margin-top: 10%;
 }
 
-.text-form{
+.text-form {
     height: 100%;
     width: 60%;
     display: flex;

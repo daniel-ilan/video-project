@@ -9,16 +9,15 @@
 
 <h2>בחירה מתבניות כלליות</h2>
 
-
-<!-- For loop logic of jinja template-->
-        {% for n in lottiePlayersArray %}
-<div class="tinyLottie">
-    <lottie-player  class="tinyLottiePlayer" src={{lottiePlayersArrayPath}}{{n[0]}} background="transparent" speed="1" style="" hover loop>
-
+<!-- For loop logic of jinja template -->
+{% for n in lottiePlayersArray %}
+<div class=" tinyLottie">
+    <lottie-player class="tinyLottiePlayer" src={{lottiePlayersArrayPath}}{{n[0]}} background="transparent" speed="1"
+                   style="" hover loop>
     </lottie-player>
     <p class="tinyLottieDescription">{{n[1]}}</p>
 
 </div>
-        {% endfor %}
+{% endfor %}
 
 {% endblock %}
