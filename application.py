@@ -5,11 +5,10 @@ Routes and views for the flask application.
 import os
 import time
 from datetime import datetime
-
+from db import create_conn, get_row, update_query, select_one_query, select_many_query, select_all_query, get_all_animations
 from flask import Flask
 from flask import render_template, request
 from matplotlib import colors
-import pyodbc
 from tgs import exporters, objects
 from tgs.parsers.tgs import parse_tgs
 
@@ -76,56 +75,7 @@ def get_anim_props(anim):
 changing_path = "static/content/temp1_anim2.json"
 
 
-def create_conn():
-    connStr = (
-        r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
-        r"DBQ=static\db\db.accdb;"
-    )
-    conn = pyodbc.connect(connStr)
-    cursor = conn.cursor()
-    return (conn, cursor)
 
-
-def get_row(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    data = len(cursor.fetchall())
-    cursor.close()
-    return data
-
-
-def update_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-
-def select_one_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchone()
-    cursor.close()
-    return query_data
-
-
-def select_many_query(query:str, some:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchmany(some)
-    cursor.close()
-    return query_data
-
-def select_all_query(query:str):
-    conn, cursor= create_conn()
-    cursor.execute(query)
-    query_data = cursor.fetchall()
-    cursor.close()
-    return query_data
-
-
-def get_all_animations():
-    query = f"SELECT [animation_url],[animation_name] FROM animations"
-    return select_all_query(query)
 
 an = readable(changing_path)
 anim_properties = get_anim_props(an)
@@ -327,7 +277,7 @@ def change_text(text, color, alignment=1):
 
     anim_text = correct_text(text)
 
-    correct_color = list(colors.to_rgba(color, float)) + (1,)
+    correct_color = list(colors.to_rgba(color, float) + (1,))
     an.find('.myText').data.data.keyframes[0].start.color = correct_color[0:3]
     an.find('.myText').data.data.keyframes[0].start.text = anim_text
     an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))

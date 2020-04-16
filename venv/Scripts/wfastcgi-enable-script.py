@@ -1,4 +1,4 @@
-#!C:\video-project\venv\Scripts\python.exe
+#!c:\video-project\venv\scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'wfastcgi==3.0.0','console_scripts','wfastcgi-enable'
 __requires__ = 'wfastcgi==3.0.0'
 import re

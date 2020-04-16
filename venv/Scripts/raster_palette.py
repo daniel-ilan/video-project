@@ -1,4 +1,4 @@
-#!C:\video-project\venv\Scripts\python.exe
+#!c:\video-project\venv\scripts\python.exe
 
 import sys
 import os

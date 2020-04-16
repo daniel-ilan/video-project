@@ -13,44 +13,21 @@ $(document).ready(function () {
             )
         });
     sideBarNavItemHover();
-    /* change the color of the selceted nav item */
 
+    /* change the color of the selceted nav item */
     var path = window.location.pathname;
     var page = path.split("/").pop();
     $(`a[href='${page}']`).children().removeClass('svgFill');
     $(`a[href='${page}']`).children().addClass('svgFillActive');
-
     $(`a[href='${page}']`).addClass('active');
-
     $(`a[href='${page}']`).removeClass('text-white');
-    const animation_templates = $('.tinyLottiePlayer');
-    animation_templates.on('click', changeAnimation);
-
-
-
-    const selected_alignment = document.querySelector("#selectedAlignment");
-    selected_alignment.selectedIndex = selected_alignment.attributes["data-selected"].value;
-
     $(`a[href='${page}']`).parent().addClass('activeNav');
     roundItemsBorder();
 
 
-
-    /*          ----            change animation - editTemplate           ----            */
-    const animation_templates = $('.tinyLottiePlayer');
-    animation_templates.on('click', changeAnimation);
-
 });
 
-function changeAnimation(event) {
-    const main_animation = document.querySelector('#mainAnimation');
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        main_animation.load(event.currentTarget.src)
-    };
-    xhttp.open("POST", "/editTemplate", true);
-    xhttp.send(event.currentTarget.src);
-}
+
 
 /* round the before and after nav items borders */
 function roundItemsBorder() {
