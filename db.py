@@ -55,7 +55,6 @@ def get_all_animations():
     return select_all_query(query)
 
 
-
 def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
     person_name = email.strip()
@@ -64,6 +63,7 @@ def create_new_user(person_name: str, person_last_name: str, email: str, passwor
     password = password.strip()
     query = f"INSERT INTO users ([person_name] ,[person_last_name],[email] ,[password] ,[image]) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image});"
     update_query(query)
+
 
 def get_user(email: str, password: str):
     email = email.strip()
