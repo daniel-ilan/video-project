@@ -91,22 +91,21 @@ h1 {
     font-size: 0.9vw;
 }
 
-.nav-item svg {
+svg {
     width: 1.4vw;
     height: auto;
 }
-
 
 .whiteBG {
     background-color: white;
 }
 
 .upNavUI {
-    border-bottom-right-radius: 22pt 25pt;
+    border-bottom-right-radius:1.5vw 1.5vw;
 }
 
 .downNavUI {
-    border-top-right-radius: 22pt 25pt;
+    border-top-right-radius: 1.5vw 1.5vw;
 
 }
 
@@ -161,7 +160,6 @@ h1 {
 
 
 /* --- slideNav ----*/
-
 .nav-item span {
     margin-right: 0.2vw;
 }
@@ -178,7 +176,7 @@ h1 {
     z-index: 2;
     position: absolute;
     bottom: 20%;
-
+    width: 1.8vw;
 }
 
 .minMenu_Big {
