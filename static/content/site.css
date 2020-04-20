@@ -92,7 +92,7 @@ h1 {
 }
 
 .nav-item svg {
-    width: 1.5vw;
+    width: 1.4vw;
     height: auto;
 }
 
@@ -135,7 +135,7 @@ h1 {
 .nav-link {
     color: #282828;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1rem;
 }
 
 .nav-link:hover {
@@ -163,7 +163,7 @@ h1 {
 /* --- slideNav ----*/
 
 .nav-item span {
-    margin-right: 8px;
+    margin-right: 0.2vw;
 }
 
 .greyBG {
@@ -205,14 +205,17 @@ h1 {
 
 }
 
+#logo{
+    width: 7vw;
+}
+
 .mini_logo {
     padding-top: 75%;
     padding-bottom: 100%;
 }
 
 .mini_logo img {
-    width: 200%;
-    margin-right: -24px;
+    margin-right: -1.65vw;
 }
 
 .sidebarCol_mini {
