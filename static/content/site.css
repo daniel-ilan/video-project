@@ -87,6 +87,15 @@ h1 {
     padding: 4% 0;
 }
 
+.nav-item span {
+    font-size: 0.9vw;
+}
+
+.nav-item svg {
+    width: 1.5vw;
+    height: auto;
+}
+
 
 .whiteBG {
     background-color: white;
@@ -172,14 +181,13 @@ h1 {
 
 }
 
-.minMenu_Big{
+.minMenu_Big {
     margin-right: 90%;
 }
 
-.minMenu_mini{
+.minMenu_mini {
     margin-right: 0.7%;
 }
-
 
 
 #minMenu:hover path {
@@ -202,7 +210,7 @@ h1 {
     padding-bottom: 100%;
 }
 
-.mini_logo img{
+.mini_logo img {
     width: 200%;
     margin-right: -24px;
 }
@@ -211,8 +219,8 @@ h1 {
     width: 3.5vw;
 }
 
-.main_mini{
-    /*width: 95vw;*/
+.main_mini {
+    width: 95vw;
     flex-grow: 1;
 
 }
