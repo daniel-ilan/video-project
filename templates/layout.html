@@ -16,21 +16,14 @@
 </head>
 
 <body>
-<nav class="navbar sticky-top  flex-md-nowrap p-0 " style="height: 5vh; align-items:normal">
-    <a class="navbar-brand col-sm-3 col-md-1 mr-0 pt-2  whiteBG" href="about">
-        <img id="logo" src="../static/images/logo.svg" style="width:100%;"/>
-    </a>
-    <div class="greyBG">
-        <h1 id="pageTitleH" class="mr-auto pl-4 pt-2   ">{{ title }}</h1>
-
-    </div>
-</nav>
-
 <div class="container-fluid">
 
-    <div class="row" style="height:80vh">
+    <div class="row" style="height:85vh">
         <div class="sidebarCol col-md-1 ml-sm-auto col-lg-1">
-            <nav class="sidebar slidetextSize  ">
+            <a id="logo_herf" class="whiteBG" href="about">
+                <img id="logo" src="../static/images/logo.svg""/>
+            </a>
+            <nav class="sidebar slidetextSize">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                     </li>
@@ -103,7 +96,7 @@
                 </ul>
             </nav>
             <div class="inner_remaining">
-                <svg id="minMenu" width="30" height="30" viewBox="0 0 30 30" fill="none"
+                <svg id="minMenu" class="minMenu_Big" width="30" height="30" viewBox="0 0 30 30" fill="none"
                      xmlns="http://www.w3.org/2000/svg">
                     <ellipse id="minMenu_outline_elipse" cx="16" cy="15" rx="14" ry="14" transform="rotate(-180 16 15)"
                              fill="#F7F7F7"/>
@@ -117,7 +110,8 @@
 
         <main role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 greyBG ">
             <div class="overflow-auto main-container">
-                <div id="mainContent" class="col-7 float-left pt-4">
+                <div id="mainContent" class="col-7 float-left ">
+                    <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">{{ title }}</h1>
                     {% block content %}{% endblock %}
                 </div>
 

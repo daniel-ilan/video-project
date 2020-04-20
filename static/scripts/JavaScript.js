@@ -61,24 +61,50 @@ function sideBarNavItemHover() {
         }
     );
 }
+
 var x = 0
+
 function sideBarDisplaySpanNone() {
     $(".sidebar li span").each(function () {
         $(this).toggle();
     });
     if (x == 0) {
-        rotateImage(90);
+        rotateImage("#logo",90);
+        rotateImage("#minMenu",180);
+
+        $("#logo_herf").addClass('mini_logo');
+
+        $(".sidebarCol").addClass('sidebarCol_mini');
+        $(".sidebarCol").removeClass('col-md-1');
+        $(".sidebarCol").removeClass('ml-sm-auto');
+        $(".sidebarCol").removeClass('col-lg-1');
+
+        $('#minMenu').removeClass('minMenu_Big');
+        $('#minMenu').addClass('minMenu_mini');
+
+        $('main').removeClass('ml-sm-auto');
         x = 1;
     } else {
-        rotateImage(2);
-        rotateImage(0);
+        rotateImage("#logo",2);
+        rotateImage("#logo",0);
+        rotateImage("#minMenu",0);
 
+        $("#logo_herf").removeClass('mini_logo');
+
+        $(".sidebarCol").removeClass('sidebarCol_mini');
+        $(".sidebarCol").addClass('col-md-1');
+        $(".sidebarCol").addClass('ml-sm-auto');
+        $(".sidebarCol").addClass('col-lg-1');
+
+        $('#minMenu').addClass('minMenu_Big');
+        $('#minMenu').removeClass('minMenu_mini');
+        $('main').addClass('ml-sm-auto');
         x = 0;
     }
 }
 
-function rotateImage(degree) {
-    $("#logo").animate({transform: degree}, {
+function rotateImage(id,degree) {
+    $(id).animate({transform: degree}, {
         step: function (now, fx) {
             $(this).css({
                 '-webkit-transform': 'rotate(' + now + 'deg)',

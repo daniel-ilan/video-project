@@ -7,7 +7,7 @@ body {
     font-family: 'Rubik', sans-serif;
 }
 
-h1::selection ,p::selection, a::selection , h2::selection{
+h1::selection, p::selection, a::selection, h2::selection {
     color: #5715ad;
     background: rgba(54, 253, 252, 0.45);
 }
@@ -50,7 +50,7 @@ input[type="checkbox"].input-validation-error {
     display: none;
 }
 
-h2{
+h2 {
     font-weight: 500;
     font-size: 1.5rem;
 }
@@ -62,24 +62,24 @@ h1 {
 }
 
 /*          ----------            video edit template          ----------          */
-.sidebar{
+.sidebar {
     height: fit-content;
 }
 
-.miniSideBar{
+.miniSideBar {
     width: fit-content;
 }
 
-.sidebarCol{
+.sidebarCol {
     padding: 0 0;
     display: flex;
     flex-flow: column;
     height: 100%;
 }
 
-.inner_remaining{
+.inner_remaining {
     background-color: white;
-    flex-grow : 1;
+    flex-grow: 1;
 }
 
 .nav-item {
@@ -111,7 +111,6 @@ h1 {
 }
 
 
-
 .svgFill {
     fill: #282828;
 }
@@ -135,7 +134,7 @@ h1 {
 
 }
 
-.nav-linkHover{
+.nav-linkHover {
     color: #00B6DE;
     font-weight: bold;
 }
@@ -154,14 +153,12 @@ h1 {
 
 /* --- slideNav ----*/
 
-.nav-item span{
+.nav-item span {
     margin-right: 8px;
 }
 
-
 .greyBG {
     background-color: #F3F5F8;
-    width: 100%;
 }
 
 .slidetextSize {
@@ -171,23 +168,47 @@ h1 {
 #minMenu {
     z-index: 2;
     position: absolute;
-    margin-right: 90%;
-    bottom: 10%;
+    bottom: 20%;
+
 }
 
-#minMenu:hover path{
+.minMenu_Big{
+    margin-right: 90%;
+}
+
+.minMenu_mini{
+    margin-right: 0.7%;
+}
+
+
+
+#minMenu:hover path {
     fill: #00A7CC;
     stroke: #00A7CC;
 }
 
 
-#minMenu:hover #minMenu_outline_elipse{
+#minMenu:hover #minMenu_outline_elipse {
     fill: #00A7CC;
 }
 
 .link_notActive {
     cursor: not-allowed;
 
+}
+
+.mini_logo {
+    padding-top: 75%;
+    padding-bottom: 100%;
+}
+
+.mini_logo img{
+    width: 200%;
+    margin-right: -24px;
+}
+
+.sidebarCol_mini {
+    width: min-content;
 }
 
 /*          ----------            edit Template Page          ----------          */
@@ -214,7 +235,6 @@ h1 {
 }
 
 
-
 .tinyLottieDescription {
     color: #485F6E;
     text-align: center;
@@ -225,8 +245,8 @@ h1 {
 /*          ----------            Layout Template Page          ----------          */
 
 /* --- Lottie player  ----*/
-#mainContent{
-    padding-right: 0 ;
+#mainContent {
+    padding-right: 0;
 }
 
 
@@ -243,15 +263,11 @@ h1 {
     flex-direction: column;
 }
 
-#slidesArea{
+#slidesArea {
     background: white;
-   /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
+    /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
     position: relative;
 }
-
-
-
-
 
 
 /*          ----------            editColor Template Page          ----------          */
@@ -282,11 +298,11 @@ h1 {
     align-content: space-around;
 }
 
-input[type=button], input[type=submit], .primaryBTN{
+input[type=button], input[type=submit], .primaryBTN {
     background-color: #6515DD;
     border: solid 0.125rem #6515DD;
     color: white;
-    padding:0.4rem 0.75rem;
+    padding: 0.4rem 0.75rem;
     border-radius: 10px;
     font-weight: 500;
     font-size: 1rem;
@@ -297,22 +313,22 @@ input[type=button], input[type=submit], .primaryBTN{
     margin: 3rem 0;
 }
 
-input[type=button]:hover, input[type=submit]:hover, .primaryBTN:hover{
+input[type=button]:hover, input[type=submit]:hover, .primaryBTN:hover {
     background-color: #00B6DE;
     border: solid 0.125rem #00A7CC;
     box-shadow: 5px 6px 12px rgba(0, 83, 101, 0.12);
 }
 
-.xxx{
-display: block;
-width: max-content;
-margin-left: 5%;
+.xxx {
+    display: block;
+    width: max-content;
+    margin-left: 5%;
 }
 
-.input-group-prepend{
-width:40%;
+.input-group-prepend {
+    width: 40%;
 }
 
-.input-group-text{
-width:100%;
+.input-group-text {
+    width: 100%;
 }
