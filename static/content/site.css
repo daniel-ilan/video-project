@@ -160,6 +160,10 @@ svg {
 
 
 /* --- slideNav ----*/
+.emptyNav{
+    height: 1vw;
+}
+
 .nav-item span {
     margin-right: 0.2vw;
 }
