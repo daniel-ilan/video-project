@@ -66,6 +66,10 @@ h1 {
     height: fit-content;
 }
 
+.miniSideBar{
+    width: fit-content;
+}
+
 .sidebarCol{
     padding: 0 0;
     display: flex;
@@ -99,9 +103,11 @@ h1 {
 
 .activeNav {
     background-image: url("../images/UnionBG2.svg");
-    background-size: contain;
+    background-size: cover;
+    background-clip: border-box;
     background-repeat: no-repeat;
     background-color: transparent;
+    margin-left: -1%;
 }
 
 
@@ -148,6 +154,10 @@ h1 {
 
 /* --- slideNav ----*/
 
+.nav-item span{
+    margin-right: 8px;
+}
+
 
 .greyBG {
     background-color: #F3F5F8;
@@ -159,9 +169,20 @@ h1 {
 }
 
 #minMenu {
-    float: left;
-    z-index: 2000;
-    margin-left: -29px;
+    z-index: 2;
+    position: absolute;
+    margin-right: 90%;
+    bottom: 10%;
+}
+
+#minMenu:hover path{
+    fill: #00A7CC;
+    stroke: #00A7CC;
+}
+
+
+#minMenu:hover #minMenu_outline_elipse{
+    fill: #00A7CC;
 }
 
 .link_notActive {

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     /*          ----            side-nav change color           ----            */
     $('.sideNavUl').click(
         function (event) {
@@ -25,8 +24,11 @@ $(document).ready(function () {
     roundItemsBorder();
 
 
+    $('#minMenu').click(
+        function (event) {
+            sideBarDisplaySpanNone();
+        });
 });
-
 
 
 /* round the before and after nav items borders */
@@ -46,21 +48,45 @@ function roundItemsBorder() {
 
 function sideBarNavItemHover() {
     $(".sidebar li").hover(
-        function() {
-            $( this).find('svg').addClass('svgFillHover');
-            $( this).find('a').addClass('nav-linkHover');
-            console.log( $( this).find('a'));
+        function () {
+            $(this).find('svg').addClass('svgFillHover');
+            $(this).find('a').addClass('nav-linkHover');
+            console.log($(this).find('a'));
 
 
-        }, function() {
-            $( this).find('svg').removeClass('svgFillHover');
-            $( this).find('a').removeClass('nav-linkHover');
+        }, function () {
+            $(this).find('svg').removeClass('svgFillHover');
+            $(this).find('a').removeClass('nav-linkHover');
 
         }
     );
+}
+var x = 0
+function sideBarDisplaySpanNone() {
+    $(".sidebar li span").each(function () {
+        $(this).toggle();
+    });
+    if (x == 0) {
+        rotateImage(90);
+        x = 1;
+    } else {
+        rotateImage(2);
+        rotateImage(0);
 
+        x = 0;
+    }
 }
 
-
+function rotateImage(degree) {
+    $("#logo").animate({transform: degree}, {
+        step: function (now, fx) {
+            $(this).css({
+                '-webkit-transform': 'rotate(' + now + 'deg)',
+                '-moz-transform': 'rotate(' + now + 'deg)',
+                'transform': 'rotate(' + now + 'deg)'
+            });
+        }
+    });
+}
 
 
