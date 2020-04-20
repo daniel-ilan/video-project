@@ -51,9 +51,6 @@ function sideBarNavItemHover() {
         function () {
             $(this).find('svg').addClass('svgFillHover');
             $(this).find('a').addClass('nav-linkHover');
-            console.log($(this).find('a'));
-
-
         }, function () {
             $(this).find('svg').removeClass('svgFillHover');
             $(this).find('a').removeClass('nav-linkHover');
@@ -62,48 +59,54 @@ function sideBarNavItemHover() {
     );
 }
 
-var x = 0
+let active_mini = false
 
 function sideBarDisplaySpanNone() {
     $(".sidebar li span").each(function () {
         $(this).toggle();
     });
-    if (x == 0) {
-        rotateImage("#logo",90);
-        rotateImage("#minMenu",180);
+    if (active_mini == 0) {
+        rotateImage("#logo", 90);
+        rotateImage("#minMenu", 180);
 
         $("#logo_herf").addClass('mini_logo');
 
         $(".sidebarCol").addClass('sidebarCol_mini');
         $(".sidebarCol").removeClass('col-md-1');
-        $(".sidebarCol").removeClass('ml-sm-auto');
         $(".sidebarCol").removeClass('col-lg-1');
+        $('.sidebarCol').removeClass('ml-sm-auto');
+
+        $("main").addClass('main_mini');
+        $("main").removeClass('col-md-11');
+        $("main").removeClass('col-lg-11 ');
+        $('main').removeClass('ml-sm-auto');
 
         $('#minMenu').removeClass('minMenu_Big');
         $('#minMenu').addClass('minMenu_mini');
-
-        $('main').removeClass('ml-sm-auto');
-        x = 1;
+        active_mini = true;
     } else {
-        rotateImage("#logo",2);
-        rotateImage("#logo",0);
-        rotateImage("#minMenu",0);
+        rotateImage("#logo", 2);
+        rotateImage("#logo", 0);
+        rotateImage("#minMenu", 0);
 
         $("#logo_herf").removeClass('mini_logo');
 
         $(".sidebarCol").removeClass('sidebarCol_mini');
         $(".sidebarCol").addClass('col-md-1');
-        $(".sidebarCol").addClass('ml-sm-auto');
         $(".sidebarCol").addClass('col-lg-1');
+        $('.sidebarCol').addClass('ml-sm-auto');
 
         $('#minMenu').addClass('minMenu_Big');
         $('#minMenu').removeClass('minMenu_mini');
+        $("main").removeClass('main_mini');
+        $("main").addClass('col-md-11');
+        $("main").addClass('col-lg-11 ');
         $('main').addClass('ml-sm-auto');
-        x = 0;
+        active_mini = false;
     }
 }
 
-function rotateImage(id,degree) {
+function rotateImage(id, degree) {
     $(id).animate({transform: degree}, {
         step: function (now, fx) {
             $(this).css({

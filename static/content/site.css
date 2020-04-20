@@ -208,7 +208,13 @@ h1 {
 }
 
 .sidebarCol_mini {
-    width: min-content;
+    width: 3.5vw;
+}
+
+.main_mini{
+    /*width: 95vw;*/
+    flex-grow: 1;
+
 }
 
 /*          ----------            edit Template Page          ----------          */
