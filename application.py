@@ -113,17 +113,15 @@ def contact():
 @application.route('/about', methods=['POST', 'GET'])
 def about():
     global person_name
-    global person_last_name
     global email
     global password
     if request.method == 'POST':
         # new user
         person_name = request.form['person_name']
-        person_last_name = request.form['person_last_name']
         email = request.form['email']
         password = request.form['password']
         image = None  # request.form['image']
-        db.create_new_user(person_name, person_last_name, email, password, image)
+        db.create_new_user(person_name, email, password, image)
         # get user info
         # dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
         # print(dataFromDB)
@@ -133,7 +131,6 @@ def about():
         # password = dataFromDB[4]
     else:
         person_name = ""
-        person_last_name = ""
         email = ""
         password = ""
     """Renders the about page."""
@@ -143,7 +140,6 @@ def about():
         year=datetime.now().year,
         message='Your application description page.',
         person_name=person_name,
-        person_last_name=person_last_name,
         email=email,
         password=password
     )
