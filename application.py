@@ -14,7 +14,6 @@ from tgs.parsers.tgs import parse_tgs
 
 application = Flask(__name__)
 
-
 def correct_text(sentence):
     """
     Formatting Hebrew and English text so it displays right
@@ -84,18 +83,10 @@ changing_path = "static/content/animations/temp1_anim2.json"
 
 an = readable(changing_path)
 anim_properties = get_anim_props(an)
-# lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
-#                       ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
-#                       ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
-#                       ["temp2_anim4.json", "שלום"]]
-
 lottiePlayersArray = db.get_all_animations()
-# get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
 
 colorsArray = []
-# myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim1.json"]
-
 
 @application.route('/home')
 def home():

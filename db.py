@@ -1,4 +1,6 @@
 import pyodbc
+import os
+
 
 
 def create_conn():
@@ -55,14 +57,21 @@ def get_all_animations():
     return select_all_query(query)
 
 
-def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
+def create_new_user(person_name: str , email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
     person_name = email.strip()
-    person_last_name = password.strip()
     email = email.strip()
     password = password.strip()
-    query = f"INSERT INTO users ([person_name] ,[person_last_name],[email] ,[password] ,[image]) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image});"
+    query = f"INSERT INTO users ([person_name] ,[email] ,[password] ,[image]) VALUES('{person_name}','{email}','{password}',{image});"
     update_query(query)
+    get_id = get_user_id(email)[0]
+    create_directory("", get_id)
+
+
+def get_user_id(email: str):
+    email = email.strip()
+    query = f"SELECT user_id FROM users WHERE email= '{email}';"
+    return select_one_query(query)
 
 
 def get_user(email: str, password: str):
@@ -83,6 +92,17 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
     image = f"'{image}'" if image else 'null'
     query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
     update_query(query)
+    get_id = get_last_project_id()[0]
+    create_directory(user_id, get_id)
+    path = str(get_id) + "/videos"
+    create_directory(user_id, path)
+    path = str(get_id) + "/docs"
+    create_directory(user_id, path)
+
+
+def get_last_project_id(user_id: str):
+    query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
+    return select_one_query(query)
 
 
 def get_project_info(user_id: str):
@@ -157,3 +177,36 @@ def get_animations_by_template(template_id: str):
 def new_doc(project_id: int, doc_url: str, doc_name:str):
     query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
+
+
+def create_new_video(project_id: int, video_name: str, image: str = None):
+    image = f"'{image}'" if image else 'null'
+    query = f"INSERT INTO videos([project_id] ,[video_name],[image]) VALUES({project_id},'{video_name}', {image});"
+    update_query(query)
+    get_id = get_last_video_id(str(project_id))[0]
+    project_owner = get_project_owner(str(project_id))[0]
+    path = str(project_owner) + "/" + str(project_id) + "/videos/"
+    create_directory(path, get_id)
+
+
+def get_last_video_id(project_id: str):
+    project_id = int(project_id)
+    query = f"SELECT TOP 1 video_id FROM videos WHERE project_id={project_id} ORDER BY video_id DESC;"
+    return select_one_query(query)
+
+
+def get_project_owner(project_id: str):
+    project_id = int(project_id.strip())
+    query = f"SELECT user_id FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
+def create_directory(my_path: str, name: str):
+    name = str(name)
+    my_path = str(my_path)
+    if my_path != "":
+        path = os.path.join(os.getcwd(), "static/db/users", my_path, name)
+    else:
+        path = os.path.join("static/db/users/", name)
+    if not os.path.exists(path):
+        os.mkdir(path)
