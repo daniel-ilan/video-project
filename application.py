@@ -179,8 +179,9 @@ def homePage():
     global color2
     global color3
     global color4
-    global palteName
-    palteName = ""
+    global paletteName
+    paletteName = ""
+    alertM = ""
     colors_data = ["#000000"]
     # color1 = color2 = color3 = color4 = "#000000"
 
@@ -189,11 +190,11 @@ def homePage():
             color = request.form['add_color']
             kind = request.form['kind']
             db.create_color(color, kind)
-        elif request.form['submit_button'] == 'submit_search_palte_id':
-            search_palte_id = request.form['search_palte_id']
-            data = db.get_palte(search_palte_id)
-            palteName = data[2]
-            colors_data = db.get_colors_by_plate(search_palte_id)
+        elif request.form['submit_button'] == 'submit_search_palette_id':
+            search_palette_id = request.form['search_palette_id']
+            data = db.get_palette(search_palette_id)
+            paletteName = data[1]
+            colors_data = db.get_colors_by_palette(search_palette_id)
             # color1 = colors_data[0][0]
             # color2 = colors_data[1][0]
             # color3 = colors_data[2][0]
@@ -224,7 +225,7 @@ def homePage():
         # color3=color3,
         # color4=color4,
         my_colors=colors_data,
-        palte_name=palteName
+        palette_name=paletteName
 
     )
 

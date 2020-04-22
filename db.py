@@ -139,29 +139,29 @@ def update_project_status(project_id: str, status:str):
     update_query(query)
 
 
-def create_color(hex:str, kind: str, palte_id: str):
-    hex = hex.strip()
+def create_color(my_hex: str, kind: str, palette_id: str):
+    my_hex = my_hex.strip()
     kind = kind.strip()
-    palte_id = int(palte_id.strip())
-    query = f"INSERT INTO colors ([hex],[kind],[palte_id]) VALUES('{hex}','{kind}', {palte_id});"
+    palette_id = int(palette_id.strip())
+    query = f"INSERT INTO colors ([hex],[kind],[palette_id]) VALUES('{my_hex}','{kind}', {palette_id});"
     update_query(query)
 
 
-def create_palte(project_id: str, palte_name: str):
+def create_palette(project_id: str, palette_name: str):
     project_id = int(project_id.strip())
-    query = f"INSERT INTO paltes ([project_id],[palte_name]) VALUES({project_id},'{palte_name}');"
+    query = f"INSERT INTO palettes ([project_id],[palette_name]) VALUES({project_id},'{palette_name}');"
     update_query(query)
 
 
-def get_palte(palte_id: str):
-    palte_id = int(palte_id.strip())
-    query = f"SELECT * FROM paltes WHERE palte_id={palte_id};"
+def get_palette(palette_id: str):
+    palette_id = int(palette_id.strip())
+    query = f"SELECT * FROM palettes WHERE palette_id={palette_id};"
     return select_one_query(query)
 
 
-def get_colors_by_plate(palte_id: str):
-    palte_id = int(palte_id.strip())
-    query = f"SELECT hex,kind FROM colors WHERE palte_id={palte_id};"
+def get_colors_by_palette(palette_id: str):
+    palette_id = int(palette_id.strip())
+    query = f"SELECT hex,kind FROM colors WHERE palette_id={palette_id};"
     return select_all_query(query)
 
 
