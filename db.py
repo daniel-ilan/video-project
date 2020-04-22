@@ -184,7 +184,10 @@ def new_doc(project_id: int, doc_url: str, doc_name:str):
 
 def create_new_video(project_id: int, video_name: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    query = f"INSERT INTO videos([project_id] ,[video_name],[image]) VALUES({project_id},'{video_name}', {image});"
+    if video_name == "" or video_name == " ":
+        query = f"INSERT INTO videos([project_id],[image]) VALUES({project_id},{image});"
+    else:
+        query = f"INSERT INTO videos([project_id] ,[video_name],[image]) VALUES({project_id},'{video_name}', {image});"
     update_query(query)
     get_id = get_last_video_id(str(project_id))[0]
     project_owner = get_project_owner(str(project_id))[0]

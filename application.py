@@ -88,6 +88,7 @@ lottiePlayersArrayPath = "../static/content/"
 
 colorsArray = []
 
+
 @application.route('/home')
 def home():
     """Renders the home page."""
@@ -154,6 +155,11 @@ def newProject():
             db.update_project_last_update("2")
             data = db.get_project_info(userID)
             print(data)
+        elif request.form['submit_button'] == 'submit_newVid':
+            project_id = request.form['project_id']
+            video_name = request.form['video_name']
+            db.create_new_video(project_id,video_name)
+
         else:
             # new user
             userID = int(request.form['project_owner'])
@@ -183,7 +189,6 @@ def homePage():
     paletteName = ""
     alertM = ""
     colors_data = ["#000000"]
-    # color1 = color2 = color3 = color4 = "#000000"
 
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_new_Color':
@@ -195,12 +200,6 @@ def homePage():
             data = db.get_palette(search_palette_id)
             paletteName = data[1]
             colors_data = db.get_colors_by_palette(search_palette_id)
-            # color1 = colors_data[0][0]
-            # color2 = colors_data[1][0]
-            # color3 = colors_data[2][0]
-            # color4 = colors_data[3][0]
-
-            print(colors_data)
         else:
             if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
                 dataFromDB = db.check_log_in(str(request.form['existUserEmail']), str(request.form['existUserPass']))
@@ -220,10 +219,6 @@ def homePage():
         year=datetime.now().year,
         message='Your contact page.',
         alertMessage=alertM,
-        # color1=color1,
-        # color2=color2,
-        # color3=color3,
-        # color4=color4,
         my_colors=colors_data,
         palette_name=paletteName
 
@@ -338,7 +333,7 @@ def change_color(color, outline_color, opacity):
 # @application.route("/")
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
-    colorsArray = db.get_colors_by_plate("1")
+    colorsArray = db.get_colors_by_palette("1")
     print(colorsArray)
     global changing_path
     """
