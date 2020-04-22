@@ -57,9 +57,9 @@ def get_all_animations():
     return select_all_query(query)
 
 
-def create_new_user(person_name: str , email: str, password: str, image: str = None):
+def create_new_user(person_name: str, email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    person_name = email.strip()
+    person_name = person_name.strip()
     email = email.strip()
     password = password.strip()
     query = f"INSERT INTO users ([person_name] ,[email] ,[password] ,[image]) VALUES('{person_name}','{email}','{password}',{image});"
@@ -74,25 +74,28 @@ def get_user_id(email: str):
     return select_one_query(query)
 
 
-def get_user(email: str, password: str):
+def check_log_in(email: str, password: str):
     email = email.strip()
     password = password.strip()
-    exsistUser = False
+    exist_user = False
     match = False
     query = f"SELECT COUNT (*) FROM users WHERE email= '{email}';"
     if get_row(query) == 1:
-        exsistUser = True
+        exist_user = True
         query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
         if get_row(query) == 1:
             match = True
-    return (exsistUser, match)
+    return (exist_user, match)
 
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
+    if project_name == "" or project_name == " ":
+        query = f"INSERT INTO projects([user_id] ,[image]) VALUES({user_id}, {image});"
+    else:
+        query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},{project_name}, {image});"
     update_query(query)
-    get_id = get_last_project_id()[0]
+    get_id = get_last_project_id(user_id)[0]
     create_directory(user_id, get_id)
     path = str(get_id) + "/videos"
     create_directory(user_id, path)
@@ -100,7 +103,7 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
     create_directory(user_id, path)
 
 
-def get_last_project_id(user_id: str):
+def get_last_project_id(user_id: int):
     query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
     return select_one_query(query)
 

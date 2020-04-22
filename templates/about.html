@@ -11,24 +11,31 @@
 <div class="color-form-container">
     <form lang="he" dir="rtl" action="about" method="post" class="d-flex">
         <div class="form-group color-form">
-            <label for="person_name">שם מלא</label>
-            <input type="text" id="person_name" name="person_name"
-                   value="{{person_name}}" class="form-control">
-            <br/>
-            <input type="email" id="email" name="email"
-                   value="{{email}}" class="form-control">
-            <br/>
-            <label for="password">סיסמא</label>
-            <input type="password" id="password" name="password"
-                   value="{{password}}" class="form-control">
-            <br/>
-            <label for="image">תמונה</label>
-            <input type="image" id="image" name="image"
-                   value="{{image}}" class="form-control">
-            <br/>
-            <input type="submit" name="submit" id="submitUser" class="btn btn-primary color-submit-btn"
-                   value="התחלת עבודה"/>
+
+            <div class="form-group text-form">
+                <label for="person_name">שם מלא</label>
+                <input type="text" id="person_name" name="person_name"
+                       value="{{person_name}}" class="form-control">
+            </div>
+            <div class="form-group text-form">
+                <label for="email">אימייל</label>
+                <input type="email" id="email" name="email"
+                       value="{{email}}" class="form-control">
+            </div>
+            <div class="form-group text-form">
+                <label for="password">סיסמא</label>
+                <input type="password" id="password" name="password"
+                       value="{{password}}" class="form-control">
+            </div>
+            <div class="form-group text-form">
+                <label for="image">תמונה</label>
+                <input type="image" id="image" name="image"
+                       value="{{image}}" class="form-control">
+                <input type="submit" name="submit" id="submitUser" class="btn btn-primary color-submit-btn"
+                       value="התחלת עבודה"/>
+            </div>
         </div>
+
     </form>
 
 

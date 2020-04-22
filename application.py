@@ -202,7 +202,7 @@ def homePage():
             print(colors_data)
         else:
             if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
-                dataFromDB = db.get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+                dataFromDB = db.check_log_in(str(request.form['existUserEmail']), str(request.form['existUserPass']))
                 print(dataFromDB)
                 if dataFromDB[0] is True and dataFromDB[1] is False:
                     alertM = "סיסמא שגויה"
