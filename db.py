@@ -114,6 +114,12 @@ def get_project_info(user_id: str):
     return select_all_query(query)
 
 
+def get_project_owner(project_id: str):
+    project_id = int(project_id.strip())
+    query = f"SELECT user_id FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
 def update_project_name(project_id: str, new_name:str):
     project_id = int(project_id.strip())
     query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id={project_id}  ;"
@@ -193,6 +199,9 @@ def create_new_video(project_id: int, video_name: str, image: str = None):
     project_owner = get_project_owner(str(project_id))[0]
     path = str(project_owner) + "/" + str(project_id) + "/videos/"
     create_directory(path, get_id)
+    path = path + "/" + str(get_id)
+    create_directory(path, "frames")
+    create_new_frame(str(get_id))
 
 
 def get_last_video_id(project_id: str):
@@ -201,10 +210,30 @@ def get_last_video_id(project_id: str):
     return select_one_query(query)
 
 
-def get_project_owner(project_id: str):
-    project_id = int(project_id.strip())
-    query = f"SELECT user_id FROM projects WHERE project_id={project_id};"
-    return select_one_query(query)
+def update_video_name(video_id: str, new_name: str):
+    video_id = int(video_id)
+    new_name = new_name.strip()
+    query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
+    update_query(query)
+
+
+def update_video_status(video_id: str, new_status: str):
+    video_id = int(video_id)
+    new_status = new_status.strip()
+    query = f"UPDATE videos SET video_status='{new_status}' WHERE video_id={video_id};"
+    update_query(query)
+
+
+def create_new_frame(video_id: str):
+    video_id = int(video_id)
+    query = f"INSERT INTO frames([video_id]) VALUES({video_id});"
+    update_query(query)
+
+
+def get_all_frames(video_id: str):
+    video_id = int(video_id)
+    query = f"SELECT [lottie_url] FROM frames WHERE video_id={video_id};"
+    return select_all_query(query)
 
 
 def create_directory(my_path: str, name: str):

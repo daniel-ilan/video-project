@@ -85,7 +85,9 @@ an = readable(changing_path)
 anim_properties = get_anim_props(an)
 lottiePlayersArray = db.get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
-
+frames_array = db.get_all_frames("17")
+# lottiePlayersArrayPath = "../static/db/users/10/11/videos/17"
+frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 
 
@@ -354,7 +356,10 @@ def editTemplate():
         anim_path=changing_path,
         lottiePlayersArray=lottiePlayersArray,
         lottiePlayersArrayPath=lottiePlayersArrayPath,
-        colorsArray=colorsArray
+        colorsArray=colorsArray,
+        frames_array = frames_array,
+        len=len(frames_array),
+        frames_arrayPath=frames_arrayPath
 
     )
 
