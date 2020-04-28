@@ -103,7 +103,8 @@ anim_properties = get_anim_props(an, changing_path)
 lottiePlayersArray = db.get_all_animations()
 # get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
-
+frames_array = db.get_all_frames("17")
+frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 # myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim1.json"]
 
@@ -133,27 +134,24 @@ def contact():
 @application.route('/about', methods=['POST', 'GET'])
 def about():
     global person_name
-    global person_last_name
     global email
     global password
     if request.method == 'POST':
         # new user
         person_name = request.form['person_name']
-        person_last_name = request.form['person_last_name']
         email = request.form['email']
         password = request.form['password']
-        image = None  # request.form['image']
-        db.create_new_user(person_name, person_last_name, email, password, image)
+        image = None
+        # request.form['image']
+        db.create_new_user(person_name, email, password, image)
         # get user info
         # dataFromDB = get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
         # print(dataFromDB)
         # person_name = dataFromDB[1]
-        # person_last_name = dataFromDB[2]
         # email = dataFromDB[3]
         # password = dataFromDB[4]
     else:
         person_name = ""
-        person_last_name = ""
         email = ""
         password = ""
     """Renders the about page."""
@@ -163,7 +161,6 @@ def about():
         year=datetime.now().year,
         message='Your application description page.',
         person_name=person_name,
-        person_last_name=person_last_name,
         email=email,
         password=password
     )
@@ -203,30 +200,22 @@ def homePage():
     global color2
     global color3
     global color4
-    global palteName
-    palteName = ""
+    global paletteName
+    paletteName = ""
     colors_data = ["#000000"]
-    # color1 = color2 = color3 = color4 = "#000000"
-
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_new_Color':
             color = request.form['add_color']
             kind = request.form['kind']
             db.create_color(color, kind)
-        elif request.form['submit_button'] == 'submit_search_palte_id':
-            search_palte_id = request.form['search_palte_id']
-            data = db.get_palte(search_palte_id)
-            palteName = data[2]
-            colors_data = db.get_colors_by_plate(search_palte_id)
-            # color1 = colors_data[0][0]
-            # color2 = colors_data[1][0]
-            # color3 = colors_data[2][0]
-            # color4 = colors_data[3][0]
-
-            print(colors_data)
+        elif request.form['submit_button'] == 'submit_search_palette_id':
+            search_palette_id = request.form['search_palette_id']
+            data = db.get_palette(search_palette_id)
+            paletteName = data[1]
+            colors_data = db.get_colors_by_palette(search_palette_id)
         else:
             if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
-                dataFromDB = db.get_user(str(request.form['existUserEmail']), str(request.form['existUserPass']))
+                dataFromDB = db.check_log_in(str(request.form['existUserEmail']), str(request.form['existUserPass']))
                 print(dataFromDB)
                 if dataFromDB[0] is True and dataFromDB[1] is False:
                     alertM = "סיסמא שגויה"
@@ -243,12 +232,8 @@ def homePage():
         year=datetime.now().year,
         message='Your contact page.',
         alertMessage=alertM,
-        # color1=color1,
-        # color2=color2,
-        # color3=color3,
-        # color4=color4,
         my_colors=colors_data,
-        palte_name=palteName
+        palette_name=paletteName
 
     )
 
@@ -377,7 +362,7 @@ def change_color(color, outline_color, opacity):
 
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
-    colorsArray = db.get_colors_by_plate("1")
+    colorsArray = db.get_colors_by_palette("1")
     print(colorsArray)
     global changing_path
     """
@@ -398,8 +383,10 @@ def editTemplate():
         anim_path=changing_path,
         lottiePlayersArray=lottiePlayersArray,
         lottiePlayersArrayPath=lottiePlayersArrayPath,
-        colorsArray=colorsArray
-
+        colorsArray=colorsArray,
+        frames_array=frames_array,
+        len=len(frames_array),
+        frames_arrayPath=frames_arrayPath
     )
 
 

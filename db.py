@@ -244,5 +244,6 @@ def create_directory(my_path: str, name: str):
         path = os.path.join(os.getcwd(), "static/db/users", my_path, name)
     else:
         path = os.path.join("static/db/users/", name)
+
     if not os.path.exists(path):
         os.mkdir(path)
