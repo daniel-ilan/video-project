@@ -5,23 +5,16 @@
 {% block content %}
 
 <div class="color-form-container">
-    <form action="editColor" method="post" class="d-flex">
-        <div class="form-group color-form">
-            <label for="animColor">בחר צבע רקע לאנימציה</label>
-            <input type="color" id="animColor" name="animColor"
-                   value="{{mainColor}}" class="form-control">
-            <label for="outlineColor">בחר צבע מסגרת לאנימציה</label>
-            <input type="color" id="outlineColor" name="outlineColor"
-                   value="{{outlineColor}}" class="form-control">
-            <label for="opacityRange">בחר רמת שקיפות</label>
-            <div class="d-flex w-100">
-                <span class="px-2">0%</span>
-                <input type="range" name="opacityRange" value="{{opacity}}" class="custom-range w-50" id="opacityRange" min="0" max="100">
-                <span class="px-2">100%</span>
-            </div>
-            <input type="submit" name="submit" id="submitColor" class="btn btn-primary color-submit-btn" value="שנה"/>
-
-        </div>
+    <form id="editColor" class="d-flex">
     </form>
 </div>
+
+{% endblock %}
+{% block scripts %}
+<script src="../static/scripts/Script_editColor.js"></script>
+<script type=text/javascript>
+    var user = JSON.parse('{{ var | tojson | safe}}');
+    addProps(user)
+</script>
+
 {% endblock %}

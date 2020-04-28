@@ -4,28 +4,17 @@
   
 {% block content %}
 <h3>{{ message }}</h3>
-<div class="color-form-container">
-    <form action="editContent" method="post">
-        <div class="form-group text-form">
-            <label for="animText"> הכנס טקסט</label>
-            <div class="input-group mb-3 w-75">
-                <div class="input-group-prepend">
-                    <label class="input-group-text" for="selectedAlignment">יישור</label>
-                </div>
-                <select name="selectedAlignment" class="custom-select" id="selectedAlignment" data-selected="{{alignment}}">
-                    <option value="0">שמאל</option>
-                    <option value="1">ימין</option>
-                    <option value="2">מרכז</option>
-                </select>
-            </div>
-            <input type="text" maxlength="24" id="animText" name="animText" value="{{textContent}}" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="textColor">בחר צבע</label>
-            <input type="color" id="textColor" name="textColor" value={{textColor}} class="form-control">
-        </div>
-        <button type="submit" name="submit" id="submitText" class="btn btn-primary color-submit-btn">שנה</button>
+<div class="color-form-container" >
+    <form id="editContent">
     </form>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
 <script src="../static/scripts/Script_editContent.js"></script>
+<script type=text/javascript>
+    var user = JSON.parse('{{ var | tojson | safe}}');
+    addProps(user)
+</script>
 {% endblock %}

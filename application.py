@@ -5,12 +5,15 @@ Routes and views for the flask application.
 import os
 import time
 from datetime import datetime
+from flask import jsonify
 import db
 from flask import Flask
 from flask import render_template, request
+from lottie import exporters, objects
+from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
-from tgs import exporters, objects
-from tgs.parsers.tgs import parse_tgs
+
+import db
 
 application = Flask(__name__)
 
@@ -52,38 +55,46 @@ def readable(path):
     return file
 
 
-def get_anim_props(anim):
+def get_anim_props(anim, changing_path):
     """
     todo: add any new property we are changing: last added image_layer: image
     :param anim: tgs Animation object
     :return: dictionary with all values used in HTML controls
     """
-    text_color = anim.find('.myText').data.data.keyframes[0].start.color
-    text_content = anim.find('.myText').data.data.keyframes[0].start.text
-    text_alignment = an.find('.myText').data.data.keyframes[0].start.justify.value
+    anim_props = {'path': changing_path}
+    if anim.find('.myText'):
+        text_color = anim.find('.myText').data.data.keyframes[0].start.color
+        text_content = anim.find('.myText').data.data.keyframes[0].start.text
+        text_alignment = an.find('.myText').data.data.keyframes[0].start.justify.value
+        text_dict = {'color': colors.to_hex(list(text_color[0:3] + [1])),
+                     'content': correct_text(text_content),
+                     'alignment': text_alignment}
+        anim_props['text'] = text_dict
 
-    color = anim.find('.primaryColor').find('Fill 1').color.value.components
-    prim_opacity = anim.find('.primaryColor').find('Fill 1').opacity.value
+    if anim.find('.primaryColor'):
+        color = colors.to_hex(anim.find('.primaryColor').find('Fill 1').color.value.components)
+        prim_opacity = anim.find('.primaryColor').find('Fill 1').opacity.value
+        primary_dict = {'primary':{'color': color,'opacity': prim_opacity}}
+        anim_props.update(primary_dict)
 
-    out_color = anim.find('.baseColor').find('Fill 1').color.value.components
-    sec_opacity = anim.find('.baseColor').find('Fill 1').opacity.value
+    if anim.find('.baseColor'):
+        out_color = colors.to_hex(anim.find('.baseColor').find('Fill 1').color.value.components)
+        sec_opacity = anim.find('.baseColor').find('Fill 1').opacity.value
+        secondary_dict = {'secondary':{'color': out_color,'opacity': sec_opacity}}
+        anim_props.update(secondary_dict)
 
-    anim_props = {'text':
-                      {'color': list(text_color[0:3] + [1]),
-                       'content': correct_text(text_content),
-                       'alignment': text_alignment},
-                  'shapes': {
-                      'primary': {'color': color,
-                                  'opacity': prim_opacity},
-                      'secondary': {'color': out_color,
-                                    'opacity': sec_opacity}}}
+    if anim.find('.image'):
+        image_dict = {'image': an.assets[0].image}
+        anim_props['image'] = image_dict
+
+
     return anim_props
 
 
 changing_path = "static/content/animations/temp1_anim2.json"
 
 an = readable(changing_path)
-anim_properties = get_anim_props(an)
+anim_properties = get_anim_props(an, changing_path)
 # lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
 #                       ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
 #                       ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
@@ -242,34 +253,40 @@ def homePage():
     )
 
 
-@application.route('/editContent', methods=['POST', 'GET'])
+
+@application.route('/editContent')
 def editContent():
     global anim_properties
-    if request.method == 'POST':
-        result = request.form['animText']
-        color = request.form['textColor']
-        alignment = request.form['selectedAlignment']
-        change_text(result, color, alignment)
-
-    text_color = colors.to_hex(anim_properties['text']['color'])
-    text_content = anim_properties['text']['content']
-    alignment = anim_properties['text']['alignment']
+    # loadAnimProps()
+    # if request.method == 'POST':
+    #     result = request.form['animText']
+    #     color = request.form['textColor']
+    #     alignment = request.form['selectedAlignment']
+    #     change_text(result, color, alignment)
+    #
+    #
+    # text_color = colors.to_hex(anim_properties['text']['color'])
+    # text_content = anim_properties['text']['content']
+    # alignment = anim_properties['text']['alignment']
     return render_template(
         'editContent.html',
         title='תוכן',
-        year=datetime.now().year,
-        message='',
-        anim_path=changing_path,
-        textColor=text_color,
-        textContent=text_content,
-        alignment=alignment
+        var=anim_properties
     )
+
+@application.route('/changeAnimText', methods=['POST'])
+def change_anim_text():
+    text = request.form['animText']
+    color = request.form['textColor']
+    alignment = request.form['selectedAlignment']
+    new_text = change_text(text, color, alignment)
+    return jsonify(result=new_text)
 
 
 def change_text(text, color, alignment=1):
     global an
     global changing_path
-    global anim_properties
+
 
     anim_text = correct_text(text)
 
@@ -284,12 +301,13 @@ def change_text(text, color, alignment=1):
     if changing_path[-6:-9:-1].isdigit():
         os.remove(changing_path)
     changing_path = new_json
-
-    anim_properties['text']['color'] = correct_color[0:3]
-    anim_properties['text']['content'] = text
-    anim_properties['text']['alignment'] = alignment
-
     an = readable(changing_path)
+    return get_anim_props(an, changing_path)
+
+
+    # anim_properties['text']['color'] = correct_color[0:3]
+    # anim_properties['text']['content'] = text
+    # anim_properties['text']['alignment'] = alignment
     # an.find('.myText').transform.position.value = Point(30, 200)
     # an.find('.myText').data.data.keyframes[0].start = objects.text.TextDocument(text, 48, Color(correct_color[0], correct_color[1], correct_color[2]), font)
     # an.fonts.append(objects.text.Font(font, name=f"{font}"))
@@ -299,55 +317,64 @@ def change_text(text, color, alignment=1):
 
 @application.route('/editColor', methods=['POST', 'GET'])
 def editColor():
+    """
+    Renders the color editing page page
+    :return:
+    """
     global anim_properties
-    """Renders the about page."""
-    if request.method == 'POST':
-        background = request.form['animColor']
-        outline = request.form['outlineColor']
-        prim_opacity = request.form['opacityRange']
-        change_color(background, outline, prim_opacity)
-    main_color = colors.to_hex(anim_properties['shapes']['primary']['color'])
-    outline_color = colors.to_hex(anim_properties['shapes']['secondary']['color'])
-    prim_opacity = anim_properties['shapes']['primary']['opacity']
+
+    # if request.method == 'POST':
+    #     background = request.form['animColor']
+    #     outline = request.form['outlineColor']
+    #     prim_opacity = request.form['opacityRange']
+    #     change_color(background, outline, prim_opacity)
+    # main_color = colors.to_hex(anim_properties['primary']['color'])
+    # outline_color = colors.to_hex(anim_properties['secondary']['color'])
+    # prim_opacity = anim_properties['primary']['opacity']
 
     return render_template(
         'editColor.html',
         title='צבע',
-        year=datetime.now().year,
-        message='',
-        anim_path=changing_path,
-        mainColor=main_color,
-        outlineColor=outline_color,
-        opacity=prim_opacity
+        var=anim_properties,
+        # mainColor=main_color,
+        # outlineColor=outline_color,
+        # opacity=prim_opacity
     )
+
+@application.route('/changeAnimColor', methods=['POST'])
+def change_anim_color():
+    prime_color = request.form['animColor']
+    sec_color = request.form['outlineColor']
+    prim_opacity = request.form['opacityRange']
+    new_color = change_color(prime_color, sec_color, prim_opacity)
+    return jsonify(result=new_color)
 
 
 def change_color(color, outline_color, opacity):
     global an
     global changing_path
-    global anim_properties
+
+
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
     an.find('.primaryColor').find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
     an.find('.baseColor').find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
     an.find('.primaryColor').find('Fill 1').opacity.value = float(opacity)
 
-    # an.layers[-1].matte_mode = objects.MatteMode.Luma
-
     new_name = "temp" + str(int(time.time())) + ".json"
     exporters.export_lottie(an, "static/content/" + new_name)
     new_json = "static/content/" + new_name
 
-    # script.script_main(an, path="static/content/", formats=['json'])
-
     if changing_path[-6:-9:-1].isdigit():
         os.remove(changing_path)
     changing_path = new_json
-    anim_properties['shapes']['primary']['color'] = list(correct_color[0:3] + (1,))
-    anim_properties['shapes']['secondary']['color'] = list(correct_outline_color[0:3] + (1,))
+    an = readable(changing_path)
+    return get_anim_props(an, changing_path)
+
+    # an.layers[-1].matte_mode = objects.MatteMode.Luma
+    # script.script_main(an, path="static/content/", formats=['json'])
 
 
-# @application.route("/")
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     colorsArray = db.get_colors_by_plate("1")
@@ -382,7 +409,7 @@ def change_animation(path):
     global anim_properties
     changing_path = path[3:]
     an = readable(changing_path)
-    anim_properties = get_anim_props(an)
+    anim_properties = get_anim_props(an, changing_path)
     pass
 
 
