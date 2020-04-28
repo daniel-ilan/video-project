@@ -233,6 +233,7 @@ def create_new_frame(video_id: str):
 def get_all_frames(video_id: str):
     video_id = int(video_id)
     query = f"SELECT [lottie_url] FROM frames WHERE video_id={video_id};"
+    print("work work work")
     return select_all_query(query)
 
 
