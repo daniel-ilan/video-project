@@ -175,6 +175,11 @@ def newProject():
             db.update_project_last_update("2")
             data = db.get_project_info(userID)
             print(data)
+        elif request.form['submit_button'] == 'submit_newVid':
+            project_id = request.form['project_id']
+            video_name = request.form['video_name']
+            db.create_new_video(project_id, video_name)
+
         else:
             # new user
             userID = int(request.form['project_owner'])
