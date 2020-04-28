@@ -261,6 +261,13 @@ svg {
     margin-top: -10%;
 }
 
+.frame_lottie{
+    width: 5vw;
+    height: 10vh;
+    border: 1px solid rgba(0, 182, 222, 1);
+}
+
+
 /*          ----------            Layout Template Page          ----------          */
 
 /* --- Lottie player  ----*/
@@ -282,7 +289,7 @@ svg {
     flex-direction: column;
 }
 
-#slidesArea {
+#frames_Area {
     background: white;
     /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
     position: relative;
