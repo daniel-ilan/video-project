@@ -8,7 +8,7 @@
 
     <form action="newProject" method="post" class="d-flex">
         <div class="form-group text-form m-4">
-            <label for="userID"> הכנס את ה-ID של המשתמש: לדוגמא 13,15</label>
+            <label for="userID"> הכנס את ה-ID של המשתמש: לדוגמא 10 </label>
             <input type="text" id="userID" name="userID" class="form-control">
             <input type="submit" name="submit_button" value="submit_id">
         </div>
@@ -17,10 +17,23 @@
             <input type="text" id="project_owner" name="project_owner" class="form-control">
             <label for="project_name">שם הפרויקט</label>
             <input type="text" id="project_name" name="project_name" class="form-control">
-                        <label for="project_image">תמונה</label>
+            <label for="project_image">תמונה</label>
             <input type="image" id="project_image" name="project_image" class="form-control">
-                    <button type="submit" name="submit_button" id="submitNew" value="submitNew" class="btn btn-primary color-submit-btn">צור פרויקט חדש
-        </button>
+            <button type="submit" name="submit_button" id="submitNew" value="submitNew"
+                    class="btn btn-primary color-submit-btn">צור פרויקט חדש
+            </button>
+        </div>
+
+        <div class="form-group text-form m-4">
+            <div class="form-group text-form">
+                <label for="userID"> שייך לפרויקט :</label>
+                <input type="text" id="project_id" name="project_id" class="form-control">
+            </div>
+            <div class="form-group text-form">
+                <label for="userID"> שם הסרטון :</label>
+                <input type="text" id="video_name" name="video_name" class="form-control">
+            </div>
+            <input type="submit" name="submit_button" value="submit_newVid">
         </div>
     </form>
 </div>

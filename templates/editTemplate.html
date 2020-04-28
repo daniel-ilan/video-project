@@ -19,5 +19,24 @@
 </div>
 {% endfor %}
 
+
 <script src="../static/scripts/Script_editTemplate.js"></script>
+{% endblock %}
+
+{% block frames_Area %}
+{%for i in range(0, len)%}
+<div class="tinyLottie frame_lottie">
+    <lottie-player class="tinyLottiePlayer" src={{frames_arrayPath}}{{frames_array[i][0]}} background="transparent"
+                   speed="1"
+                   style="" hover loop>
+    </lottie-player>
+    <p class="tinyLottieDescription">{{i+1}}</p>
+</div>
+<div>
+    ___
+</div>
+{% endfor %}
+<div>
+    <button class="primaryBTN">+</button>
+</div>
 {% endblock %}

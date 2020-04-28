@@ -1,4 +1,6 @@
 import pyodbc
+import os
+
 
 
 def create_conn():
@@ -55,40 +57,67 @@ def get_all_animations():
     return select_all_query(query)
 
 
-def create_new_user(person_name: str, person_last_name: str, email: str, password: str, image: str = None):
+def create_new_user(person_name: str, email: str, password: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    person_name = email.strip()
-    person_last_name = password.strip()
+    person_name = person_name.strip()
     email = email.strip()
     password = password.strip()
-    query = f"INSERT INTO users ([person_name] ,[person_last_name],[email] ,[password] ,[image]) VALUES('{person_name}','{person_last_name}','{email}','{password}',{image});"
+    query = f"INSERT INTO users ([person_name] ,[email] ,[password] ,[image]) VALUES('{person_name}','{email}','{password}',{image});"
     update_query(query)
+    get_id = get_user_id(email)[0]
+    create_directory("", get_id)
 
 
-def get_user(email: str, password: str):
+def get_user_id(email: str):
+    email = email.strip()
+    query = f"SELECT user_id FROM users WHERE email= '{email}';"
+    return select_one_query(query)
+
+
+def check_log_in(email: str, password: str):
     email = email.strip()
     password = password.strip()
-    exsistUser = False
+    exist_user = False
     match = False
     query = f"SELECT COUNT (*) FROM users WHERE email= '{email}';"
     if get_row(query) == 1:
-        exsistUser = True
+        exist_user = True
         query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
         if get_row(query) == 1:
             match = True
-    return (exsistUser, match)
+    return (exist_user, match)
 
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
     image = f"'{image}'" if image else 'null'
-    query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
+    if project_name == "" or project_name == " ":
+        query = f"INSERT INTO projects([user_id] ,[image]) VALUES({user_id}, {image});"
+    else:
+        query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},{project_name}, {image});"
     update_query(query)
+    get_id = get_last_project_id(user_id)[0]
+    create_directory(user_id, get_id)
+    path = str(get_id) + "/videos"
+    create_directory(user_id, path)
+    path = str(get_id) + "/docs"
+    create_directory(user_id, path)
+
+
+def get_last_project_id(user_id: int):
+    query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
+    return select_one_query(query)
 
 
 def get_project_info(user_id: str):
     user_id = int(user_id.strip())
     query = f"SELECT * FROM projects WHERE user_id={user_id};"
     return select_all_query(query)
+
+
+def get_project_owner(project_id: str):
+    project_id = int(project_id.strip())
+    query = f"SELECT user_id FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
 
 
 def update_project_name(project_id: str, new_name:str):
@@ -116,29 +145,29 @@ def update_project_status(project_id: str, status:str):
     update_query(query)
 
 
-def create_color(hex:str, kind: str, palte_id: str):
-    hex = hex.strip()
+def create_color(my_hex: str, kind: str, palette_id: str):
+    my_hex = my_hex.strip()
     kind = kind.strip()
-    palte_id = int(palte_id.strip())
-    query = f"INSERT INTO colors ([hex],[kind],[palte_id]) VALUES('{hex}','{kind}', {palte_id});"
+    palette_id = int(palette_id.strip())
+    query = f"INSERT INTO colors ([hex],[kind],[palette_id]) VALUES('{my_hex}','{kind}', {palette_id});"
     update_query(query)
 
 
-def create_palte(project_id: str, palte_name: str):
+def create_palette(project_id: str, palette_name: str):
     project_id = int(project_id.strip())
-    query = f"INSERT INTO paltes ([project_id],[palte_name]) VALUES({project_id},'{palte_name}');"
+    query = f"INSERT INTO palettes ([project_id],[palette_name]) VALUES({project_id},'{palette_name}');"
     update_query(query)
 
 
-def get_palte(palte_id: str):
-    palte_id = int(palte_id.strip())
-    query = f"SELECT * FROM paltes WHERE palte_id={palte_id};"
+def get_palette(palette_id: str):
+    palette_id = int(palette_id.strip())
+    query = f"SELECT * FROM palettes WHERE palette_id={palette_id};"
     return select_one_query(query)
 
 
-def get_colors_by_plate(palte_id: str):
-    palte_id = int(palte_id.strip())
-    query = f"SELECT hex,kind FROM colors WHERE palte_id={palte_id};"
+def get_colors_by_palette(palette_id: str):
+    palette_id = int(palette_id.strip())
+    query = f"SELECT hex,kind FROM colors WHERE palette_id={palette_id};"
     return select_all_query(query)
 
 
@@ -157,3 +186,63 @@ def get_animations_by_template(template_id: str):
 def new_doc(project_id: int, doc_url: str, doc_name:str):
     query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
+
+
+def create_new_video(project_id: int, video_name: str, image: str = None):
+    image = f"'{image}'" if image else 'null'
+    if video_name == "" or video_name == " ":
+        query = f"INSERT INTO videos([project_id],[image]) VALUES({project_id},{image});"
+    else:
+        query = f"INSERT INTO videos([project_id] ,[video_name],[image]) VALUES({project_id},'{video_name}', {image});"
+    update_query(query)
+    get_id = get_last_video_id(str(project_id))[0]
+    project_owner = get_project_owner(str(project_id))[0]
+    path = str(project_owner) + "/" + str(project_id) + "/videos/"
+    create_directory(path, get_id)
+    path = path + "/" + str(get_id)
+    create_directory(path, "frames")
+    create_new_frame(str(get_id))
+
+
+def get_last_video_id(project_id: str):
+    project_id = int(project_id)
+    query = f"SELECT TOP 1 video_id FROM videos WHERE project_id={project_id} ORDER BY video_id DESC;"
+    return select_one_query(query)
+
+
+def update_video_name(video_id: str, new_name: str):
+    video_id = int(video_id)
+    new_name = new_name.strip()
+    query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
+    update_query(query)
+
+
+def update_video_status(video_id: str, new_status: str):
+    video_id = int(video_id)
+    new_status = new_status.strip()
+    query = f"UPDATE videos SET video_status='{new_status}' WHERE video_id={video_id};"
+    update_query(query)
+
+
+def create_new_frame(video_id: str):
+    video_id = int(video_id)
+    query = f"INSERT INTO frames([video_id]) VALUES({video_id});"
+    update_query(query)
+
+
+def get_all_frames(video_id: str):
+    video_id = int(video_id)
+    query = f"SELECT [lottie_url] FROM frames WHERE video_id={video_id};"
+    print("work work work")
+    return select_all_query(query)
+
+
+def create_directory(my_path: str, name: str):
+    name = str(name)
+    my_path = str(my_path)
+    if my_path != "":
+        path = os.path.join(os.getcwd(), "static/db/users", my_path, name)
+    else:
+        path = os.path.join("static/db/users/", name)
+    if not os.path.exists(path):
+        os.mkdir(path)
