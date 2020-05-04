@@ -5,17 +5,17 @@ Routes and views for the flask application.
 import os
 import time
 from datetime import datetime
-from flask import jsonify
-import db
-from flask import Flask
-from flask import render_template, request
+from flask import render_template, request, jsonify, Flask, redirect
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
-
+from werkzeug.utils import secure_filename
 import db
 
 application = Flask(__name__)
+UPLOAD_FOLDER = "static/content/animations/images"
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 def correct_text(sentence):
@@ -55,18 +55,19 @@ def readable(path):
     return file
 
 
-def get_anim_props(anim, changing_path):
+def get_anim_props(anim, changing_path, image_path=""):
     """
     todo: add any new property we are changing: last added image_layer: image
     :param anim: tgs Animation object
     :return: dictionary with all values used in HTML controls
+
     """
     anim_props = {'path': changing_path}
     if anim.find('.myText'):
         text_color = anim.find('.myText').data.data.keyframes[0].start.color
         text_content = anim.find('.myText').data.data.keyframes[0].start.text
         text_alignment = an.find('.myText').data.data.keyframes[0].start.justify.value
-        text_dict = {'color': colors.to_hex(list(text_color[0:3] + [1])),
+        text_dict = {'color': colors.to_hex(list(text_color[0:3])),
                      'content': correct_text(text_content),
                      'alignment': text_alignment}
         anim_props['text'] = text_dict
@@ -84,10 +85,9 @@ def get_anim_props(anim, changing_path):
         anim_props.update(secondary_dict)
 
     if anim.find('.image'):
-        image_dict = {'image': an.assets[0].image}
+        image_name = image_path
+        image_dict = {'image': an.assets[0].image, 'image_path': f"static/content/animations/images/{image_name}"}
         anim_props['image'] = image_dict
-
-
     return anim_props
 
 
@@ -103,7 +103,7 @@ anim_properties = get_anim_props(an, changing_path)
 lottiePlayersArray = db.get_all_animations()
 # get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
-frames_array = db.get_all_frames("17")
+frames_array = db.get_all_frames("18")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 # myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim1.json"]
@@ -175,6 +175,11 @@ def newProject():
             db.update_project_last_update("2")
             data = db.get_project_info(userID)
             print(data)
+        elif request.form['submit_button'] == 'submit_newVid':
+            project_id = request.form['project_id']
+            video_name = request.form['video_name']
+            db.create_new_video(project_id, video_name)
+
         else:
             # new user
             userID = int(request.form['project_owner'])
@@ -195,11 +200,6 @@ def newProject():
 @application.route("/")
 @application.route('/homePage', methods=['POST', 'GET'])
 def homePage():
-    global alertM
-    global color1
-    global color2
-    global color3
-    global color4
     global paletteName
     paletteName = ""
     colors_data = ["#000000"]
@@ -234,36 +234,30 @@ def homePage():
         alertMessage=alertM,
         my_colors=colors_data,
         palette_name=paletteName
-
     )
 
 
 
-@application.route('/editContent')
+@application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     global anim_properties
     # loadAnimProps()
-    # if request.method == 'POST':
-    #     result = request.form['animText']
-    #     color = request.form['textColor']
-    #     alignment = request.form['selectedAlignment']
-    #     change_text(result, color, alignment)
-    #
-    #
+    if request.method == 'POST':
+        return jsonify(result=get_anim_props(an, changing_path))
     # text_color = colors.to_hex(anim_properties['text']['color'])
     # text_content = anim_properties['text']['content']
     # alignment = anim_properties['text']['alignment']
     return render_template(
         'editContent.html',
         title='תוכן',
-        var=anim_properties
+        # var=anim_properties
     )
 
 @application.route('/changeAnimText', methods=['POST'])
 def change_anim_text():
-    text = request.form['animText']
-    color = request.form['textColor']
-    alignment = request.form['selectedAlignment']
+    text = request.form['textcontent']
+    color = request.form['textcolor']
+    alignment = request.form['textalignment']
     new_text = change_text(text, color, alignment)
     return jsonify(result=new_text)
 
@@ -271,8 +265,6 @@ def change_anim_text():
 def change_text(text, color, alignment=1):
     global an
     global changing_path
-
-
     anim_text = correct_text(text)
 
     correct_color = list(colors.to_rgba(color, float) + (1,))
@@ -300,37 +292,13 @@ def change_text(text, color, alignment=1):
     # an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(2)
 
 
-@application.route('/editColor', methods=['POST', 'GET'])
-def editColor():
-    """
-    Renders the color editing page page
-    :return:
-    """
-    global anim_properties
 
-    # if request.method == 'POST':
-    #     background = request.form['animColor']
-    #     outline = request.form['outlineColor']
-    #     prim_opacity = request.form['opacityRange']
-    #     change_color(background, outline, prim_opacity)
-    # main_color = colors.to_hex(anim_properties['primary']['color'])
-    # outline_color = colors.to_hex(anim_properties['secondary']['color'])
-    # prim_opacity = anim_properties['primary']['opacity']
-
-    return render_template(
-        'editColor.html',
-        title='צבע',
-        var=anim_properties,
-        # mainColor=main_color,
-        # outlineColor=outline_color,
-        # opacity=prim_opacity
-    )
 
 @application.route('/changeAnimColor', methods=['POST'])
 def change_anim_color():
-    prime_color = request.form['animColor']
-    sec_color = request.form['outlineColor']
-    prim_opacity = request.form['opacityRange']
+    prime_color = request.form['primary']
+    sec_color = request.form['secondary']
+    prim_opacity = 100 # request.form['opacityRange']
     new_color = change_color(prime_color, sec_color, prim_opacity)
     return jsonify(result=new_color)
 
@@ -338,7 +306,6 @@ def change_anim_color():
 def change_color(color, outline_color, opacity):
     global an
     global changing_path
-
 
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
@@ -356,8 +323,56 @@ def change_color(color, outline_color, opacity):
     an = readable(changing_path)
     return get_anim_props(an, changing_path)
 
-    # an.layers[-1].matte_mode = objects.MatteMode.Luma
-    # script.script_main(an, path="static/content/", formats=['json'])
+
+@application.route('/changeAnimImage', methods=['POST'])
+def change_anim_image():
+    if 'image' not in request.files:
+        return jsonify(result="Not good!")
+    file = request.files['image']
+    if file.filename == '':
+        return redirect(request.url)
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+        file.save(location)
+        new_image = change_image(location)
+        return jsonify(result=new_image)
+    # myName = "something"
+    # image_64 = request.form['image']
+    # sec_color = request.form['secondary']
+    # prim_opacity = 100  # request.form['opacityRange']
+    # new_image = change_image(image_64)
+
+    # image = objects.assets.Image().load(image_filename)
+    # image_data = image.embedded(image_filename).image
+    # an.assets[0].image = image_data
+
+    # return jsonify(result=new_image)
+
+def change_image(image_filename):
+    global an
+    global changing_path
+
+    image = objects.assets.Image().load(image_filename)
+    image_data = image.embedded(image_filename).image
+    an.assets[0].image = image_data
+
+    new_name = "temp" + str(int(time.time())) + ".json"
+    exporters.export_lottie(an, "static/content/" + new_name)
+    new_json = "static/content/" + new_name
+
+    if changing_path[-6:-9:-1].isdigit():
+        os.remove(changing_path)
+    changing_path = new_json
+    an = readable(changing_path)
+
+    return get_anim_props(an, changing_path, image_filename)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @application.route('/editTemplate', methods=['POST', 'GET'])
@@ -402,3 +417,21 @@ def change_animation(path):
 
 if __name__ == '__main__':
     application.run()
+
+
+
+# @application.route('/editColor', methods=['POST', 'GET'])
+# def editColor():
+#     """
+#     Renders the color editing page page
+#     :return:
+#     """
+#     global anim_properties
+#
+#     if request.method == 'POST':
+#         return jsonify(result=get_anim_props(an, changing_path))
+#
+#     return render_template(
+#         'editColor.html',
+#         title='צבע',
+#     )

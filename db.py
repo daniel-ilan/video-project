@@ -93,7 +93,7 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
     if project_name == "" or project_name == " ":
         query = f"INSERT INTO projects([user_id] ,[image]) VALUES({user_id}, {image});"
     else:
-        query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},{project_name}, {image});"
+        query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
     update_query(query)
     get_id = get_last_project_id(user_id)[0]
     create_directory(user_id, get_id)
