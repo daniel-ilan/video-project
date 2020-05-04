@@ -3,18 +3,15 @@
 {% endblock %}
   
 {% block content %}
-<h3>{{ message }}</h3>
+<link href="../static/node_modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css" rel="stylesheet">
 <div class="color-form-container" >
-    <form id="editContent">
-    </form>
+    <div id="content">
+    </div>
 </div>
 
 {% endblock %}
 
 {% block scripts %}
+<script src="../static/node_modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js"></script>
 <script src="../static/scripts/Script_editContent.js"></script>
-<script type=text/javascript>
-    var user = JSON.parse('{{ var | tojson | safe}}');
-    addProps(user)
-</script>
 {% endblock %}

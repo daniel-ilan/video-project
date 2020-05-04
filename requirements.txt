@@ -11,6 +11,6 @@ pyodbc==4.0.30
 pyparsing==2.4.7
 python-dateutil==2.8.1
 six==1.14.0
-lottie==0.6.0
+lottie==0.6.2
 Werkzeug==1.0.1
 wfastcgi==3.0.0
