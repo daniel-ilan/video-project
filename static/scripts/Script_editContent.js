@@ -37,10 +37,12 @@ function loadForm() {
 function changeFrame(event) {
 
     const main_animation = document.querySelector('#mainAnimation');
+
+    event.preventDefault();
     $.ajax({
         method: 'POST',
         url: '/changeFrame',
-        data: event.currentTarget.id
+        data: {"id": $(this)}
     }).done(buildForm);
     // xhttp.onreadystatechange = function () {
     //     main_animation.load(event.currentTarget.src)

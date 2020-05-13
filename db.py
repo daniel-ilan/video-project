@@ -201,7 +201,6 @@ def create_new_video(project_id: int, video_name: str, image: str = None):
     create_directory(path, get_id)
     path = path + "/" + str(get_id)
     create_directory(path, "frames")
-    create_new_frame(str(get_id))
 
 
 def get_last_video_id(project_id: str):
@@ -224,9 +223,9 @@ def update_video_status(video_id: str, new_status: str):
     update_query(query)
 
 
-def create_new_frame(video_id: str):
+def create_new_frame(video_id: str, name: str):
     video_id = int(video_id)
-    query = f"INSERT INTO frames([video_id]) VALUES({video_id});"
+    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{name}');"
     update_query(query)
 
 

@@ -12,7 +12,7 @@ from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
 
-import db
+import db, json
 
 application = Flask(__name__)
 UPLOAD_FOLDER = "static/content/animations/images"
@@ -198,6 +198,18 @@ def about():
     )
 
 
+def copy_animations(new_path, old_path='static/content/animations/', name='empty'):
+    with open(old_path+name + '.json', 'r') as in_file:
+        # Reading from json file
+        json_object = json.load(in_file)
+
+    new_name = name + '_' + str(int(time.time())) + ".json"
+
+    with open(new_path+new_name, "w") as out_file:
+        json.dump(json_object, out_file)
+    return new_name
+
+
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
     if request.method == 'POST':
@@ -211,6 +223,15 @@ def newProject():
             project_id = request.form['project_id']
             video_name = request.form['video_name']
             db.create_new_video(project_id, video_name)
+
+            project_owner = db.get_project_owner(str(project_id))[0]
+            video_id = db.get_last_video_id(project_id)[0]
+            frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+
+
+            frame_name = copy_animations(frame_path)
+            id =db.get_last_video_id(str(project_id))[0]
+            db.create_new_frame(id, frame_name)
 
         else:
             # new user
@@ -286,7 +307,7 @@ def editContent():
 
 def get_frames_from_db():
     frames_array = db.get_all_frames("17")
-    frames_arrayPath = "../static/content/animations/"
+    frames_arrayPath = "../static/db/users/10/11/videos/17/frames/"
     frames_list = []
     myArray = [frames_arrayPath, frames_list]
     for frame in frames_array:
@@ -425,13 +446,11 @@ def add_frame():
 @application.route('/changeFrame', methods=['POST'])
 def change_frame():
 
-    test = request
-    id = request.data["id"]
-
+    data = request.form['id']
+    id = data[data.find('_')+1:]
     anim_url = db.get_frame_url_by_id(id)
 
-    a = request.data
-    return change_animation(a.decode("utf-8"))
+    return change_animation(anim_url.decode("utf-8"))
 
 
 
