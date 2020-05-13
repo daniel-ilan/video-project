@@ -1,6 +1,8 @@
-$(document).ready(function () {
-    const editForm = $('#content');
 
+let editForm = "";
+$(document).ready(function () {
+    // const editForm = $('#content');
+    editForm = $('#content');
     if (editForm.val() === ""){
         loadForm();
     }
@@ -27,7 +29,7 @@ function buildForm(data) {
      */
     let colorUi = [];
     let colorId = [];
-    const content = $('#content');
+    // const content = $('#content');
     Object.keys(data.result).forEach(function (elem) {
         if (elem === "path"){
             buildMain(elem, data.result[elem])
@@ -41,13 +43,36 @@ function buildForm(data) {
             colorId.push(elem)
         }
         else if (elem === "text"){
-            content.append(getText(elem, data.result[elem]));
+            editForm.append(getText(elem, data.result[elem]));
             $('#editText').on('submit', changeText);
             $('#textalignment option[value='+ data.result[elem].alignment + ']').prop('selected', true)
         }
         else if (elem === 'image') {
-            content.append(getImage(elem), data.result[elem]);
+            editForm.append(getImage(elem), data.result[elem]);
             $('#editImage').on('submit', changeImage);
+        }
+        else if (elem === 'listItem'){
+            editForm.append(getText(elem, data.result[elem].text));
+            let colorListUi = [];
+            let colorListId = [];
+
+            Object.keys(data.result[elem]).forEach(function (item){
+            if (item === "primary"){
+                colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
+                colorListId.push('listItem_'+item)
+            }
+            else if (item === "secondary"){
+                colorListUi.push(getColor('listItem_'+item, data.result[elem][item]));
+                colorListId.push('listItem_'+item)
+            }
+            });
+
+            if (colorListUi.length > 0) {
+                /**
+                 *checks how many shape layers there are in the animation and building the color-picker UI
+                 */
+                createColorUi(colorListUi, colorListId)
+            }
         }
     });
 
@@ -55,20 +80,26 @@ function buildForm(data) {
         /**
          *checks how many shape layers there are in the animation and building the color-picker UI
          */
-        let colorForm = `<form id="editColor">
-                            <div id="inputWrapper" class="form-group color-form"></div>
-                             <input id="colorSubmit" type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה"/>
-                        </form>`;
-        content.append(colorForm);
-        const inputWrapper = $('#inputWrapper');
-        for (i=0; i<colorUi.length; i++){
-            inputWrapper.append(colorUi[i]);
-            $('#'+colorId[i]).colorpicker();
-        }
-        $('#editColor').on('submit', changeColor);
+        createColorUi(colorUi, colorId)
     }
 }
 
+
+function createColorUi(colors, colorId) {
+
+
+    let colorForm = `<form id="editColor" class="col-5">
+                            <div id="inputWrapper_${colorId[0]}" class="form-group color-form"></div>
+                             <input id="colorSubmit_${colorId[0]}" type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה"/>
+                        </form>`;
+    editForm.append(colorForm);
+    const inputWrapper = $('#inputWrapper_'+ colorId[0]);
+    for (i=0; i<colors.length; i++){
+        inputWrapper.append(colors[i]);
+        $('#'+colorId[i]).colorpicker();
+    }
+    $('#editColor').on('submit', changeColor);
+}
 
 function buildMain(key, path) {
     /**
@@ -113,7 +144,7 @@ function getText(name, text) {
      * @param {list}    color   the color of the layer
      * @return {HTMLElement}
      */
-    return `<form id="editText">
+    return `<form id="editText" class="col-6">
                 <div class="form-group text-form">
                     <label for="animText"> הכנס טקסט</label>
                     <div class="input-group mb-3 w-75">
@@ -132,9 +163,8 @@ function getText(name, text) {
                     <label for="textColor">בחר צבע</label>
                     <input type="color" name=${name + 'color'} id=${name + 'color'}  value=${text.color} class="form-control">\n
                 </div>
-                <input type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה">\`
+                <input type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה">
             </form>`;
-
 }
 /***    Runs when loading the initial page  ***/
 
@@ -194,6 +224,8 @@ function loadImageProps(data) {
     $('#displayImage').attr('src', imagePath);
 
     buildMain('mt', path);
+
+
 }
 
 function loadTextProps(data) {

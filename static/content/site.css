@@ -326,11 +326,20 @@ align-items: center;
 
 }
 
-.color-form-container {
+#content{
     display: flex;
-    width: 50%;
-    align-items: center;
+    flex-direction: column;
+    height:80vh;
+    overflow: scroll;
 }
+
+
+.color-form-container #content {
+    display: flex;
+    align-items: flex-end;
+}
+
+
 
 .color-submit-btn {
     margin-top: 10%;

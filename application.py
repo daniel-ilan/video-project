@@ -5,11 +5,13 @@ Routes and views for the flask application.
 import os
 import time
 from datetime import datetime
+
 from flask import render_template, request, jsonify, Flask, redirect
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
+
 import db
 
 application = Flask(__name__)
@@ -63,31 +65,67 @@ def get_anim_props(anim, changing_path, image_path=""):
 
     """
     anim_props = {'path': changing_path}
-    if anim.find('.myText'):
-        text_color = anim.find('.myText').data.data.keyframes[0].start.color
-        text_content = anim.find('.myText').data.data.keyframes[0].start.text
-        text_alignment = an.find('.myText').data.data.keyframes[0].start.justify.value
-        text_dict = {'color': colors.to_hex(list(text_color[0:3])),
-                     'content': correct_text(text_content),
-                     'alignment': text_alignment}
-        anim_props['text'] = text_dict
+    for layer in anim.layers:
+        list_changed = False
+        if layer.name == '.myText':
+            text_color = layer.data.data.keyframes[0].start.color
+            text_content = layer.data.data.keyframes[0].start.text
+            text_alignment = layer.data.data.keyframes[0].start.justify.value
+            text_dict = {'color': colors.to_hex(list(text_color[0:3])),
+                         'content': correct_text(text_content),
+                         'alignment': text_alignment}
+            anim_props['text'] = text_dict
 
-    if anim.find('.primaryColor'):
-        color = colors.to_hex(anim.find('.primaryColor').find('Fill 1').color.value.components)
-        prim_opacity = anim.find('.primaryColor').find('Fill 1').opacity.value
-        primary_dict = {'primary':{'color': color,'opacity': prim_opacity}}
-        anim_props.update(primary_dict)
+        elif layer.name == '.primaryColor':
+            color = colors.to_hex(layer.find('Fill 1').color.value.components)
+            prim_opacity = layer.find('Fill 1').opacity.value
+            primary_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
+            anim_props.update(primary_dict)
 
-    if anim.find('.baseColor'):
-        out_color = colors.to_hex(anim.find('.baseColor').find('Fill 1').color.value.components)
-        sec_opacity = anim.find('.baseColor').find('Fill 1').opacity.value
-        secondary_dict = {'secondary':{'color': out_color,'opacity': sec_opacity}}
-        anim_props.update(secondary_dict)
+        elif layer.name == '.baseColor':
+            out_color = colors.to_hex(layer.find('Fill 1').color.value.components)
+            sec_opacity = layer.find('Fill 1').opacity.value
+            secondary_dict = {'secondary': {'color': out_color, 'opacity': sec_opacity}}
+            anim_props.update(secondary_dict)
 
-    if anim.find('.image'):
-        image_name = image_path
-        image_dict = {'image': an.assets[0].image, 'image_path': f"static/content/animations/images/{image_name}"}
-        anim_props['image'] = image_dict
+        elif layer.name == '.image':
+            image_name = image_path
+            image_dict = {'image': an.assets[0].image, 'image_path': f"static/content/animations/images/{image_name}"}
+            anim_props['image'] = image_dict
+
+        elif layer.name.find(".listText") != -1 and list_changed is False:
+            text_layer_num = int(layer.name[-1])
+            if text_layer_num == 1:
+                text_color = layer.data.data.keyframes[0].start.color
+                text_content = layer.data.data.keyframes[0].start.text
+                text_alignment = layer.data.data.keyframes[0].start.justify.value
+
+                text_dict = {'listItem': {'text': {'color': colors.to_hex(list(text_color[0:3])),
+                                               'content': [correct_text(text_content)],
+                                               'alignment': text_alignment}}}
+
+                anim_props.update(text_dict)
+
+            else:
+                text_content = layer.data.data.keyframes[0].start.text
+                anim_props['listItem']['text']['content'].append(text_content)
+
+        elif layer.name.find(".primaryColorList") != -1:
+            primary_layer_num = int(layer.name[-1])
+            if primary_layer_num == 1:
+                color = colors.to_hex(layer.find('Fill 1').color.value.components)
+                prim_opacity = layer.find('Fill 1').opacity.value
+                color_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
+                anim_props['listItem'].update(color_dict)
+
+        elif layer.name.find(".baseColorList") != -1:
+            secondary_layer_num = int(layer.name[-1])
+            if secondary_layer_num == 1:
+                color = colors.to_hex(layer.find('Fill 1').color.value.components)
+                prim_opacity = layer.find('Fill 1').opacity.value
+                color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
+                anim_props['listItem'].update(color_dict)
+
     return anim_props
 
 
@@ -95,18 +133,12 @@ changing_path = "static/content/animations/temp1_anim2.json"
 
 an = readable(changing_path)
 anim_properties = get_anim_props(an, changing_path)
-# lottiePlayersArray = [["temp1_anim1.json", "שקיפות"], ["temp1_anim2.json", "בהדרגה מימין"],
-#                       ["temp1_anim3.json", "מצד ימין"], ["temp1_anim4.json", "שלום"], ["temp2_anim1.json", "שקיפות"],
-#                       ["temp2_anim2.json", "בהדרגה מימין"], ["temp2_anim3.json", "מצד ימין"],
-#                       ["temp2_anim4.json", "שלום"]]
 
 lottiePlayersArray = db.get_all_animations()
-# get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
 frames_array = db.get_all_frames("18")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
-# myLoAr = ["../static/content/temp1_anim1.json", "../static/content/temp1_anim1.json"]
 
 
 @application.route('/home')
@@ -237,7 +269,6 @@ def homePage():
     )
 
 
-
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     global anim_properties
@@ -252,6 +283,7 @@ def editContent():
         title='תוכן',
         # var=anim_properties
     )
+
 
 @application.route('/changeAnimText', methods=['POST'])
 def change_anim_text():
@@ -281,7 +313,6 @@ def change_text(text, color, alignment=1):
     an = readable(changing_path)
     return get_anim_props(an, changing_path)
 
-
     # anim_properties['text']['color'] = correct_color[0:3]
     # anim_properties['text']['content'] = text
     # anim_properties['text']['alignment'] = alignment
@@ -292,13 +323,11 @@ def change_text(text, color, alignment=1):
     # an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(2)
 
 
-
-
 @application.route('/changeAnimColor', methods=['POST'])
 def change_anim_color():
     prime_color = request.form['primary']
     sec_color = request.form['secondary']
-    prim_opacity = 100 # request.form['opacityRange']
+    prim_opacity = 100  # request.form['opacityRange']
     new_color = change_color(prime_color, sec_color, prim_opacity)
     return jsonify(result=new_color)
 
@@ -350,6 +379,7 @@ def change_anim_image():
 
     # return jsonify(result=new_image)
 
+
 def change_image(image_filename):
     global an
     global changing_path
@@ -378,7 +408,6 @@ def allowed_file(filename):
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     colorsArray = db.get_colors_by_palette("1")
-    print(colorsArray)
     global changing_path
     """
     gets an ajax request and changes the json file attached to the lottie-player
@@ -417,8 +446,6 @@ def change_animation(path):
 
 if __name__ == '__main__':
     application.run()
-
-
 
 # @application.route('/editColor', methods=['POST', 'GET'])
 # def editColor():
