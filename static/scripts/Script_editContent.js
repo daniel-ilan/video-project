@@ -17,7 +17,19 @@ $(document).ready(function () {
 });
 
 function deleteFrameFunc() {
+    /**
+    todo: db get deleted id and return the previous id
+     we need to change done funcations because buildFrames gets  ---> check if it's works
+     a = event.result ---> check this line!
+     */
 
+    frame_id = $(".active_frame_lottie").id;
+
+    $.ajax({
+        method: 'POST',
+        url: '/deleteFrame',
+        data: {'id': frame_id}
+    }).done(buildFrames, changeFrame(true));
 
 }
 
@@ -34,21 +46,42 @@ function loadForm() {
     }).done(buildForm, buildFrames);
 }
 
-function changeFrame(event) {
+function changeFrame(isDelete=false, event) {
+    let a = ""
+    if (!isDelete)
+    {
+        a = event.currentTarget.id;
+    }
+    else{
+    a = event.result
+    }
 
-    const main_animation = document.querySelector('#mainAnimation');
+    activeFrame(a);
 
-    event.preventDefault();
     $.ajax({
         method: 'POST',
         url: '/changeFrame',
-        data: {"id": $(this)}
+        data: {"id": a}
     }).done(buildForm);
     // xhttp.onreadystatechange = function () {
     //     main_animation.load(event.currentTarget.src)
     // };
     // xhttp.open("POST", "/editTemplate", true);
     // xhttp.send(event.currentTarget.src);
+}
+
+
+function activeFrame(id) {
+
+
+    $('.frame_lottie').each(function (elm){
+        if (this.classList.contains("active_frame_lottie")){
+            this.classList.remove("active_frame_lottie")
+        }
+    });
+
+    $('#'+id).addClass("active_frame_lottie");
+    console.log("xxxx")
 }
 
 
@@ -102,63 +135,77 @@ function loadNewFrames(data) {
 }
 
 function buildForm(data) {
+
+
     /**
      * @param {JSON}    data    the data recieved by the server holding the animation properties
      * Description. checking the parameters of the animation and building the form accordingly
      */
+
+
     let colorUi = [];
     let colorId = [];
-    // const content = $('#content');
+
     if (data != null) {
+        // const content = $('#content');
         Object.keys(data.result).forEach(function (elem) {
-            if (elem === "path") {
-                buildMain(data.result[elem])
-            } else if (elem === "primary") {
-                colorUi.push(getColor(elem, data.result[elem]))
-                colorId.push(elem)
-            } else if (elem === "secondary") {
-                colorUi.push(getColor(elem, data.result[elem]))
-                colorId.push(elem)
-            } else if (elem === "text") {
-                editForm.append(getText(elem, data.result[elem]));
-                $('#editText').on('submit', changeText);
-                $('#textalignment option[value=' + data.result[elem].alignment + ']').prop('selected', true)
-            } else if (elem === 'image') {
-                editForm.append(getImage(elem), data.result[elem]);
-                $('#editImage').on('submit', changeImage);
-            } else if (elem === 'listItem') {
-                editForm.append(getText(elem, data.result[elem].text));
-                let colorListUi = [];
-                let colorListId = [];
 
-                Object.keys(data.result[elem]).forEach(function (item) {
-                    if (item === "primary") {
-                        colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
-                        colorListId.push('listItem_' + item)
-                    } else if (item === "secondary") {
-                        colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
-                        colorListId.push('listItem_' + item)
+            if (elem === "empty") {
+                editForm.html("")
+            } else {
+                if (elem === "path") {
+                    buildMain(data.result[elem])
+                } else if (elem === "primary") {
+                    colorUi.push(getColor(elem, data.result[elem]))
+                    colorId.push(elem)
+                } else if (elem === "secondary") {
+                    colorUi.push(getColor(elem, data.result[elem]))
+                    colorId.push(elem)
+                } else if (elem === "text") {
+                    editForm.append(getText(elem, data.result[elem]));
+                    $('#editText').on('submit', changeText);
+                    $('#textalignment option[value=' + data.result[elem].alignment + ']').prop('selected', true)
+                } else if (elem === 'image') {
+                    editForm.append(getImage(elem), data.result[elem]);
+                    $('#editImage').on('submit', changeImage);
+                } else if (elem === 'listItem') {
+                    editForm.append(getText(elem, data.result[elem].text));
+                    let colorListUi = [];
+                    let colorListId = [];
+
+                    Object.keys(data.result[elem]).forEach(function (item) {
+                        if (item === "primary") {
+                            colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
+                            colorListId.push('listItem_' + item)
+                        } else if (item === "secondary") {
+                            colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
+                            colorListId.push('listItem_' + item)
+                        }
+                    });
+
+                    if (colorListUi.length > 0) {
+                        /**
+                         *checks how many shape layers there are in the animation and building the color-picker UI
+                         */
+                        createColorUi(colorListUi, colorListId)
                     }
-                });
-
-                if (colorListUi.length > 0) {
-                    /**
-                     *checks how many shape layers there are in the animation and building the color-picker UI
-                     */
-                    createColorUi(colorListUi, colorListId)
                 }
+
             }
         });
-
-        if (colorUi.length > 0) {
-            /**
-             *checks how many shape layers there are in the animation and building the color-picker UI
-             */
-            createColorUi(colorUi, colorId)
-        }
-    } else {
-        editForm.html("")
     }
+
+    if (colorUi.length > 0) {
+        /**
+         *checks how many shape layers there are in the animation and building the color-picker UI
+         */
+        createColorUi(colorUi, colorId)
+    }
+
+    editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`)
+    $('#dltFrameBtn').on('click', deleteFrameFunc)
+
+
 }
 
 

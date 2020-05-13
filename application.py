@@ -18,6 +18,8 @@ application = Flask(__name__)
 UPLOAD_FOLDER = "static/content/animations/images"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+WORKING_PATH ='static/db/users/10/11/videos/27/frames/'
+
 
 
 def correct_text(sentence):
@@ -125,7 +127,9 @@ def get_anim_props(anim, changing_path, image_path=""):
                 prim_opacity = layer.find('Fill 1').opacity.value
                 color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
                 anim_props['listItem'].update(color_dict)
-
+        elif layer.name == ".empty":
+            empty_dict = {'empty': 'empty'}
+            anim_props.update(empty_dict)
     return anim_props
 
 
@@ -306,8 +310,8 @@ def editContent():
 
 
 def get_frames_from_db():
-    frames_array = db.get_all_frames("17")
-    frames_arrayPath = "../static/db/users/10/11/videos/17/frames/"
+    frames_array = db.get_all_frames("27")
+    frames_arrayPath = "../static/db/users/10/11/videos/27/frames/"
     frames_list = []
     myArray = [frames_arrayPath, frames_list]
     for frame in frames_array:
@@ -438,7 +442,11 @@ def allowed_file(filename):
 
 @application.route('/add_frame', methods=['POST'])
 def add_frame():
-    db.create_new_frame("17")
+
+    frame_path = WORKING_PATH
+
+    frame_name = copy_animations(frame_path)
+    db.create_new_frame("27", frame_name)
 
     return jsonify(frames=get_frames_from_db())
 
@@ -447,11 +455,28 @@ def add_frame():
 def change_frame():
 
     data = request.form['id']
-    id = data[data.find('_')+1:]
-    anim_url = db.get_frame_url_by_id(id)
+    my_id = data[data.find('_')+1:]
+    anim_url = WORKING_PATH + db.get_frame_url_by_id(my_id)[0]
 
-    return change_animation(anim_url.decode("utf-8"))
+#anim_url.decode
+    return jsonify(result=change_animation(anim_url))
 
+
+
+@application.route('/deleteFrame', methods=['POST', 'GET'])
+def delete_frame():
+    data = request.form['id']
+    my_id = data[data.find('_')+1:]
+
+    all_frames = db.get_all_frames("27")
+    prev_id=0
+    i = 0
+    for i in range(0, len(all_frames)):
+        if all_frames[i] == my_id:
+            prev_id = all_frames[i-1]
+
+    db.delete_frame(my_id)
+    return jsonify(result=prev_id, frames=db.get_all_frames("27"))
 
 
 @application.route('/editTemplate', methods=['POST', 'GET'])
@@ -487,7 +512,7 @@ def change_animation(path):
     global an
     global changing_path
     global anim_properties
-    changing_path = path[3:]
+    changing_path = path
     an = readable(changing_path)
     anim_properties = get_anim_props(an, changing_path)
     return anim_properties

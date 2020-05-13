@@ -266,7 +266,20 @@ svg {
 .frame_lottie{
     width: 5vw;
     height: 10vh;
-    border: 1px solid rgba(0, 182, 222, 1);
+    border: 1.5px solid #828282;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.frame_lottie:hover{
+    border-color: #00B6DE;
+    color: #00B6DE;
+    box-shadow: 0px 4px 8px rgba(99, 99, 99, 0.2);
+}
+
+.active_frame_lottie{
+    border-color: #6515DD;
+    color: #6515DD;
 }
 
 .colorUi{
