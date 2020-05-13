@@ -1,13 +1,25 @@
-
 let editForm = "";
+let deleteFrameBtn = "";
+
+
 $(document).ready(function () {
     // const editForm = $('#content');
     editForm = $('#content');
-    if (editForm.val() === ""){
+    if (editForm.val() === "") {
         loadForm();
     }
 
+
+    deleteFrameBtn = $('#dltFrameBtn');
+    deleteFrameBtn.on('click', deleteFrameFunc)
+
+
 });
+
+function deleteFrameFunc() {
+
+
+}
 
 
 /***    Runs when loading the initial page  ***/
@@ -19,7 +31,72 @@ function loadForm() {
         method: 'POST',
         url: '/editContent',
         data: $(this).serialize()
+    }).done(buildForm, buildFrames);
+}
+
+function changeFrame(event) {
+
+    const main_animation = document.querySelector('#mainAnimation');
+    $.ajax({
+        method: 'POST',
+        url: '/changeFrame',
+        data: event.currentTarget.id
     }).done(buildForm);
+    // xhttp.onreadystatechange = function () {
+    //     main_animation.load(event.currentTarget.src)
+    // };
+    // xhttp.open("POST", "/editTemplate", true);
+    // xhttp.send(event.currentTarget.src);
+}
+
+
+function buildFrames(data) {
+    numSlides = [];
+    for (i = 0; i < data.frames[1].length; i++) {
+        slide = `<div id="frame_${data.frames[1][i][0]}" class="tinyLottie frame_lottie">
+        <lottie-player class="tinyLottiePlayer" src=${data.frames[0]}${data.frames[1][i][1]} background="transparent"
+    speed="1"
+    style="" hover loop>
+    </lottie-player>
+    <p class="tinyLottieDescription">${i + 1}</p>
+    </div>
+    
+    <div>
+    _
+    </div>`;
+        numSlides.push(slide);
+    }
+
+    addBtn = `<div>
+            <button id="newFrameBtn" class="primaryBTN">+</button>
+        </div>`;
+    numSlides.push(addBtn);
+
+
+    $('#frames_Area').html(numSlides);
+    $('#newFrameBtn').on('click', addFrame)
+    $('.frame_lottie').on('click', changeFrame)
+
+}
+
+function addFrame(eve) {
+    /**
+     * @param {event} eve
+     * @fires   loadFrames
+     * @listens onclick: #newFrameBtn
+     */
+    eve.preventDefault();
+    $.ajax({
+        method: 'POST',
+        url: '/add_frame',
+        data: $(this).serialize()
+    }).done(loadNewFrames);
+}
+
+function loadNewFrames(data) {
+
+    buildForm(null)
+    buildFrames(data)
 }
 
 function buildForm(data) {
@@ -30,57 +107,55 @@ function buildForm(data) {
     let colorUi = [];
     let colorId = [];
     // const content = $('#content');
-    Object.keys(data.result).forEach(function (elem) {
-        if (elem === "path"){
-            buildMain(elem, data.result[elem])
-        }
-        else if (elem === "primary"){
-            colorUi.push(getColor(elem, data.result[elem]))
-            colorId.push(elem)
-        }
-        else if (elem === "secondary"){
-            colorUi.push(getColor(elem, data.result[elem]))
-            colorId.push(elem)
-        }
-        else if (elem === "text"){
-            editForm.append(getText(elem, data.result[elem]));
-            $('#editText').on('submit', changeText);
-            $('#textalignment option[value='+ data.result[elem].alignment + ']').prop('selected', true)
-        }
-        else if (elem === 'image') {
-            editForm.append(getImage(elem), data.result[elem]);
-            $('#editImage').on('submit', changeImage);
-        }
-        else if (elem === 'listItem'){
-            editForm.append(getText(elem, data.result[elem].text));
-            let colorListUi = [];
-            let colorListId = [];
+    if (data != null) {
+        Object.keys(data.result).forEach(function (elem) {
+            if (elem === "path") {
+                buildMain(data.result[elem])
+            } else if (elem === "primary") {
+                colorUi.push(getColor(elem, data.result[elem]))
+                colorId.push(elem)
+            } else if (elem === "secondary") {
+                colorUi.push(getColor(elem, data.result[elem]))
+                colorId.push(elem)
+            } else if (elem === "text") {
+                editForm.append(getText(elem, data.result[elem]));
+                $('#editText').on('submit', changeText);
+                $('#textalignment option[value=' + data.result[elem].alignment + ']').prop('selected', true)
+            } else if (elem === 'image') {
+                editForm.append(getImage(elem), data.result[elem]);
+                $('#editImage').on('submit', changeImage);
+            } else if (elem === 'listItem') {
+                editForm.append(getText(elem, data.result[elem].text));
+                let colorListUi = [];
+                let colorListId = [];
 
-            Object.keys(data.result[elem]).forEach(function (item){
-            if (item === "primary"){
-                colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
-                colorListId.push('listItem_'+item)
-            }
-            else if (item === "secondary"){
-                colorListUi.push(getColor('listItem_'+item, data.result[elem][item]));
-                colorListId.push('listItem_'+item)
-            }
-            });
+                Object.keys(data.result[elem]).forEach(function (item) {
+                    if (item === "primary") {
+                        colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
+                        colorListId.push('listItem_' + item)
+                    } else if (item === "secondary") {
+                        colorListUi.push(getColor('listItem_' + item, data.result[elem][item]));
+                        colorListId.push('listItem_' + item)
+                    }
+                });
 
-            if (colorListUi.length > 0) {
-                /**
-                 *checks how many shape layers there are in the animation and building the color-picker UI
-                 */
-                createColorUi(colorListUi, colorListId)
+                if (colorListUi.length > 0) {
+                    /**
+                     *checks how many shape layers there are in the animation and building the color-picker UI
+                     */
+                    createColorUi(colorListUi, colorListId)
+                }
             }
+        });
+
+        if (colorUi.length > 0) {
+            /**
+             *checks how many shape layers there are in the animation and building the color-picker UI
+             */
+            createColorUi(colorUi, colorId)
         }
-    });
-
-    if (colorUi.length > 0) {
-        /**
-         *checks how many shape layers there are in the animation and building the color-picker UI
-         */
-        createColorUi(colorUi, colorId)
+    } else {
+        editForm.html("")
     }
 }
 
@@ -93,15 +168,15 @@ function createColorUi(colors, colorId) {
                              <input id="colorSubmit_${colorId[0]}" type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה"/>
                         </form>`;
     editForm.append(colorForm);
-    const inputWrapper = $('#inputWrapper_'+ colorId[0]);
-    for (i=0; i<colors.length; i++){
+    const inputWrapper = $('#inputWrapper_' + colorId[0]);
+    for (i = 0; i < colors.length; i++) {
         inputWrapper.append(colors[i]);
-        $('#'+colorId[i]).colorpicker();
+        $('#' + colorId[i]).colorpicker();
     }
     $('#editColor').on('submit', changeColor);
 }
 
-function buildMain(key, path) {
+function buildMain(path) {
     /**
      * doesn't use the key parameter!
      * takes the path for the animations and loads the main player
@@ -166,10 +241,11 @@ function getText(name, text) {
                 <input type="submit" name="submit" class="btn btn-primary color-submit-btn" value="שנה">
             </form>`;
 }
+
 /***    Runs when loading the initial page  ***/
 
 
-function changeColor(eve){
+function changeColor(eve) {
     /**
      * @param {event} eve
      * @fires   loadColorProps
@@ -180,7 +256,7 @@ function changeColor(eve){
         method: 'POST',
         url: '/changeAnimColor',
         data: $(this).serialize()
-      }).done(loadColorProps);
+    }).done(loadColorProps);
 }
 
 function changeImage(eve) {
@@ -202,7 +278,7 @@ function changeImage(eve) {
     }).done(loadImageProps);
 }
 
-function changeText(eve){
+function changeText(eve) {
     /**
      * @param {event} eve
      * @fires   loadTextProps
@@ -223,7 +299,7 @@ function loadImageProps(data) {
 
     $('#displayImage').attr('src', imagePath);
 
-    buildMain('mt', path);
+    buildMain(path);
 
 
 }
@@ -241,9 +317,10 @@ function loadTextProps(data) {
     $('#textalignment').attr('selectedIndex', alignment);
     $('#textcontent').attr('value', content);
     $('#textcolor').attr('value', color);
-    buildMain('mt', path)
+    buildMain(path)
 
 }
+
 function loadColorProps(data) {
     /**
      * @param   {JSON}  data    the data recieved by the server holding the animation properties
@@ -256,7 +333,7 @@ function loadColorProps(data) {
 
     $('#primary input').attr('value', primary);
     $('#secondary input').attr('value', secondary);
-    buildMain('mt', path)
+    buildMain(path)
 
     $('#primary').colorpicker();
     $('#secondary').colorpicker()

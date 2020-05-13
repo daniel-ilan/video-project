@@ -136,7 +136,7 @@ anim_properties = get_anim_props(an, changing_path)
 
 lottiePlayersArray = db.get_all_animations()
 lottiePlayersArrayPath = "../static/content/"
-frames_array = db.get_all_frames("18")
+frames_array = db.get_all_frames("17")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 
@@ -271,10 +271,9 @@ def homePage():
 
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
-    global anim_properties
-    # loadAnimProps()
     if request.method == 'POST':
-        return jsonify(result=get_anim_props(an, changing_path))
+
+        return jsonify(result=get_anim_props(an, changing_path), frames=get_frames_from_db())
     # text_color = colors.to_hex(anim_properties['text']['color'])
     # text_content = anim_properties['text']['content']
     # alignment = anim_properties['text']['alignment']
@@ -283,6 +282,16 @@ def editContent():
         title='תוכן',
         # var=anim_properties
     )
+
+
+def get_frames_from_db():
+    frames_array = db.get_all_frames("17")
+    frames_arrayPath = "../static/content/animations/"
+    frames_list = []
+    myArray = [frames_arrayPath, frames_list]
+    for frame in frames_array:
+        frames_list.append([frame[0],frame[1]])
+    return myArray
 
 
 @application.route('/changeAnimText', methods=['POST'])
@@ -405,6 +414,27 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
+@application.route('/add_frame', methods=['POST'])
+def add_frame():
+    db.create_new_frame("17")
+
+    return jsonify(frames=get_frames_from_db())
+
+
+@application.route('/changeFrame', methods=['POST'])
+def change_frame():
+
+    test = request
+    id = request.data["id"]
+
+    anim_url = db.get_frame_url_by_id(id)
+
+    a = request.data
+    return change_animation(a.decode("utf-8"))
+
+
+
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     colorsArray = db.get_colors_by_palette("1")
@@ -441,7 +471,7 @@ def change_animation(path):
     changing_path = path[3:]
     an = readable(changing_path)
     anim_properties = get_anim_props(an, changing_path)
-    pass
+    return anim_properties
 
 
 if __name__ == '__main__':
