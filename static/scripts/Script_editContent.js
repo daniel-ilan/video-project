@@ -23,13 +23,13 @@ function deleteFrameFunc() {
      a = event.result ---> check this line!
      */
 
-    frame_id = $(".active_frame_lottie").id;
+    frame_id = $(".active_frame_lottie")[0].id;
 
     $.ajax({
         method: 'POST',
         url: '/deleteFrame',
         data: {'id': frame_id}
-    }).done(buildFrames, changeFrame(true));
+    }).done(buildFrames, changeFrame);
 
 }
 
@@ -46,16 +46,18 @@ function loadForm() {
     }).done(buildForm, buildFrames);
 }
 
-function changeFrame(isDelete=false, event) {
-    let a = ""
-    if (!isDelete)
+function changeFrame(event) {
+    if(event.data!= null)
     {
-        a = event.currentTarget.id;
-    }
-    else{
-    a = event.result
+        if (event.data.name === 'user_change'){
+            a = event.currentTarget.id;
+        }
     }
 
+
+    else {
+        a = "frame_" + event.prev_id;
+    }
     activeFrame(a);
 
     $.ajax({
@@ -63,11 +65,6 @@ function changeFrame(isDelete=false, event) {
         url: '/changeFrame',
         data: {"id": a}
     }).done(buildForm);
-    // xhttp.onreadystatechange = function () {
-    //     main_animation.load(event.currentTarget.src)
-    // };
-    // xhttp.open("POST", "/editTemplate", true);
-    // xhttp.send(event.currentTarget.src);
 }
 
 
@@ -109,8 +106,8 @@ function buildFrames(data) {
 
 
     $('#frames_Area').html(numSlides);
-    $('#newFrameBtn').on('click', addFrame)
-    $('.frame_lottie').on('click', changeFrame)
+    $('#newFrameBtn').on('click', addFrame);
+    $('.frame_lottie').on('click', {name: "user_change"}, changeFrame);
 
 }
 
@@ -130,8 +127,9 @@ function addFrame(eve) {
 
 function loadNewFrames(data) {
 
-    buildForm(null)
-    buildFrames(data)
+    buildForm(null);
+    buildFrames(data);
+    changeFrame({'prev_id': data.frames[1][data.frames[1].length-1][0]});
 }
 
 function buildForm(data) {
@@ -202,7 +200,7 @@ function buildForm(data) {
         createColorUi(colorUi, colorId)
     }
 
-    editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`)
+    editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
     $('#dltFrameBtn').on('click', deleteFrameFunc)
 
 

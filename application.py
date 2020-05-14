@@ -139,7 +139,7 @@ an = readable(changing_path)
 anim_properties = get_anim_props(an, changing_path)
 
 lottiePlayersArray = db.get_all_animations()
-lottiePlayersArrayPath = "../static/content/"
+lottiePlayersArrayPath = "static/content/"
 frames_array = db.get_all_frames("17")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
@@ -310,10 +310,15 @@ def editContent():
 
 
 def get_frames_from_db():
+    # need to change "27"
     frames_array = db.get_all_frames("27")
+
+    "need to change frames_arrayPath"
     frames_arrayPath = "../static/db/users/10/11/videos/27/frames/"
     frames_list = []
     myArray = [frames_arrayPath, frames_list]
+
+
     for frame in frames_array:
         frames_list.append([frame[0],frame[1]])
     return myArray
@@ -462,21 +467,23 @@ def change_frame():
     return jsonify(result=change_animation(anim_url))
 
 
-
 @application.route('/deleteFrame', methods=['POST', 'GET'])
 def delete_frame():
     data = request.form['id']
     my_id = data[data.find('_')+1:]
 
     all_frames = db.get_all_frames("27")
-    prev_id=0
-    i = 0
+    prev_id = all_frames[0][0]
     for i in range(0, len(all_frames)):
-        if all_frames[i] == my_id:
-            prev_id = all_frames[i-1]
+        if all_frames[i][0] == int(my_id):
+            prev_id = all_frames[i-1][0]
+            break
 
+    path= WORKING_PATH+db.get_frame_url_by_id(my_id)[0]
+    os.remove(path)
     db.delete_frame(my_id)
-    return jsonify(result=prev_id, frames=db.get_all_frames("27"))
+
+    return jsonify(prev_id=prev_id, frames=get_frames_from_db())
 
 
 @application.route('/editTemplate', methods=['POST', 'GET'])
