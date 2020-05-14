@@ -12,12 +12,14 @@ from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
 
-import db
+import db, json
 
 application = Flask(__name__)
 UPLOAD_FOLDER = "static/content/animations/images"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+WORKING_PATH ='static/db/users/10/11/videos/27/frames/'
+
 
 
 def correct_text(sentence):
@@ -125,7 +127,9 @@ def get_anim_props(anim, changing_path, image_path=""):
                 prim_opacity = layer.find('Fill 1').opacity.value
                 color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
                 anim_props['listItem'].update(color_dict)
-
+        elif layer.name == ".empty":
+            empty_dict = {'empty': 'empty'}
+            anim_props.update(empty_dict)
     return anim_props
 
 
@@ -135,8 +139,8 @@ an = readable(changing_path)
 anim_properties = get_anim_props(an, changing_path)
 
 lottiePlayersArray = db.get_all_animations()
-lottiePlayersArrayPath = "../static/content/"
-frames_array = db.get_all_frames("18")
+lottiePlayersArrayPath = "static/content/"
+frames_array = db.get_all_frames("17")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 
@@ -198,6 +202,18 @@ def about():
     )
 
 
+def copy_animations(new_path, old_path='static/content/animations/', name='empty'):
+    with open(old_path+name + '.json', 'r') as in_file:
+        # Reading from json file
+        json_object = json.load(in_file)
+
+    new_name = name + '_' + str(int(time.time())) + ".json"
+
+    with open(new_path+new_name, "w") as out_file:
+        json.dump(json_object, out_file)
+    return new_name
+
+
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
     if request.method == 'POST':
@@ -211,6 +227,15 @@ def newProject():
             project_id = request.form['project_id']
             video_name = request.form['video_name']
             db.create_new_video(project_id, video_name)
+
+            project_owner = db.get_project_owner(str(project_id))[0]
+            video_id = db.get_last_video_id(project_id)[0]
+            frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+
+
+            frame_name = copy_animations(frame_path)
+            id =db.get_last_video_id(str(project_id))[0]
+            db.create_new_frame(id, frame_name)
 
         else:
             # new user
@@ -271,10 +296,9 @@ def homePage():
 
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
-    global anim_properties
-    # loadAnimProps()
     if request.method == 'POST':
-        return jsonify(result=get_anim_props(an, changing_path))
+
+        return jsonify(result=get_anim_props(an, changing_path), frames=get_frames_from_db())
     # text_color = colors.to_hex(anim_properties['text']['color'])
     # text_content = anim_properties['text']['content']
     # alignment = anim_properties['text']['alignment']
@@ -283,6 +307,21 @@ def editContent():
         title='תוכן',
         # var=anim_properties
     )
+
+
+def get_frames_from_db():
+    # need to change "27"
+    frames_array = db.get_all_frames("27")
+
+    "need to change frames_arrayPath"
+    frames_arrayPath = "../static/db/users/10/11/videos/27/frames/"
+    frames_list = []
+    myArray = [frames_arrayPath, frames_list]
+
+
+    for frame in frames_array:
+        frames_list.append([frame[0],frame[1]])
+    return myArray
 
 
 @application.route('/changeAnimText', methods=['POST'])
@@ -405,6 +444,48 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
+@application.route('/add_frame', methods=['POST'])
+def add_frame():
+
+    frame_path = WORKING_PATH
+
+    frame_name = copy_animations(frame_path)
+    db.create_new_frame("27", frame_name)
+
+    return jsonify(frames=get_frames_from_db())
+
+
+@application.route('/changeFrame', methods=['POST'])
+def change_frame():
+
+    data = request.form['id']
+    my_id = data[data.find('_')+1:]
+    anim_url = WORKING_PATH + db.get_frame_url_by_id(my_id)[0]
+
+#anim_url.decode
+    return jsonify(result=change_animation(anim_url))
+
+
+@application.route('/deleteFrame', methods=['POST', 'GET'])
+def delete_frame():
+    data = request.form['id']
+    my_id = data[data.find('_')+1:]
+
+    all_frames = db.get_all_frames("27")
+    prev_id = all_frames[0][0]
+    for i in range(0, len(all_frames)):
+        if all_frames[i][0] == int(my_id):
+            prev_id = all_frames[i-1][0]
+            break
+
+    path= WORKING_PATH+db.get_frame_url_by_id(my_id)[0]
+    os.remove(path)
+    db.delete_frame(my_id)
+
+    return jsonify(prev_id=prev_id, frames=get_frames_from_db())
+
+
 @application.route('/editTemplate', methods=['POST', 'GET'])
 def editTemplate():
     colorsArray = db.get_colors_by_palette("1")
@@ -438,10 +519,10 @@ def change_animation(path):
     global an
     global changing_path
     global anim_properties
-    changing_path = path[3:]
+    changing_path = path
     an = readable(changing_path)
     anim_properties = get_anim_props(an, changing_path)
-    pass
+    return anim_properties
 
 
 if __name__ == '__main__':

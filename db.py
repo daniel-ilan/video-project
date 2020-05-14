@@ -201,7 +201,6 @@ def create_new_video(project_id: int, video_name: str, image: str = None):
     create_directory(path, get_id)
     path = path + "/" + str(get_id)
     create_directory(path, "frames")
-    create_new_frame(str(get_id))
 
 
 def get_last_video_id(project_id: str):
@@ -224,17 +223,27 @@ def update_video_status(video_id: str, new_status: str):
     update_query(query)
 
 
-def create_new_frame(video_id: str):
+def create_new_frame(video_id: str, name: str):
     video_id = int(video_id)
-    query = f"INSERT INTO frames([video_id]) VALUES({video_id});"
+    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{name}');"
     update_query(query)
 
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [lottie_url] FROM frames WHERE video_id={video_id};"
-    print("work work work")
+    query = f"SELECT [frame_id],[lottie_url] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
     return select_all_query(query)
+
+
+def delete_frame(frame_id: int):
+    query = f"DELETE FROM frames WHERE frame_id =({frame_id});"
+    update_query(query)
+
+
+def get_frame_url_by_id(id: str):
+    id = int(id)
+    query = f"SELECT [lottie_url] FROM frames WHERE frame_id={id};"
+    return select_one_query(query)
 
 
 def create_directory(my_path: str, name: str):
