@@ -246,6 +246,12 @@ def get_frame_url_by_id(id: str):
     return select_one_query(query)
 
 
+def get_frame_kind_by_id(id: str):
+    id = int(id)
+    query = f"SELECT [selected_animation_kind] FROM frames WHERE frame_id={id};"
+    return select_one_query(query)
+
+
 def create_directory(my_path: str, name: str):
     name = str(name)
     my_path = str(my_path)

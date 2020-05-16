@@ -228,6 +228,8 @@ def newProject():
             video_name = request.form['video_name']
             db.create_new_video(project_id, video_name)
 
+
+            # 3 lines below this needs to be in a function called get_frames_path
             project_owner = db.get_project_owner(str(project_id))[0]
             video_id = db.get_last_video_id(project_id)[0]
             frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
@@ -254,7 +256,6 @@ def newProject():
     )
 
 
-@application.route("/")
 @application.route('/homePage', methods=['POST', 'GET'])
 def homePage():
     global paletteName
@@ -293,12 +294,14 @@ def homePage():
         palette_name=paletteName
     )
 
-
+@application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     if request.method == 'POST':
 
-        return jsonify(result=get_anim_props(an, changing_path), frames=get_frames_from_db())
+        path = get_frames_from_db()
+
+        return jsonify(result=get_anim_props(an, path[0]+str(path[1][0][1])), frames=path)
     # text_color = colors.to_hex(anim_properties['text']['color'])
     # text_content = anim_properties['text']['content']
     # alignment = anim_properties['text']['alignment']
@@ -314,6 +317,7 @@ def get_frames_from_db():
     frames_array = db.get_all_frames("27")
 
     "need to change frames_arrayPath"
+    # line velow should come out of a functions called get_frames_path
     frames_arrayPath = "../static/db/users/10/11/videos/27/frames/"
     frames_list = []
     myArray = [frames_arrayPath, frames_list]
@@ -322,6 +326,45 @@ def get_frames_from_db():
     for frame in frames_array:
         frames_list.append([frame[0],frame[1]])
     return myArray
+
+
+@application.route('/changeAnim', methods=['POST'])
+def change_anim():
+
+    global an
+    to_change = request.form
+    text = {}
+    color = {}
+    image = []
+    list = []
+    path = request.form["path"]
+    for item in to_change:
+        if item == "primary":
+            color.update({"primary": to_change[item]})
+        elif item == "secondary":
+            color.update({"secondary": to_change[item]})
+        elif item == "textalignment":
+            text.update({"textalignment": to_change[item]})
+        elif item == "textcontent":
+            text.update({"textcontent": to_change[item]})
+        elif item == "textcolor":
+            text.update({"textcolor": to_change[item]})
+
+    if len(text) > 0:
+        new_text = change_text(text["textcontent"], text["textcolor"], text["textalignment"])
+    if len(color) > 0:
+        new_color = change_color(color["primary"], color["secondary"], 100)
+
+
+
+    new_name = "temp" + str(int(time.time())) + ".json"
+    exporters.export_lottie(an, path)
+    new_json = "static/content/" + new_name
+    if path[-6:-9:-1].isdigit():
+        os.remove(path)
+    path = new_json
+    an = readable(path)
+    return get_anim_props(an, path)
 
 
 @application.route('/changeAnimText', methods=['POST'])
@@ -343,14 +386,16 @@ def change_text(text, color, alignment=1):
     an.find('.myText').data.data.keyframes[0].start.text = anim_text
     an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
 
-    new_name = "temp" + str(int(time.time())) + ".json"
-    exporters.export_lottie(an, "static/content/" + new_name)
-    new_json = "static/content/" + new_name
-    if changing_path[-6:-9:-1].isdigit():
-        os.remove(changing_path)
-    changing_path = new_json
-    an = readable(changing_path)
-    return get_anim_props(an, changing_path)
+
+    return an
+    # new_name = "temp" + str(int(time.time())) + ".json"
+    # exporters.export_lottie(an, "static/content/" + new_name)
+    # new_json = "static/content/" + new_name
+    # if changing_path[-6:-9:-1].isdigit():
+    #     os.remove(changing_path)
+    # changing_path = new_json
+    # an = readable(changing_path)
+    # return get_anim_props(an, changing_path)
 
     # anim_properties['text']['color'] = correct_color[0:3]
     # anim_properties['text']['content'] = text
@@ -380,16 +425,20 @@ def change_color(color, outline_color, opacity):
     an.find('.primaryColor').find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
     an.find('.baseColor').find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
     an.find('.primaryColor').find('Fill 1').opacity.value = float(opacity)
+    return an
 
-    new_name = "temp" + str(int(time.time())) + ".json"
-    exporters.export_lottie(an, "static/content/" + new_name)
-    new_json = "static/content/" + new_name
 
-    if changing_path[-6:-9:-1].isdigit():
-        os.remove(changing_path)
-    changing_path = new_json
-    an = readable(changing_path)
-    return get_anim_props(an, changing_path)
+    # new_name = "temp" + str(int(time.time())) + ".json"
+    # exporters.export_lottie(an, "static/content/" + new_name)
+    # new_json = "static/content/" + new_name
+
+
+
+    # if changing_path[-6:-9:-1].isdigit():
+    #     os.remove(changing_path)
+    # changing_path = new_json
+    # an = readable(changing_path)
+    # return get_anim_props(an, changing_path)
 
 
 @application.route('/changeAnimImage', methods=['POST'])
@@ -458,13 +507,17 @@ def add_frame():
 
 @application.route('/changeFrame', methods=['POST'])
 def change_frame():
-
+    global an
+    global anim_properties
     data = request.form['id']
     my_id = data[data.find('_')+1:]
     anim_url = WORKING_PATH + db.get_frame_url_by_id(my_id)[0]
+    an = readable(anim_url)
+    anim_properties = get_anim_props(an, anim_url)
+    anim_kind = db.get_frame_kind_by_id(my_id)[0]
 
 #anim_url.decode
-    return jsonify(result=change_animation(anim_url))
+    return jsonify(result=anim_properties, anim_kind=anim_kind)
 
 
 @application.route('/deleteFrame', methods=['POST', 'GET'])
