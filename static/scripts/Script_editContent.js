@@ -26,7 +26,7 @@ function loadForm() {
         method: 'POST',
         url: '/editContent',
         data: $(this).serialize()
-    }).done(buildForm, buildFrames);
+    }).done(buildForm, buildFrames,changeFrame);
 }
 
 
@@ -64,6 +64,7 @@ function buildFrames(data) {
 
 
 function buildForm(data) {
+    editForm.html("")
     animProps = data;
 
     /**
@@ -170,8 +171,10 @@ function changeFrame(event) {
             a = event.currentTarget.id;
         }
     }
-
-
+    else if(event.frames!=null)
+    {
+        a ="frame_" +event.frames[1][0][0];
+    }
     else {
         //when user delete or add new frame
          a = "frame_" + event.prev_id;
@@ -187,12 +190,20 @@ function changeFrame(event) {
 
 function buildSideNav(data)
 {
+
+
     let kind="empty";
     if(data.anim_kind !=null)
     {
         kind = data.anim_kind;
     }
-    changeNavItem(kind)
+    changeNavItem(kind);
+
+    $.ajax({
+        method: 'POST',
+        url: '/getAnimations',
+        data: {'kind': kind}
+    }).done(buildAnim_byKind);
 }
 
 function changeNavItem(kind) {
@@ -207,9 +218,7 @@ function changeNavItem(kind) {
                 $(this).addClass('active');
                 $(this).removeClass('text-white');
                 $(this).parent().addClass('activeNav');
-            }
-            else
-            {
+            } else {
                 if ($(this).hasClass('active')) {
                     $(this).removeClass('text-white');
                     $(this).children().removeClass('svgFillActive');
@@ -226,6 +235,28 @@ function changeNavItem(kind) {
         }
     );
     roundItemsBorder();
+}
+
+function buildAnim_byKind(data) {
+    let animations = [];
+    if (data != null) {
+        for (i = 0; i < data.animations.length; i++) {
+            let source = data.animations[i][1];
+            let animKindPlayer = `<div id="anim_${data.animations[i][2]}" class="tinyLottie anim_kind">
+        <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
+    speed="1"
+    style="" hover loop>
+    </lottie-player>
+    <p class="tinyLottieDescription">${data.animations[i][0]}</p>
+    </div>
+`;
+            animations.push(animKindPlayer);
+        }
+    }
+
+    $("#kindAnimationsArea").html(animations);
+
+    $('.anim_kind').on('click', buildMain);
 }
 
 /* round the before and after nav items borders */
@@ -253,7 +284,6 @@ function activeFrame(id) {
     });
 
     $('#'+id).addClass("active_frame_lottie");
-    console.log("xxxx")
 }
 
 
@@ -274,7 +304,7 @@ function addFrame(eve) {
 
 function loadNewFrames(data) {
 
-    buildForm(null);
+    buildForm(data);
     buildFrames(data);
     changeFrame({'prev_id': data.frames[1][data.frames[1].length-1][0]});
 }

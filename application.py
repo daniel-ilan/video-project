@@ -520,6 +520,20 @@ def change_frame():
     return jsonify(result=anim_properties, anim_kind=anim_kind)
 
 
+@application.route('/getAnimations', methods=['POST'])
+def get_animations():
+
+    data = request.form['kind']
+    myArray = []
+    animations = db.get_animations_by_project_and_kind('11', data)
+
+
+    for anim in animations:
+        myArray.append([anim[0], "static/content/animations/" + anim[1], anim[2]])
+    print("s")
+    return jsonify(animations=myArray)
+
+
 @application.route('/deleteFrame', methods=['POST', 'GET'])
 def delete_frame():
     data = request.form['id']

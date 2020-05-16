@@ -252,6 +252,16 @@ def get_frame_kind_by_id(id: str):
     return select_one_query(query)
 
 
+def get_animations_by_project_and_kind(project_id: str, kind: str):
+    project_id = int(project_id)
+    query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
+    themed_id = int(select_one_query(query)[0])
+    query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={themed_id};"
+    new_query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_id IN({query}) AND animation_kind='{kind}';"
+    return select_all_query(new_query)
+
+
+
 def create_directory(my_path: str, name: str):
     name = str(name)
     my_path = str(my_path)

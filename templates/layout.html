@@ -119,16 +119,8 @@
                     </lottie-player>
                     <!--                    <div class="lottie lottiePlayer" id="mainAnimation" data-animation-path="../static/content/animations/temp1_anim3.json" data-anim-loop="true"></div>-->
 
-                    <div>
-                        show colors:
-                        {% for n in colorsArray %}
-                        <div class="input-group mb-2">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">{{n[1]}}</div>
-                            </div>
-                            <input type="color" id="color{{n}}" name="color{{n}}" value="{{n[0]}}" class="form-control">
-                        </div>
-                        {% endfor %}
+                    <div id="kindAnimationsArea">
+
                     </div>
                 </div>
 
