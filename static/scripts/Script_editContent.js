@@ -7,27 +7,25 @@ $(document).ready(function () {
     // const editForm = $('#content');
     editForm = $('#content');
     if (editForm.val() === "") {
-        loadForm();
+        /**
+         * Runs when loading the initial page
+         */
+        $.ajax({
+            method: 'POST',
+            url: '/editContent',
+            data: $(this).serialize()
+        }).done(buildForm, buildFrames, changeFrame);
     }
 
-
     deleteFrameBtn = $('#dltFrameBtn');
+
+    //delete - called from buildForm
     deleteFrameBtn.on('click', deleteFrameFunc)
 
 
 });
 
-/***    Runs when loading the initial page  ***/
-function loadForm() {
-    /**
-     * Ajax call to load the page from first login
-     */
-    $.ajax({
-        method: 'POST',
-        url: '/editContent',
-        data: $(this).serialize()
-    }).done(buildForm, buildFrames,changeFrame);
-}
+
 
 
 
@@ -129,11 +127,11 @@ function buildForm(data) {
          */
         createColorUi(colorUi, colorId)
     }
+    //check if frame is empty and remove submitChange if it is
     editForm.append(`<input type="submit" name="submitChange" id="submitChange" class="btn btn-primary color-submit-btn">שנה</input>`);
     editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
+
     $('#dltFrameBtn').on('click', deleteFrameFunc);
-
-
     $('#submitChange').on('submit', changeAnim);
 
 
