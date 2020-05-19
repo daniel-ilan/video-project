@@ -116,6 +116,7 @@ svg {
     background-repeat: no-repeat;
     background-color: transparent;
     margin-left: -1%;
+
 }
 
 
@@ -232,8 +233,6 @@ svg {
 
 /*          ----------            edit Template Page          ----------          */
 
-
-
 .tinyLottie {
     width: 10vw;
     height: 15vh;
@@ -277,7 +276,7 @@ svg {
     box-shadow: 0px 4px 8px rgba(99, 99, 99, 0.2);
 }
 
-.active_frame_lottie{
+.active_frame_lottie, .active_anim_lottie{
     border-color: #6515DD;
     color: #6515DD;
 }

@@ -13,16 +13,6 @@ $(document).ready(function () {
         });
     sideBarNavItemHover();
 
-    /* change the color of the selceted nav item */
-    var path = window.location.pathname;
-    var page = path.split("/").pop();
-    $(`a[href='${page}']`).children().removeClass('svgFill');
-    $(`a[href='${page}']`).children().addClass('svgFillActive');
-    $(`a[href='${page}']`).addClass('active');
-    $(`a[href='${page}']`).removeClass('text-white');
-    $(`a[href='${page}']`).parent().addClass('activeNav');
-    roundItemsBorder();
-
 
     $('#minMenu').click(
         function (event) {
@@ -31,20 +21,6 @@ $(document).ready(function () {
 });
 
 
-/* round the before and after nav items borders */
-function roundItemsBorder() {
-    var indexActive = 0;
-    var counter = 0;
-    $(".sidebar li").each(function () {
-        counter++;
-        if ($(this).hasClass('activeNav')) {
-            indexActive = counter;
-        }
-    });
-    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
-    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
-
-}
 
 function sideBarNavItemHover() {
     $(".sidebar li").hover(

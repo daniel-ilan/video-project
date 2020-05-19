@@ -173,7 +173,7 @@ def get_colors_by_palette(palette_id: str):
 
 def get_animations_by_kind(kind: str):
     kind = kind.strip()
-    query = f"SELECT [animation_url],[animation_name] FROM animations WHERE animation_kind='{kind}';"
+    query = f"SELECT [animation_url],[animation_name],[animation_id] FROM animations WHERE animation_kind='{kind}';"
     return select_all_query(query)
 
 
@@ -223,15 +223,16 @@ def update_video_status(video_id: str, new_status: str):
     update_query(query)
 
 
-def create_new_frame(video_id: str, name: str):
+def create_new_frame(video_id: str, url: str):
     video_id = int(video_id)
-    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{name}');"
+
+    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{url}');"
     update_query(query)
 
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
     return select_all_query(query)
 
 
@@ -244,6 +245,28 @@ def get_frame_url_by_id(id: str):
     id = int(id)
     query = f"SELECT [lottie_url] FROM frames WHERE frame_id={id};"
     return select_one_query(query)
+
+
+def get_frame_kind_by_id(id: str):
+    id = int(id)
+    query = f"SELECT [selected_animation_kind] FROM frames WHERE frame_id={id};"
+    return select_one_query(query)
+
+def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str):
+    frame_id = int(frame_id)
+    selected_anim = int(selected_anim)
+    query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}' WHERE frame_id={frame_id};"
+    update_query(query)
+
+
+def get_animations_by_project_and_kind(project_id: str, kind: str):
+    project_id = int(project_id)
+    query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
+    themed_id = int(select_one_query(query)[0])
+    query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={themed_id};"
+    new_query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_id IN({query}) AND animation_kind='{kind}';"
+    return select_all_query(new_query)
+
 
 
 def create_directory(my_path: str, name: str):
