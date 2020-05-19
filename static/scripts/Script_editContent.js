@@ -160,32 +160,34 @@ function deleteFrameFunc() {
 }
 
 
-
-
+/**
+ * gets the id of the frame that is asosiated with the working animation & sends it to server side
+ * @param {object} event data to check wehre the function was called from
+ * @event {onclick},{onload} when user clicks .frame_lottie OR #dltFrameBtn OR #newFrameBtn, when building the initial page
+ */
 function changeFrame(event) {
     let frame_id="";
-    let anim_id=""
+   // let anim_id=""
     if(event.data!= null)
     {
         //when user clicks on a slide
         if (event.data.name === 'user_change'){
             frame_id = event.currentTarget.id;
-            anim_id = event.currentTarget.attr('data-anim')
+            //anim_id = event.currentTarget.getAttribute("data-anim")
         }
     }
     else if(event.frames!=null)
     {
         // initial load
         frame_id ="frame_" +event.frames[1][0][0];
-        anim_id = event.frames[1][0][2];
 
     }
     else {
         //when user delete or add new frame
         frame_id = "frame_" + event.prev_id[0];
-        anim_id = event.prev_id[2];
+        //anim_id = event.prev_id[2];
     }
-    activeFrame(frame_id);
+    activeFrame(frame_id, ".frame_lottie");
 
     $.ajax({
         method: 'POST',
@@ -268,9 +270,7 @@ function buildAnim_byKind(data) {
 
     $("#kindAnimationsArea").html(animations);
     $('.anim_kind').on('click', buildMain);
-
-
-
+     activeFrame(null, ".anim_kind");
 
 }
 
@@ -289,16 +289,32 @@ function roundItemsBorder() {
 
 }
 
-function activeFrame(id) {
-
-
-    $('.frame_lottie').each(function (elm){
-        if (this.classList.contains("active_frame_lottie")){
-            this.classList.remove("active_frame_lottie")
+function activeFrame(id, name_of_class) {
+    /**
+     * changes the currently active lottie frame on the frames area & the same kind animations below the main
+     * @param {string} id the id of the frame the user clicked on
+     * @param {string} name_of_class the class of the lottie player to change to active state
+     * @event onclick#
+     */
+    $(name_of_class).each(function (elm){
+            if (this.classList.contains("active_frame_lottie")){
+                this.classList.remove("active_frame_lottie")
+            }
+            // name_of_class = anim_lottie
+            else if (this.classList.contains("active_anim_lottie")){
+                this.classList.remove("active_anim_lottie")
         }
     });
 
-    $('#'+id).addClass("active_frame_lottie");
+    if(name_of_class === ".frame_lottie")
+    {
+        $('#'+id).addClass("active_frame_lottie");
+    }
+    else
+    {
+       let myid =  $(".active_frame_lottie").attr('data-anim');
+        $('#anim_'+myid).addClass("active_anim_lottie");
+    }
 }
 
 
@@ -306,9 +322,9 @@ function activeFrame(id) {
 
 function addFrame(eve) {
     /**
-     * @param {event} eve
-     * @fires   loadFrames
      * @listens onclick: #newFrameBtn
+     * @param {event} eve
+     * @fires   loadNewFrames
      */
     eve.preventDefault();
     $.ajax({
