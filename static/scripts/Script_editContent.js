@@ -35,7 +35,7 @@ function buildFrames(data) {
     let numSlides = [];
     for (i = 0; i < data.frames[1].length; i++) {
         let source = data.frames[0] + data.frames[1][i][1];
-        let slide = `<div id="frame_${data.frames[1][i][0]}" class="tinyLottie frame_lottie">
+        let slide = `<div id="frame_${data.frames[1][i][0]}" data-anim="${data.frames[1][i][2]}" class="tinyLottie frame_lottie">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
     speed="1"
     style="" hover loop>
@@ -64,7 +64,7 @@ function buildFrames(data) {
 
 
 function buildForm(data) {
-    editForm.html("")
+    editForm.html("");
     animProps = data;
 
     /**
@@ -134,7 +134,7 @@ function buildForm(data) {
     $('#dltFrameBtn').on('click', deleteFrameFunc);
 
 
-    $('#content').on('submit', changeAnim);
+    $('#submitChange').on('submit', changeAnim);
 
 
 }
@@ -163,28 +163,34 @@ function deleteFrameFunc() {
 
 
 function changeFrame(event) {
-    let a=""
+    let frame_id="";
+    let anim_id=""
     if(event.data!= null)
     {
         //when user clicks on a slide
         if (event.data.name === 'user_change'){
-            a = event.currentTarget.id;
+            frame_id = event.currentTarget.id;
+            anim_id = event.currentTarget.attr('data-anim')
         }
     }
     else if(event.frames!=null)
     {
-        a ="frame_" +event.frames[1][0][0];
+        // initial load
+        frame_id ="frame_" +event.frames[1][0][0];
+        anim_id = event.frames[1][0][2];
+
     }
     else {
         //when user delete or add new frame
-         a = "frame_" + event.prev_id;
+        frame_id = "frame_" + event.prev_id[0];
+        anim_id = event.prev_id[2];
     }
-    activeFrame(a);
+    activeFrame(frame_id);
 
     $.ajax({
         method: 'POST',
         url: '/changeFrame',
-        data: {"id": a}
+        data: {"id": frame_id}
     }).done(buildForm, buildSideNav);
 }
 
@@ -238,25 +244,34 @@ function changeNavItem(kind) {
 }
 
 function buildAnim_byKind(data) {
+    /**
+     * todo indicate which type is now playing
+     * update main animation with all props applied
+     * @type {*[]}
+     */
+
     let animations = [];
+    let source;
     if (data != null) {
         for (i = 0; i < data.animations.length; i++) {
-            let source = data.animations[i][1];
+            source = data.animations[i][1];
             let animKindPlayer = `<div id="anim_${data.animations[i][2]}" class="tinyLottie anim_kind">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
     speed="1"
     style="" hover loop>
     </lottie-player>
     <p class="tinyLottieDescription">${data.animations[i][0]}</p>
-    </div>
-`;
+    </div>`;
             animations.push(animKindPlayer);
         }
     }
 
     $("#kindAnimationsArea").html(animations);
-
     $('.anim_kind').on('click', buildMain);
+
+
+
+
 }
 
 /* round the before and after nav items borders */
@@ -288,6 +303,7 @@ function activeFrame(id) {
 
 
 
+
 function addFrame(eve) {
     /**
      * @param {event} eve
@@ -304,9 +320,9 @@ function addFrame(eve) {
 
 function loadNewFrames(data) {
 
-    buildForm(data);
+    buildForm(null);
     buildFrames(data);
-    changeFrame({'prev_id': data.frames[1][data.frames[1].length-1][0]});
+    changeFrame({'prev_id': data.frames[1][data.frames[1].length-1]});
 }
 
 
@@ -326,7 +342,6 @@ function createColorUi(colors, colorId) {
 
 function buildMain(path) {
     /**
-     * doesn't use the key parameter!
      * takes the path for the animations and loads the main player
      * called after each update & the initial page load
      * @param {string}  path    the path to the lottie file - server side is holding {'changing_path'}

@@ -173,7 +173,7 @@ def get_colors_by_palette(palette_id: str):
 
 def get_animations_by_kind(kind: str):
     kind = kind.strip()
-    query = f"SELECT [animation_url],[animation_name] FROM animations WHERE animation_kind='{kind}';"
+    query = f"SELECT [animation_url],[animation_name],[animation_id] FROM animations WHERE animation_kind='{kind}';"
     return select_all_query(query)
 
 
@@ -223,15 +223,16 @@ def update_video_status(video_id: str, new_status: str):
     update_query(query)
 
 
-def create_new_frame(video_id: str, name: str):
+def create_new_frame(video_id: str, url: str):
     video_id = int(video_id)
-    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{name}');"
+
+    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{url}');"
     update_query(query)
 
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
     return select_all_query(query)
 
 

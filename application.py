@@ -138,9 +138,6 @@ changing_path = "static/content/animations/temp1_anim2.json"
 an = readable(changing_path)
 anim_properties = get_anim_props(an, changing_path)
 
-lottiePlayersArray = db.get_all_animations()
-lottiePlayersArrayPath = "static/content/"
-frames_array = db.get_all_frames("17")
 frames_arrayPath = "../static/content/animations/"
 colorsArray = []
 
@@ -203,15 +200,20 @@ def about():
 
 
 def copy_animations(new_path, old_path='static/content/animations/', name='empty'):
-    with open(old_path+name + '.json', 'r') as in_file:
+
+    if name == 'empty':
+        empty_anim = db.get_animations_by_kind('empty')
+        old_path = old_path + empty_anim[0][0] # url
+        anim_id = empty_anim[0][2]
+    with open(old_path, 'r') as in_file:
         # Reading from json file
         json_object = json.load(in_file)
 
     new_name = name + '_' + str(int(time.time())) + ".json"
 
-    with open(new_path+new_name, "w") as out_file:
+    with open(new_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
-    return new_name
+    return new_name, anim_id
 
 
 @application.route('/newProject', methods=['POST', 'GET'])
@@ -324,7 +326,7 @@ def get_frames_from_db():
 
 
     for frame in frames_array:
-        frames_list.append([frame[0],frame[1]])
+        frames_list.append([frame[0],frame[1],frame[2]])
     return myArray
 
 
@@ -359,7 +361,7 @@ def change_anim():
 
     new_name = "temp" + str(int(time.time())) + ".json"
     exporters.export_lottie(an, path)
-    new_json = "static/content/" + new_name
+    new_json = WORKING_PATH + new_name
     if path[-6:-9:-1].isdigit():
         os.remove(path)
     path = new_json
@@ -499,8 +501,16 @@ def add_frame():
 
     frame_path = WORKING_PATH
 
-    frame_name = copy_animations(frame_path)
-    db.create_new_frame("27", frame_name)
+    with open(frames_arrayPath, 'r') as in_file:
+        # Reading from json file
+        json_object = json.load(in_file)
+
+    new_name = 'empty_' + str(int(time.time())) + ".json"
+
+    with open(frame_path + new_name, "w") as out_file:
+        json.dump(json_object, out_file)
+
+    db.create_new_frame("27", new_name)
 
     return jsonify(frames=get_frames_from_db())
 
@@ -522,7 +532,10 @@ def change_frame():
 
 @application.route('/getAnimations', methods=['POST'])
 def get_animations():
-
+    """
+    todo: change '11' to the project we are working on
+    :return:
+    """
     data = request.form['kind']
     myArray = []
     animations = db.get_animations_by_project_and_kind('11', data)
@@ -530,7 +543,6 @@ def get_animations():
 
     for anim in animations:
         myArray.append([anim[0], "static/content/animations/" + anim[1], anim[2]])
-    print("s")
     return jsonify(animations=myArray)
 
 
