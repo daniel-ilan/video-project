@@ -138,7 +138,7 @@ changing_path = "static/content/animations/temp1_anim2.json"
 an = readable(changing_path)
 anim_properties = get_anim_props(an, changing_path)
 
-frames_arrayPath = "../static/content/animations/"
+frames_arrayPath = "static/content/animations/"
 colorsArray = []
 
 
@@ -501,7 +501,7 @@ def add_frame():
 
     frame_path = WORKING_PATH
 
-    with open(frames_arrayPath, 'r') as in_file:
+    with open(frames_arrayPath + "empty.json", 'r') as in_file:
         # Reading from json file
         json_object = json.load(in_file)
 
