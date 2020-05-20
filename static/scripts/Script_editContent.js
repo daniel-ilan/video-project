@@ -271,7 +271,6 @@ function buildAnim_byKind(data) {
     $("#kindAnimationsArea").html(animations);
     $('.anim_kind').on('click', buildMain);
      activeFrame(null, ".anim_kind");
-
 }
 
 /* round the before and after nav items borders */
