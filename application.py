@@ -20,7 +20,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 WORKING_PATH = 'static/db/users/10/11/videos/27/frames/'
 
-
 def correct_text(sentence):
     """
     Formatting Hebrew and English text so it displays right
@@ -148,16 +147,6 @@ def home():
     )
 
 
-@application.route('/contact')
-def contact():
-    """Renders the contact page."""
-    return render_template(
-        'contact.html',
-        title='Contact',
-        year=datetime.now().year,
-        message='Your contact page.'
-    )
-
 
 @application.route('/about', methods=['POST', 'GET'])
 def about():
@@ -276,16 +265,9 @@ def homePage():
 @application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
-    if request.method == 'POST':
-        path = get_frames_from_db()
-
-        return jsonify(result=get_anim_props(an, path[0] + str(path[1][0][1])), frames=path)
-    # text_color = colors.to_hex(anim_properties['text']['color'])
-    # text_content = anim_properties['text']['content']
-    # alignment = anim_properties['text']['alignment']
     return render_template(
         'editContent.html',
-        title='תוכן',
+        title='שם הסרטון',
         # var=anim_properties
     )
 
@@ -369,7 +351,6 @@ def get_animations_by_kind(kind):
     for anim in animations:
         myArray.append([anim[0], "static/content/animations/" + anim[1], anim[2]])
     return myArray
-
 
 
 def add_frame():
@@ -535,35 +516,6 @@ def change_image(image_filename):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-
-
-@application.route('/changeFrame', methods=['POST'])
-def change_frame():
-    global an
-    global anim_properties
-    data = request.form['id']
-    my_id = data[data.find('_') + 1:]
-    anim_url = WORKING_PATH + db.get_frame_url_by_id(my_id)[0]
-    an = readable(anim_url)
-    anim_properties = get_anim_props(an, anim_url)
-    anim_kind = db.get_frame_kind_by_id(my_id)[0]
-
-    # anim_url.decode
-    return jsonify(result=anim_properties, anim_kind=anim_kind)
-
-
-
-
-def change_animation(path):
-    global an
-    global changing_path
-    global anim_properties
-    changing_path = path
-    an = readable(changing_path)
-    anim_properties = get_anim_props(an, changing_path)
-    return anim_properties
 
 
 if __name__ == '__main__':
