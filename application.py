@@ -202,7 +202,7 @@ def newProject():
             video_id = db.get_last_video_id(project_id)[0]
             frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
 
-            frame_name = copy_animations(frame_path)
+            frame_name = copy_animations("empty new project" ,frame_path)
             id = db.get_last_video_id(str(project_id))[0]
             db.create_new_frame(id, frame_name)
 
@@ -294,7 +294,6 @@ def frame_change():
             anim_props = get_anim_props(frames_props[0] + str(current_frame[3]))
             kind = current_frame[4]
 
-
         elif event_kind == "new_frame":
             add_frame()
             frames_props = get_frames_from_db()
@@ -312,12 +311,39 @@ def frame_change():
             frames_props= None
             kind = current_frame[4]
 
+        elif event_kind == "change_kind_click":
+            frames_props = get_frames_from_db()
+
+            selected_kind = request.form["selected_kind"]
+            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+
+            # create a copy of new lottie by the kind
+            new_lottie = copy_animations(selected_kind,"")
+
+            # remove old file from dit
+            remove_path = WORKING_PATH + str(db.get_frame_by_id(frame_id)[3])
+            os.remove(remove_path)
+
+            # change data in db
+            db.update_frame_props(current_frame[0],new_lottie[0],selected_kind,new_lottie[1])
+
+            anim_props = get_anim_props(frames_props[0] + new_lottie[0])
+            frames_props= None
+            kind = selected_kind
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+
+        elif event_kind == "submitChange":
+            frame_id = request.form["form_data"]
+            print("xxxx")
 
         lit_anim = get_animations_by_kind(kind)
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
 
 
+
 def convert_row_to_list(row_data):
+    # 0 -frame_id, 1- video_id, 2- conectionReplace, 3- lottie_url, 4- selected_animation_kind, 5-selected_animation_id
     frames_list = []
     for my_data in row_data:
         frames_list.append(my_data)
@@ -367,16 +393,23 @@ def add_frame():
     db.create_new_frame("27", new_name)
 
 
-def copy_animations(new_path, old_path='static/content/animations/', name='empty'):
-    if name == 'empty':
+def copy_animations(kind ,new_path, old_path='static/content/animations/'):
+    if kind == 'empty new project':
         empty_anim = db.get_animations_by_kind('empty')
         old_path = old_path + empty_anim[0][0]  # url
         anim_id = empty_anim[0][2]
-    with open(old_path, 'r') as in_file:
+        kind = "empty"
+    else:
+        get_anims = db.get_animations_by_kind(kind)
+        old_path = old_path + get_anims[0][0]  # url
+        anim_id = get_anims[0][2]
+        new_path = WORKING_PATH
+
+    with open(old_path, 'r', encoding='utf-8') as in_file:
         # Reading from json file
         json_object = json.load(in_file)
 
-    new_name = name + '_' + str(int(time.time())) + ".json"
+    new_name = kind + '_' + str(int(time.time())) + ".json"
 
     with open(new_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
@@ -394,6 +427,7 @@ def get_frames_from_db():
     myArray = [frames_arrayPath, frames_list]
 
     for frame in frames_array:
+        # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
         frames_list.append([frame[0], frame[1], frame[2],frame[3]])
     return myArray
 
@@ -516,6 +550,7 @@ def change_image(image_filename):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 
 if __name__ == '__main__':

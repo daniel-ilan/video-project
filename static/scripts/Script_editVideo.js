@@ -9,7 +9,7 @@ $(document).ready(function () {
         frameChangeHandler();
         boolX= true;
     }
-
+    $(".sidebarCol li a").on('click', changeAnimationHandler);
 });
 
 function frameChangeHandler(event) {
@@ -23,11 +23,16 @@ function frameChangeHandler(event) {
         event_kind = "delete_frame"
         frame_id =$(".active_frame_lottie")[0].id;
         event.preventDefault();
-
     }
     else if(event.currentTarget.id == "newFrameBtn")
     {
         event_kind = "new_frame"
+    }
+    else if(event.currentTarget.id == "submitChange")
+    {
+        event_kind = "submitChange"
+        frame_id =$(".active_frame_lottie")[0].id;
+        event.preventDefault();
     }
     $.ajax({
         method: 'POST',
@@ -39,16 +44,38 @@ function frameChangeHandler(event) {
 function changeAnimationHandler(event) {
     let event_kind = ""
     let frame_id = ""
-
+    let selected_kind=""
     if(event.currentTarget.classList.contains("frame_lottie"))
     {
         event_kind = "frame_click"
         frame_id =event.currentTarget.id;
     }
+    else if (event.currentTarget.classList.contains("nav-link"))
+    {
+        event_kind = "change_kind_click"
+        frame_id =$(".active_frame_lottie")[0].id;
+        selected_kind = (event.currentTarget.id).slice(5);
+    }
+
     $.ajax({
         method: 'POST',
         url: '/frame_change',
-        data: {'event_kind': event_kind, 'frame_id': frame_id}
+        data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind}
+    }).done(contentChangeHandler);
+}
+
+function submitChange_function(event)
+{
+    event.preventDefault();
+    event_kind = "submitChange"
+    const form_data = new FormData(editForm[0]);
+    form_data.append('event_kind', event_kind);
+    $.ajax({
+        processData: false,
+        contentType: false,
+        method: 'POST',
+        url: '/frame_change',
+        data: form_data
     }).done(contentChangeHandler);
 }
 
@@ -69,13 +96,10 @@ function buildFrames(data) {
     </div>`;
         numSlides.push(slide);
     }
-
     const addBtn = `<div>
             <button id="newFrameBtn" class="primaryBTN">+</button>
         </div>`;
     numSlides.push(addBtn);
-
-
     $('#frames_Area').html(numSlides);
 
      $('#newFrameBtn').on('click', frameChangeHandler);
@@ -88,11 +112,12 @@ function contentChangeHandler(data) {
     const event_kind = data.event_kind
     let frame_id = "frame_" + data.current_frame[0];
     let  kind= data.kind
-    if (event_kind == "onLoad") {
 
-    }
     buildForm(data.anim_props)
     changeActive(frame_id, ".frame_lottie");
+    if (event_kind == "change_kind_click") {
+        $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
+    }
     changeNavItem(kind);
     buildAnim_byKind(data.animation_by_kind);
 }
@@ -138,7 +163,7 @@ function buildForm(data) {
         // const content = $('#content');
         Object.keys(data).forEach(function (elem) {
             if (elem === "empty") {
-                editForm.html("xxxxxxx")
+                editForm.html("")
             } else {
                 if (elem === "path") {
                     path = data[elem]
@@ -193,7 +218,7 @@ function buildForm(data) {
     editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
-    // $('#submitChange').on('submit', changeAnim);
+     $('#submitChange').on('submit', changeAnimationHandler);
 
 }
 

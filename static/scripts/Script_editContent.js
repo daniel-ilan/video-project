@@ -430,7 +430,6 @@ function changeAnim(eve) {
      */
     eve.preventDefault();
     const form_data = new FormData(editForm[0]);
-
     const mainAnimationPath = document.querySelector('#mainAnimation').src;
     form_data.append('path', mainAnimationPath);
 

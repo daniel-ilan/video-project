@@ -252,6 +252,7 @@ def get_frame_kind_by_id(id: str):
     query = f"SELECT [selected_animation_kind] FROM frames WHERE frame_id={id};"
     return select_one_query(query)
 
+
 def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str):
     frame_id = int(frame_id)
     selected_anim = int(selected_anim)
