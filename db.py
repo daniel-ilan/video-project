@@ -232,7 +232,7 @@ def create_new_frame(video_id: str, url: str):
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
     return select_all_query(query)
 
 
@@ -241,9 +241,9 @@ def delete_frame(frame_id: int):
     update_query(query)
 
 
-def get_frame_url_by_id(id: str):
+def get_frame_by_id(id: str):
     id = int(id)
-    query = f"SELECT [lottie_url] FROM frames WHERE frame_id={id};"
+    query = f"SELECT * FROM frames WHERE frame_id={id};"
     return select_one_query(query)
 
 
@@ -251,6 +251,7 @@ def get_frame_kind_by_id(id: str):
     id = int(id)
     query = f"SELECT [selected_animation_kind] FROM frames WHERE frame_id={id};"
     return select_one_query(query)
+
 
 def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str):
     frame_id = int(frame_id)

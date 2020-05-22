@@ -271,7 +271,6 @@ function buildAnim_byKind(data) {
     $("#kindAnimationsArea").html(animations);
     $('.anim_kind').on('click', buildMain);
      activeFrame(null, ".anim_kind");
-
 }
 
 /* round the before and after nav items borders */
@@ -431,7 +430,6 @@ function changeAnim(eve) {
      */
     eve.preventDefault();
     const form_data = new FormData(editForm[0]);
-
     const mainAnimationPath = document.querySelector('#mainAnimation').src;
     form_data.append('path', mainAnimationPath);
 
