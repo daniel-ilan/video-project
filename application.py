@@ -346,6 +346,20 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frames_props= get_frames_from_db()
 
+        elif event_kind == "submitChange":
+            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            kind = current_frame[4]
+            if kind == "image":
+                form_data = request.files
+            else:
+                form_data = json.loads(request.form["form_data"])
+
+            anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]),form_data,current_frame)
+
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            frames_props= get_frames_from_db()
+
         lit_anim = get_animations_by_kind(kind)
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
 
@@ -356,7 +370,6 @@ def update_anim_props(file_name, data,frame_prop):
     text = {}
     color = {}
     image = False
-    list = []
 
     for item in data:
         if item[0] == "primary":
@@ -386,7 +399,7 @@ def update_anim_props(file_name, data,frame_prop):
     exporters.export_lottie(an, new_path)
     os.remove(path)
 
-    # update frane props on db
+    # update frame props on db
     db.update_frame_props(frame_prop[0],new_name,frame_prop[4],frame_prop[5])
     return get_anim_props(new_path)
 

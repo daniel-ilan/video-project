@@ -37,6 +37,7 @@ function changeAnimationHandler(event) {
     let frame_id = ""
     let selected_kind = ""
     let form_data = ""
+
     if (event.currentTarget.classList.contains("frame_lottie")) {
         event_kind = "frame_click"
         frame_id = event.currentTarget.id;
@@ -57,9 +58,15 @@ function changeAnimationHandler(event) {
         $('#content select').each(function () {
             form_data.push([$(this).attr('name'), $(this).val()])
         });
-
+    }
+    else if (event.currentTarget.classList.contains("anim_kind")) {
+        event_kind = "change_mini_lottie"
+        frame_id = event.currentTarget.id;
+        // selected_kind in this function represent the selected mini anim for replace to
+        selected_kind = event.target.src;
     }
 
+    // check if their is image upload input
     var is_imageUpload_file = false;
     for(var i=0; i<form_data.length;i++)
     {
@@ -104,6 +111,27 @@ function changeAnimationHandler(event) {
 
 }
 
+function contentChangeHandler(data) {
+    const event_kind = data.event_kind
+    let frame_id = "frame_" + data.current_frame[0];
+    let kind = data.kind
+
+    buildForm(data.anim_props)
+    changeActive(frame_id, ".frame_lottie");
+    if (event_kind == "change_kind_click") {
+        $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
+    }
+    changeNavItem(kind);
+    buildAnim_byKind(data.animation_by_kind);
+    // document.querySelector('#mainAnimation').load(data.anim_props.path);
+    if (event_kind == "submitChange") {
+        document.querySelector("#"+ frame_id+ " lottie-player").load(data.anim_props.path);
+    }
+    // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
+}
+
+
+
 function submitChange_function(event) {
     event.preventDefault();
     event_kind = "submitChange"
@@ -140,30 +168,8 @@ function buildFrames(data) {
         </div>`;
     numSlides.push(addBtn);
     $('#frames_Area').html(numSlides);
-
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', changeAnimationHandler);
-
-}
-
-
-function contentChangeHandler(data) {
-    const event_kind = data.event_kind
-    let frame_id = "frame_" + data.current_frame[0];
-    let kind = data.kind
-
-    buildForm(data.anim_props)
-    changeActive(frame_id, ".frame_lottie");
-    if (event_kind == "change_kind_click") {
-        $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
-    }
-    changeNavItem(kind);
-    buildAnim_byKind(data.animation_by_kind);
-    // document.querySelector('#mainAnimation').load(data.anim_props.path);
-    if (event_kind == "submitChange") {
-        document.querySelector("#"+ frame_id+ " lottie-player").load(data.anim_props.path);
-    }
-    // document.querySelector("#" +frame_id + " lottie-player").load(data.anim_props.path);
 }
 
 
@@ -396,6 +402,6 @@ function buildAnim_byKind(data) {
     }
 
     $("#kindAnimationsArea").html(animations);
-    // $('.anim_kind').on('click', buildMain);
+     $('.anim_kind').on('click', changeAnimationHandler);
     changeActive(null, ".anim_kind");
 }
