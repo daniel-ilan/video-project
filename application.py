@@ -90,9 +90,8 @@ def get_anim_props(path, image_path=""):
             anim_props.update(secondary_dict)
 
         elif layer.name == '.image':
-            image_name = image_path
-            image_dict = {'image': an.assets[0].image, 'image_path': f"static/content/animations/images/{image_name}"}
-            anim_props['image'] = image_dict
+            # image_dict = {'image': "name"}
+             anim_props['image'] = "true"
 
         elif layer.name.find(".listText") != -1 and list_changed is False:
             text_layer_num = int(layer.name[-1])
@@ -334,21 +333,31 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
         elif event_kind == "submitChange":
-            form_data = json.loads(request.form["form_data"])
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
-            update_anim_props(str(db.get_frame_by_id(frame_id)[3]),form_data)
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            kind = current_frame[4]
+            if kind == "image":
+                form_data = request.files
+            else:
+                form_data = json.loads(request.form["form_data"])
 
+            anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]),form_data,current_frame)
+
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            frames_props= get_frames_from_db()
 
         lit_anim = get_animations_by_kind(kind)
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
 
 
-def update_anim_props(file_name, data):
-    an = readable(WORKING_PATH + file_name)
+def update_anim_props(file_name, data,frame_prop):
+    path = WORKING_PATH + file_name
+    an = readable(path)
     text = {}
     color = {}
-    image = []
+    image = False
     list = []
+
     for item in data:
         if item[0] == "primary":
             color.update({"primary": item[1]})
@@ -360,23 +369,52 @@ def update_anim_props(file_name, data):
             text.update({"textcontent": item[1]})
         elif item[0] == "textcolor":
             text.update({"textcolor": item[1]})
+        elif item[0] == "f":
+            image = True
 
     if len(text) > 0:
-        new_text = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"])
+        an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"])
     if len(color) > 0:
-        new_color = change_color(an, color["primary"], color["secondary"], 100)
+        an = change_color(an, color["primary"], color["secondary"], 100)
 
-    exporters.export_lottie(an, WORKING_PATH)
+    if image == True:
+        an = save_image(data, an)
 
-    # why new name? i think we need to overwrite  the file so we wouldn't have to change the name (url_lottie)
-    # on the DB can we do that?
-    new_name = "temp" + str(int(time.time())) + ".json"
-    new_json = WORKING_PATH + new_name
-    if path[-6:-9:-1].isdigit():
-        os.remove(path)
-    path = new_json
-    an = readable(path)
-    return get_anim_props(an, path)
+    #create new name & file
+    new_name = frame_prop[4] +"_" + str(int(time.time())) + ".json"
+    new_path = WORKING_PATH + new_name
+    exporters.export_lottie(an, new_path)
+    os.remove(path)
+
+    # update frane props on db
+    db.update_frame_props(frame_prop[0],new_name,frame_prop[4],frame_prop[5])
+    return get_anim_props(new_path)
+
+
+
+def save_image(data, an):
+
+    if 'file' not in data:
+        return jsonify(result="Not good!")
+    file = data['file']
+    if file.filename == '':
+        return redirect(request.url)
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+        file.save(location)
+
+        # convert image to lottie
+        image = objects.assets.Image().load(location)
+        image_data = image.embedded(location).image
+        an.assets[0].image = image_data
+
+        # remove from os
+        os.remove(location)
+
+        return an
+
 
 
 def convert_row_to_list(row_data):
@@ -453,6 +491,8 @@ def copy_animations(kind ,new_path, old_path='static/content/animations/'):
     return new_name, anim_id
 
 
+
+
 def get_frames_from_db():
     # need to change "27"
     frames_array = db.get_all_frames("27")
@@ -468,50 +508,6 @@ def get_frames_from_db():
         frames_list.append([frame[0], frame[1], frame[2],frame[3]])
     return myArray
 
-
-# @application.route('/changeAnim', methods=['POST'])
-# def change_anim():
-#     global an
-#     to_change = request.form
-#     text = {}
-#     color = {}
-#     image = []
-#     list = []
-#     path = request.form["path"]
-#     for item in to_change:
-#         if item == "primary":
-#             color.update({"primary": to_change[item]})
-#         elif item == "secondary":
-#             color.update({"secondary": to_change[item]})
-#         elif item == "textalignment":
-#             text.update({"textalignment": to_change[item]})
-#         elif item == "textcontent":
-#             text.update({"textcontent": to_change[item]})
-#         elif item == "textcolor":
-#             text.update({"textcolor": to_change[item]})
-#
-#     if len(text) > 0:
-#         new_text = change_text(text["textcontent"], text["textcolor"], text["textalignment"])
-#     if len(color) > 0:
-#         new_color = change_color(color["primary"], color["secondary"], 100)
-#
-#     new_name = "temp" + str(int(time.time())) + ".json"
-#     exporters.export_lottie(an, path)
-#     new_json = WORKING_PATH + new_name
-#     if path[-6:-9:-1].isdigit():
-#         os.remove(path)
-#     path = new_json
-#     an = readable(path)
-#     return get_anim_props(an, path)
-
-
-@application.route('/changeAnimText', methods=['POST'])
-def change_anim_text():
-    text = request.form['textcontent']
-    color = request.form['textcolor']
-    alignment = request.form['textalignment']
-    new_text = change_text(text, color, alignment)
-    return jsonify(result=new_text)
 
 
 def change_text(an, text, color, alignment=1):
@@ -536,7 +532,6 @@ def change_anim_color():
 
 
 def change_color(an, color, outline_color, opacity):
-    global changing_path
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
     an.find('.primaryColor').find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
@@ -544,41 +539,6 @@ def change_color(an, color, outline_color, opacity):
     an.find('.primaryColor').find('Fill 1').opacity.value = float(opacity)
     return an
 
-
-@application.route('/changeAnimImage', methods=['POST'])
-def change_anim_image():
-    if 'image' not in request.files:
-        return jsonify(result="Not good!")
-    file = request.files['image']
-    if file.filename == '':
-        return redirect(request.url)
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-        file.save(location)
-        new_image = change_image(location)
-        return jsonify(result=new_image)
-
-
-def change_image(image_filename):
-    global an
-    global changing_path
-
-    image = objects.assets.Image().load(image_filename)
-    image_data = image.embedded(image_filename).image
-    an.assets[0].image = image_data
-
-    new_name = "temp" + str(int(time.time())) + ".json"
-    exporters.export_lottie(an, "static/content/" + new_name)
-    new_json = "static/content/" + new_name
-
-    if changing_path[-6:-9:-1].isdigit():
-        os.remove(changing_path)
-    changing_path = new_json
-    an = readable(changing_path)
-
-    return get_anim_props(an, changing_path, image_filename)
 
 
 def allowed_file(filename):

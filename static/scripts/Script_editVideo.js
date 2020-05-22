@@ -44,6 +44,7 @@ function changeAnimationHandler(event) {
         event_kind = "change_kind_click"
         frame_id = $(".active_frame_lottie")[0].id;
         selected_kind = (event.currentTarget.id).slice(5);
+        console.log("xxx")
 
     } else if (event.currentTarget.id == "submitChange") {
         event_kind = "submitChange";
@@ -56,12 +57,51 @@ function changeAnimationHandler(event) {
         $('#content select').each(function () {
             form_data.push([$(this).attr('name'), $(this).val()])
         });
+
     }
-    $.ajax({
-        method: 'POST',
-        url: '/frame_change',
-        data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind, 'form_data': JSON.stringify(form_data)}
-    }).done(contentChangeHandler);
+
+    var is_imageUpload_file = false;
+    for(var i=0; i<form_data.length;i++)
+    {
+        if(form_data[i].includes("imageUpload_file"))
+        {
+            is_imageUpload_file= true;
+        }
+    }
+
+    if(is_imageUpload_file)
+    {
+        //submit imageUpload_file
+
+        /**
+         * @param {event} eve
+         * @fires   loadImageProps
+         * @listens onsubmit: #editImage
+         */
+        const file_data = $('#imageUpload_file').prop('files')[0];
+        const form_data_image = new FormData();
+        form_data_image.append('file', file_data);
+        event.preventDefault();
+        form_data_image.append('event_kind', "submitChange");
+        form_data_image.append('frame_id', $(".active_frame_lottie")[0].id);
+        $.ajax({
+            processData: false,
+            contentType: false,
+            method: 'POST',
+            url: '/frame_change',
+            data: form_data_image
+        }).done(contentChangeHandler);
+    }
+    else
+    {
+        //submit others inputs
+        $.ajax({
+            method: 'POST',
+            url: '/frame_change',
+            data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind, 'form_data': JSON.stringify(form_data)}
+        }).done(contentChangeHandler);
+    }
+
 }
 
 function submitChange_function(event) {
@@ -119,6 +159,11 @@ function contentChangeHandler(data) {
     }
     changeNavItem(kind);
     buildAnim_byKind(data.animation_by_kind);
+    // document.querySelector('#mainAnimation').load(data.anim_props.path);
+    if (event_kind == "submitChange") {
+        document.querySelector("#"+ frame_id+ " lottie-player").load(data.anim_props.path);
+    }
+    // document.querySelector("#" +frame_id + " lottie-player").load(data.anim_props.path);
 }
 
 
@@ -166,9 +211,6 @@ function buildForm(data) {
             } else {
                 if (elem === "path") {
                     path = data[elem]
-                    const main_animation = document.querySelector('#mainAnimation');
-                    main_animation.load(path);
-                    main_animation.src = path;
                 } else if (elem === "primary") {
                     colorUi.push(getColor(elem, data[elem]))
                     colorId.push(elem)
@@ -179,7 +221,7 @@ function buildForm(data) {
                     editForm.append(getText(elem, data[elem]));
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
                 } else if (elem === 'image') {
-                    editForm.append(getImage(elem), data[elem]);
+                    editForm.append(getImage());
                 } else if (elem === 'listItem') {
                     editForm.append(getText(elem, data[elem].text));
                     let colorListUi = [];
@@ -205,6 +247,8 @@ function buildForm(data) {
 
             }
         });
+        const main_animation = document.querySelector('#mainAnimation');
+        main_animation.load(path);
     }
 
     if (colorUi.length > 0) {
@@ -221,12 +265,11 @@ function buildForm(data) {
 
 }
 
-function getImage(name, imagePath) {
+function getImage() {
     return `<div id="editImage" enctype="multipart/form-data">
                 <label for="imageUpload">העלה תמונה</label>
-                <input type="file" id="${name}" name="${name}" class="btn btn-secondary" value="+">
-            </div>
-            <img src=${imagePath} id="displayImage"></img>`
+                <input type="file" id="imageUpload_file" name="imageUpload_file" class="btn btn-secondary" value="+">
+            </div>`
 }
 
 function getColor(name, color) {
