@@ -346,7 +346,8 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frames_props= get_frames_from_db()
 
-        elif event_kind == "submitChange":
+        elif event_kind == "change_mini_lottie":
+            #im here rubi
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
