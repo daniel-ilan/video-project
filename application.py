@@ -334,12 +334,49 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
         elif event_kind == "submitChange":
-            frame_id = request.form["form_data"]
-            print("xxxx")
+            form_data = json.loads(request.form["form_data"])
+            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
+            update_anim_props(str(db.get_frame_by_id(frame_id)[3]),form_data)
+
 
         lit_anim = get_animations_by_kind(kind)
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
 
+
+def update_anim_props(file_name, data):
+    an = readable(WORKING_PATH + file_name)
+    text = {}
+    color = {}
+    image = []
+    list = []
+    for item in data:
+        if item[0] == "primary":
+            color.update({"primary": item[1]})
+        elif item[0] == "secondary":
+            color.update({"secondary": item[1]})
+        elif item[0] == "textalignment":
+            text.update({"textalignment": item[1]})
+        elif item[0] == "textcontent":
+            text.update({"textcontent": item[1]})
+        elif item[0] == "textcolor":
+            text.update({"textcolor": item[1]})
+
+    if len(text) > 0:
+        new_text = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"])
+    if len(color) > 0:
+        new_color = change_color(an, color["primary"], color["secondary"], 100)
+
+    exporters.export_lottie(an, WORKING_PATH)
+
+    # why new name? i think we need to overwrite  the file so we wouldn't have to change the name (url_lottie)
+    # on the DB can we do that?
+    new_name = "temp" + str(int(time.time())) + ".json"
+    new_json = WORKING_PATH + new_name
+    if path[-6:-9:-1].isdigit():
+        os.remove(path)
+    path = new_json
+    an = readable(path)
+    return get_anim_props(an, path)
 
 
 def convert_row_to_list(row_data):
@@ -432,40 +469,40 @@ def get_frames_from_db():
     return myArray
 
 
-@application.route('/changeAnim', methods=['POST'])
-def change_anim():
-    global an
-    to_change = request.form
-    text = {}
-    color = {}
-    image = []
-    list = []
-    path = request.form["path"]
-    for item in to_change:
-        if item == "primary":
-            color.update({"primary": to_change[item]})
-        elif item == "secondary":
-            color.update({"secondary": to_change[item]})
-        elif item == "textalignment":
-            text.update({"textalignment": to_change[item]})
-        elif item == "textcontent":
-            text.update({"textcontent": to_change[item]})
-        elif item == "textcolor":
-            text.update({"textcolor": to_change[item]})
-
-    if len(text) > 0:
-        new_text = change_text(text["textcontent"], text["textcolor"], text["textalignment"])
-    if len(color) > 0:
-        new_color = change_color(color["primary"], color["secondary"], 100)
-
-    new_name = "temp" + str(int(time.time())) + ".json"
-    exporters.export_lottie(an, path)
-    new_json = WORKING_PATH + new_name
-    if path[-6:-9:-1].isdigit():
-        os.remove(path)
-    path = new_json
-    an = readable(path)
-    return get_anim_props(an, path)
+# @application.route('/changeAnim', methods=['POST'])
+# def change_anim():
+#     global an
+#     to_change = request.form
+#     text = {}
+#     color = {}
+#     image = []
+#     list = []
+#     path = request.form["path"]
+#     for item in to_change:
+#         if item == "primary":
+#             color.update({"primary": to_change[item]})
+#         elif item == "secondary":
+#             color.update({"secondary": to_change[item]})
+#         elif item == "textalignment":
+#             text.update({"textalignment": to_change[item]})
+#         elif item == "textcontent":
+#             text.update({"textcontent": to_change[item]})
+#         elif item == "textcolor":
+#             text.update({"textcolor": to_change[item]})
+#
+#     if len(text) > 0:
+#         new_text = change_text(text["textcontent"], text["textcolor"], text["textalignment"])
+#     if len(color) > 0:
+#         new_color = change_color(color["primary"], color["secondary"], 100)
+#
+#     new_name = "temp" + str(int(time.time())) + ".json"
+#     exporters.export_lottie(an, path)
+#     new_json = WORKING_PATH + new_name
+#     if path[-6:-9:-1].isdigit():
+#         os.remove(path)
+#     path = new_json
+#     an = readable(path)
+#     return get_anim_props(an, path)
 
 
 @application.route('/changeAnimText', methods=['POST'])
@@ -477,8 +514,7 @@ def change_anim_text():
     return jsonify(result=new_text)
 
 
-def change_text(text, color, alignment=1):
-    global an
+def change_text(an, text, color, alignment=1):
     global changing_path
     anim_text = correct_text(text)
 
@@ -499,10 +535,8 @@ def change_anim_color():
     return jsonify(result=new_color)
 
 
-def change_color(color, outline_color, opacity):
-    global an
+def change_color(an, color, outline_color, opacity):
     global changing_path
-
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
     an.find('.primaryColor').find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))

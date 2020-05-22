@@ -1,13 +1,13 @@
 let editForm = "";
 let animProps = "";
-let boolX=false;
+let boolX = false;
 
 $(document).ready(function () {
     // const editForm = $('#content');
     editForm = $('#content');
-    if (editForm.val() === "" && boolX ==false) {
+    if (editForm.val() === "" && boolX == false) {
         frameChangeHandler();
-        boolX= true;
+        boolX = true;
     }
     $(".sidebarCol li a").on('click', changeAnimationHandler);
 });
@@ -17,23 +17,14 @@ function frameChangeHandler(event) {
     let frame_id = ""
     if (event == null) {
         event_kind = "onLoad"
-    }
-    else if(event.currentTarget.id == "dltFrameBtn")
-    {
+    } else if (event.currentTarget.id == "dltFrameBtn") {
         event_kind = "delete_frame"
-        frame_id =$(".active_frame_lottie")[0].id;
+        frame_id = $(".active_frame_lottie")[0].id;
         event.preventDefault();
-    }
-    else if(event.currentTarget.id == "newFrameBtn")
-    {
+    } else if (event.currentTarget.id == "newFrameBtn") {
         event_kind = "new_frame"
     }
-    else if(event.currentTarget.id == "submitChange")
-    {
-        event_kind = "submitChange"
-        frame_id =$(".active_frame_lottie")[0].id;
-        event.preventDefault();
-    }
+
     $.ajax({
         method: 'POST',
         url: '/frame_change',
@@ -44,28 +35,36 @@ function frameChangeHandler(event) {
 function changeAnimationHandler(event) {
     let event_kind = ""
     let frame_id = ""
-    let selected_kind=""
-    if(event.currentTarget.classList.contains("frame_lottie"))
-    {
+    let selected_kind = ""
+    let form_data = ""
+    if (event.currentTarget.classList.contains("frame_lottie")) {
         event_kind = "frame_click"
-        frame_id =event.currentTarget.id;
-    }
-    else if (event.currentTarget.classList.contains("nav-link"))
-    {
+        frame_id = event.currentTarget.id;
+    } else if (event.currentTarget.classList.contains("nav-link")) {
         event_kind = "change_kind_click"
-        frame_id =$(".active_frame_lottie")[0].id;
+        frame_id = $(".active_frame_lottie")[0].id;
         selected_kind = (event.currentTarget.id).slice(5);
-    }
 
+    } else if (event.currentTarget.id == "submitChange") {
+        event_kind = "submitChange";
+        event.preventDefault();
+        frame_id = $(".active_frame_lottie")[0].id;
+        form_data = []
+        $('#content input').each(function () {
+            form_data.push([$(this).attr('name'), $(this).val()])
+        });
+        $('#content select').each(function () {
+            form_data.push([$(this).attr('name'), $(this).val()])
+        });
+    }
     $.ajax({
         method: 'POST',
         url: '/frame_change',
-        data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind}
+        data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind, 'form_data': JSON.stringify(form_data)}
     }).done(contentChangeHandler);
 }
 
-function submitChange_function(event)
-{
+function submitChange_function(event) {
     event.preventDefault();
     event_kind = "submitChange"
     const form_data = new FormData(editForm[0]);
@@ -102,8 +101,8 @@ function buildFrames(data) {
     numSlides.push(addBtn);
     $('#frames_Area').html(numSlides);
 
-     $('#newFrameBtn').on('click', frameChangeHandler);
-     $('.frame_lottie').on('click', changeAnimationHandler);
+    $('#newFrameBtn').on('click', frameChangeHandler);
+    $('.frame_lottie').on('click', changeAnimationHandler);
 
 }
 
@@ -111,7 +110,7 @@ function buildFrames(data) {
 function contentChangeHandler(data) {
     const event_kind = data.event_kind
     let frame_id = "frame_" + data.current_frame[0];
-    let  kind= data.kind
+    let kind = data.kind
 
     buildForm(data.anim_props)
     changeActive(frame_id, ".frame_lottie");
@@ -218,7 +217,7 @@ function buildForm(data) {
     editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
-     $('#submitChange').on('submit', changeAnimationHandler);
+    $('#submitChange').on('click', changeAnimationHandler);
 
 }
 
