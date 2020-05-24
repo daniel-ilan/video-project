@@ -60,10 +60,12 @@ function changeAnimationHandler(event) {
         });
     }
     else if (event.currentTarget.classList.contains("anim_kind")) {
+        // change between two animation from the same kind and brand
         event_kind = "change_mini_lottie"
-        frame_id = event.currentTarget.id;
+        frame_id =$(".active_frame_lottie")[0].id;
         // selected_kind in this function represent the selected mini anim for replace to
-        selected_kind = event.target.src;
+        selected_kind = event.currentTarget.id;
+        //selected_kind = event.target.src;
     }
 
     // check if their is image upload input
@@ -118,9 +120,10 @@ function contentChangeHandler(data) {
 
     buildForm(data.anim_props)
     changeActive(frame_id, ".frame_lottie");
-    if (event_kind == "change_kind_click") {
+    if (event_kind == "change_kind_click" || event_kind=="change_mini_lottie" ) {
         $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
     }
+
     changeNavItem(kind);
     buildAnim_byKind(data.animation_by_kind);
     // document.querySelector('#mainAnimation').load(data.anim_props.path);
@@ -387,6 +390,7 @@ function buildAnim_byKind(data) {
 
     let animations = [];
     let source;
+
     if (data != null) {
         for (i = 0; i < data.length; i++) {
             source = data[i][1];
@@ -400,7 +404,10 @@ function buildAnim_byKind(data) {
             animations.push(animKindPlayer);
         }
     }
-
+    $('#h3_kindAnim').html(`<div>
+    <h3>בחירה מאנימציות המותג</h3>
+    <button class="secondaryBtn lit_sec"> בחירה מכלל התבניות</button>
+</div>`);
     $("#kindAnimationsArea").html(animations);
      $('.anim_kind').on('click', changeAnimationHandler);
     changeActive(null, ".anim_kind");
