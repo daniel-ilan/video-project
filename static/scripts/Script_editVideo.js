@@ -153,17 +153,15 @@ function buildFrames(data) {
     let numSlides = [];
     for (i = 0; i < data.frames[1].length; i++) {
         let source = data.frames[0] + data.frames[1][i][1];
-        let slide = `<div id="frame_${data.frames[1][i][0]}" data-anim="${data.frames[1][i][2]}" class="tinyLottie frame_lottie">
+        let slide = `<div class="frame_container_class">
+    <div id="frame_${data.frames[1][i][0]}" data-anim="${data.frames[1][i][2]}" class="tinyLottie frame_lottie">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
-    speed="1"
-    style="" hover loop>
-    </lottie-player>
-    <p class="tinyLottieDescription">${i + 1}</p>
+                       speed="1"
+                       style="" hover loop>
+        </lottie-player>
     </div>
-    
-    <div>
-    _
-    </div>`;
+    <p class="tinyLottieDescription">${i + 1}</p>
+</div>`;
         numSlides.push(slide);
     }
     const addBtn = `<div>
@@ -186,18 +184,29 @@ function changeActive(id, name_of_class) {
     $(name_of_class).each(function (elm) {
         if (this.classList.contains("active_frame_lottie")) {
             this.classList.remove("active_frame_lottie")
+            $(this).parent().children("p").removeClass("activeP");
+            $(this).on('click', changeAnimationHandler);
+
         }
         // name_of_class = anim_lottie
         else if (this.classList.contains("active_anim_lottie")) {
             this.classList.remove("active_anim_lottie")
+            $(this).parent().children("p").removeClass("activeP");
+            $(this).on('click', changeAnimationHandler);
+
+
         }
     });
 
     if (name_of_class === ".frame_lottie") {
         $('#' + id).addClass("active_frame_lottie");
+        $('#' + id).parent().children("p").addClass("activeP");
+        $('#' + id).off('click', changeAnimationHandler);
     } else {
         let myid = $(".active_frame_lottie").attr('data-anim');
         $('#anim_' + myid).addClass("active_anim_lottie");
+        $('#anim_' + myid).parent().children("p").addClass("activeP");
+        $('#anim_' + myid).off('click', changeAnimationHandler);
     }
 }
 
@@ -394,13 +403,16 @@ function buildAnim_byKind(data) {
     if (data != null) {
         for (i = 0; i < data.length; i++) {
             source = data[i][1];
-            let animKindPlayer = `<div id="anim_${data[i][2]}" class="tinyLottie anim_kind">
+            let animKindPlayer = `<div class="tinyLottie_continer">
+    <div id="anim_${data[i][2]}" class="tinyLottie anim_kind">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
-    speed="1"
-    style="" hover loop>
-    </lottie-player>
+                       speed="1"
+                       style="" hover loop>
+        </lottie-player>
+    </div>
     <p class="tinyLottieDescription">${data[i][0]}</p>
-    </div>`;
+
+</div>`;
             animations.push(animKindPlayer);
         }
     }
