@@ -269,10 +269,22 @@ def get_animations_by_project_and_kind(project_id: str, kind: str):
     return select_all_query(new_query)
 
 
+
+def get_all_animation_by_kind( kind: str):
+    query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind='{kind}';"
+    return select_all_query(query)
+
+
 def get_animations_url_by_id(id: str):
     id = int(id)
     query = f"SELECT [animation_url] FROM animations WHERE animation_id={id};"
-    return  select_one_query(query)
+    return select_one_query(query)
+
+
+def get_genral_anim_props_by_id(id: str):
+    id = int(id)
+    query = f"SELECT [animation_name], [animation_url], [animation_id] FROM animations WHERE animation_id={id};"
+    return select_one_query(query)
 
 
 def create_directory(my_path: str, name: str):

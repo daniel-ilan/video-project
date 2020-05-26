@@ -9,8 +9,42 @@ $(document).ready(function () {
         frameChangeHandler();
         boolX = true;
     }
-    $(".sidebarCol li a").on('click', changeAnimationHandler);
+    $(".sidebarCol li a").on('click', change_animation_handler);
+    $("#button_switch").on('click', open_modal_handler);
+
+
+    sortable('.sortable');
+
+    sortable('.o-sortable', {
+// options
+    });
 });
+var _el;
+
+function dragOver(e) {
+    if (isBefore(_el, e.target))
+        e.target.parentNode.insertBefore(_el, e.target);
+    else
+        e.target.parentNode.insertBefore(_el, e.target.nextSibling);
+}
+
+function dragStart(e) {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", null); // Thanks to bqlou for their comment.
+    _el = e.target;
+}
+
+function isBefore(el1, el2) {
+    if (el2.parentNode === el1.parentNode)
+        for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
+            if (cur === el2)
+                return true;
+    return false;
+}
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
 
 function frameChangeHandler(event) {
     let event_kind = ""
@@ -32,7 +66,7 @@ function frameChangeHandler(event) {
     }).done(buildFrames, contentChangeHandler);
 }
 
-function changeAnimationHandler(event) {
+function change_animation_handler(event) {
     let event_kind = ""
     let frame_id = ""
     let selected_kind = ""
@@ -67,6 +101,14 @@ function changeAnimationHandler(event) {
         selected_kind = event.currentTarget.id;
         //selected_kind = event.target.src;
     }
+    else if (event.currentTarget.id == "modal_main_btn") {
+        event_kind = "select_from_general";
+        frame_id = $(".active_frame_lottie")[0].id;
+        // selected_kind in this function represent the selected mini anim for replace to
+        selected_kind = $('.active_from_general')[0].id;
+        $('#modal').modal('hide')
+    }
+
 
     // check if their is image upload input
     var is_imageUpload_file = false;
@@ -120,7 +162,7 @@ function contentChangeHandler(data) {
 
     buildForm(data.anim_props)
     changeActive(frame_id, ".frame_lottie");
-    if (event_kind == "change_kind_click" || event_kind=="change_mini_lottie" ) {
+    if (event_kind == "change_kind_click" || event_kind=="change_mini_lottie" || event_kind=="select_from_general" ) {
         $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
     }
 
@@ -170,7 +212,7 @@ function buildFrames(data) {
     numSlides.push(addBtn);
     $('#frames_Area').html(numSlides);
     $('#newFrameBtn').on('click', frameChangeHandler);
-    $('.frame_lottie').on('click', changeAnimationHandler);
+    $('.frame_lottie').on('click', change_animation_handler);
 }
 
 
@@ -185,28 +227,37 @@ function changeActive(id, name_of_class) {
         if (this.classList.contains("active_frame_lottie")) {
             this.classList.remove("active_frame_lottie")
             $(this).parent().children("p").removeClass("activeP");
-            $(this).on('click', changeAnimationHandler);
+            $(this).on('click', change_animation_handler);
 
         }
         // name_of_class = anim_lottie
         else if (this.classList.contains("active_anim_lottie")) {
             this.classList.remove("active_anim_lottie")
             $(this).parent().children("p").removeClass("activeP");
-            $(this).on('click', changeAnimationHandler);
-
-
+            $(this).on('click', change_animation_handler);
+        }
+        else if(this.classList.contains("active_from_general")) {
+            this.classList.remove("active_from_general")
+            $(this).parent().children("p").removeClass("activeP");
         }
     });
 
     if (name_of_class === ".frame_lottie") {
         $('#' + id).addClass("active_frame_lottie");
         $('#' + id).parent().children("p").addClass("activeP");
-        $('#' + id).off('click', changeAnimationHandler);
-    } else {
+        $('#' + id).off('click', change_animation_handler);
+    }
+    else if(name_of_class === ".anim_kind") {
         let myid = $(".active_frame_lottie").attr('data-anim');
         $('#anim_' + myid).addClass("active_anim_lottie");
         $('#anim_' + myid).parent().children("p").addClass("activeP");
-        $('#anim_' + myid).off('click', changeAnimationHandler);
+        $('#anim_' + myid).off('click', change_animation_handler);
+    }
+    else
+    {
+        //active_from_general
+        $('#generalAnim_' + id).addClass("active_from_general");
+        $('#generalAnim_' + id).parent().children("p").addClass("activeP");
     }
 }
 
@@ -279,7 +330,7 @@ function buildForm(data) {
     editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
-    $('#submitChange').on('click', changeAnimationHandler);
+    $('#submitChange').on('click', change_animation_handler);
 
 }
 
@@ -374,6 +425,16 @@ function changeNavItem(kind) {
         }
     );
     roundItemsBorder();
+
+    if(kind== "empty")
+    {
+        $('#button_switch').prop('disabled', true);
+    }
+    else
+    {
+        $('#button_switch').prop('disabled', false);
+
+    }
 }
 
 /* round the before and after nav items borders */
@@ -399,28 +460,93 @@ function buildAnim_byKind(data) {
 
     let animations = [];
     let source;
+    let collection_svg=""
 
     if (data != null) {
         for (i = 0; i < data.length; i++) {
             source = data[i][1];
-            let animKindPlayer = `<div class="tinyLottie_continer">
-    <div id="anim_${data[i][2]}" class="tinyLottie anim_kind">
-        <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
-                       speed="1"
-                       style="" hover loop>
-        </lottie-player>
-    </div>
-    <p class="tinyLottieDescription">${data[i][0]}</p>
+            if (data[i].length >=4)
+            {
+                collection_svg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.1 11.7H9.9V13.5H8.1V11.7ZM8.1 4.5H9.9V9.9H8.1V4.5ZM8.991 0C4.023 0 0 4.032 0 9C0 13.968 4.023 18 8.991 18C13.968 18 18 13.968 18 9C18 4.032 13.968 0 8.991 0ZM9 16.2C5.022 16.2 1.8 12.978 1.8 9C1.8 5.022 5.022 1.8 9 1.8C12.978 1.8 16.2 5.022 16.2 9C16.2 12.978 12.978 16.2 9 16.2Z"/>
+                </svg>`;
 
-</div>`;
+             }
+            let animKindPlayer = `<div class="tinyLottie_continer">
+                <span class="not_in_collection_svg_icon" data-toggle="tooltip" data-placement="right" title="אנימציה לא מהמותג">${collection_svg}</span>
+                <div id="anim_${data[i][2]}" class="tinyLottie anim_kind">
+                <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
+                               speed="1"
+                               style="" hover loop>
+                </lottie-player>
+                </div>
+                <p class="tinyLottieDescription">${data[i][0]}</p>
+                </div>`;
             animations.push(animKindPlayer);
         }
     }
-    $('#h3_kindAnim').html(`<div>
-    <h3>בחירה מאנימציות המותג</h3>
-    <button class="secondaryBtn lit_sec"> בחירה מכלל התבניות</button>
-</div>`);
     $("#kindAnimationsArea").html(animations);
-     $('.anim_kind').on('click', changeAnimationHandler);
+     $('.anim_kind').on('click', change_animation_handler);
     changeActive(null, ".anim_kind");
+}
+
+function open_modal_handler(event) {
+    let event_kind = ""
+     if (event.currentTarget.id == "button_switch") {
+        event_kind = "button_switch"
+        frame_id = $(".active_frame_lottie")[0].id;
+
+         $.ajax({
+             method: 'POST',
+             url: '/get_all_animation_by_kind',
+             data: {'event_kind': event_kind, 'frame_id': frame_id}
+         }).done(modael_data);
+    }
+
+
+}
+
+
+function modael_data(data) {
+    let animations = [];
+    let source;
+
+    if (data.event_kind == "button_switch")
+    {
+        $('#modal_main_btn').prop('disabled', true);
+        for (i = 0; i < data.frames.length; i++) {
+            source = data.path + data.frames[i][1];
+            let collection_svg= ""
+            if (data.frames[i][3]== true)
+            {
+                collection_svg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 9.5H1C0.726142 9.5 0.5 9.27386 0.5 9V1C0.5 0.726142 0.726142 0.5 1 0.5H7C7.27386 0.5 7.5 0.726142 7.5 1V9C7.5 9.27386 7.27386 9.5 7 9.5ZM7 17.5H1C0.726142 17.5 0.5 17.2739 0.5 17V13C0.5 12.7261 0.726142 12.5 1 12.5H7C7.27386 12.5 7.5 12.7261 7.5 13V17C7.5 17.2739 7.27386 17.5 7 17.5ZM17 17.5H11C10.7261 17.5 10.5 17.2739 10.5 17V9C10.5 8.72614 10.7261 8.5 11 8.5H17C17.2739 8.5 17.5 8.72614 17.5 9V17C17.5 17.2739 17.2739 17.5 17 17.5ZM10.5 5V1C10.5 0.726142 10.7261 0.5 11 0.5H17C17.2739 0.5 17.5 0.726142 17.5 1V5C17.5 5.27386 17.2739 5.5 17 5.5H11C10.7261 5.5 10.5 5.27386 10.5 5Z"  stroke-linecap="round"/>
+                </svg>`;
+            }
+            let animKindPlayer = `<div class="tinyLottie_continer">
+            <div id="generalAnim_${data.frames[i][2]}" class="tinyLottie anim_kind general_kind_anim">
+            <span class="collection_svg_icon">${collection_svg}</span>
+                <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
+                               speed="1"
+                               style="" hover loop>
+                </lottie-player>
+            </div>
+            <p class="tinyLottieDescription">${data.frames[i][0]}</p> 
+            </div>`;
+            animations.push(animKindPlayer);
+        }
+            name_of_kind= $('#temp_'+ data.kind).text();
+        $('.modal-title').text( "בחירה מתבניות כלליות-"+ name_of_kind);
+        $('.modal-body').html(animations);
+        
+        $('.general_kind_anim').on("click", select_from_general)
+    }
+}
+
+function select_from_general(event) {
+    let id = (event.currentTarget.id).substr(12);
+    changeActive(id, ".general_kind_anim");
+    $('#modal_main_btn').prop('disabled', false);
+    $('#modal_main_btn').on('click', change_animation_handler);
+
 }

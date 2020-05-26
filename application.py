@@ -143,8 +143,7 @@ def home():
     return render_template(
         'index.html',
         title='אודות',
-        year=datetime.now().year,
-        anim_path=changing_path
+        year=datetime.now().year
     )
 
 
@@ -272,15 +271,44 @@ def editContent():
         # var=anim_properties
     )
 
+@application.route('/get_all_animation_by_kind', methods=['POST', 'GET'])
+def get_all_animation_by_kind():
+    animations_array= []
+    my_path= ""
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        if(event_kind == "button_switch"):
+            frames_props = get_frames_from_db()
+            my_path = COLLECTION_PATH
+            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            kind = current_frame[4]
+            selected_frames = db.get_all_animation_by_kind(kind)
+            for frame in selected_frames:
+                # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
+                animations_array.append([frame[0], frame[1], frame[2],False])
+            brand_frames = get_animations_by_kind(kind)
+
+            #mark the brand animations as True
+            for x_all_frames in range(len(animations_array)):
+                for y_brand_frames in range(len(brand_frames)):
+                    if animations_array[x_all_frames][2]== brand_frames[y_brand_frames][2]:
+                        animations_array[x_all_frames][3] = True
+
+        return jsonify(frames = animations_array, event_kind = event_kind, path = my_path, kind=kind)
+
+
 
 @application.route('/frame_change', methods=['POST', 'GET'])
 def frame_change():
     anim_props = ""
-    frames_props=""
-    current_frame=""
-    lit_anim = ""
+    frames_props= []
+    current_frame= []
+    lit_anim = []
     kind = ""
     path = get_frames_from_db()[0]
+    general_frame= []
+
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
         if(event_kind == "onLoad"):
@@ -349,7 +377,7 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frames_props= get_frames_from_db()
 
-        elif event_kind == "change_mini_lottie":
+        elif event_kind == "change_mini_lottie" or event_kind == "select_from_general":
             #origimal anim
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
@@ -364,6 +392,26 @@ def frame_change():
             frames_props= get_frames_from_db()
 
         lit_anim = get_animations_by_kind(kind)
+
+        if event_kind == "select_from_general":
+            general_frame =db.get_genral_anim_props_by_id(new_anim_id) #array structure [animation_name], [animation_url], [animation_id]
+
+        elif event_kind == "onLoad" or event_kind == "new_frame":
+            general_frame =db.get_genral_anim_props_by_id(str(current_frame[2]))
+
+        elif event_kind == "delete_frame" or event_kind == "frame_click" or event_kind == "change_kind_click" or event_kind == "submitChange" or event_kind == "change_mini_lottie":
+            general_frame =db.get_genral_anim_props_by_id(str(current_frame[5]))
+
+        check_if_in_collection = False;
+        if(event_kind!= "new_frame" or event_kind!="change_kind_click"):
+            #the check isn't relevnt cause it's start only with collection animations
+            for x in range(len(lit_anim)):
+                if lit_anim[x][2] == general_frame[2]:
+                    #check if the anmations is in the collection, if it is then make check_if_in_collection True
+                    check_if_in_collection= True;
+        if check_if_in_collection == False:
+            #it it's false then add the anim props to the page
+            lit_anim.append([general_frame[0], "static/content/animations/" + general_frame[1], general_frame[2], True])
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
 
 
