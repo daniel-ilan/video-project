@@ -326,6 +326,15 @@ function buildForm(data, data_kind,color_palettes) {
     }
     //disabled
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
+    $('#content input').change(function () {
+        $('#submitChange').removeClass("secondaryBtn_disabled");
+    });
+    $('#content input').keyup(function () {
+        $('#submitChange').removeClass("secondaryBtn_disabled");
+    });
+
+
+
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
@@ -511,8 +520,6 @@ function changeNavItem(kind) {
         $('#button_switch').addClass("secondaryBtn_disabled");
         $('#button_switch').on('click',  disabledFunc);
         $( "#button_switch" ).off('click', open_modal_handler);
-
-
     }
     else
     {
