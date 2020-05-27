@@ -252,8 +252,8 @@ function create_color_pelettes_json(color_palettes) {
     for (var i = 0 ; i < color_palettes.length; i++) {
         color_palettes_array[color_palettes[i][1]] = color_palettes[i][1];
     }
-    $.extend(color_palettes_array, {'#000000': 'black'});
-    $.extend(color_palettes_array, {'#ffffff': 'white'});
+    $.extend(color_palettes_array, {'#000000': '#000000'});
+    $.extend(color_palettes_array, {'#ffffff': '#ffffff'});
 
     return color_palettes_array
 }
@@ -487,7 +487,6 @@ function createColorUi(colors, colorId,color_palettes_json) {
         }
         $('#name_' +colorId[i]).html(myName);
         $('#' + colorId[i]).colorpicker({
-            customClass: 'colorpicker-2x',
             extensions: [
                 {
                     name: 'swatches', // extension name to load
