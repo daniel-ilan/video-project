@@ -48,7 +48,7 @@ function change_animation_handler(event) {
     let selected_kind = ""
     let form_data = ""
 
-    if(event.currentTarget.classList.contains("disabled"))
+    if(event.currentTarget.classList.contains("secondaryBtn_disabled"))
     {
         disabledFunc(event)
     }
@@ -178,7 +178,7 @@ function buildFrames(data) {
     for (i = 0; i < data.frames[1].length; i++) {
         let source = data.frames[0] + data.frames[1][i][1];
         let slide = `<div class="frame_container_class">
-    <div id="frame_${data.frames[1][i][0]}" data-anim="${data.frames[1][i][2]}" class="tinyLottie frame_lottie">
+    <div id="frame_${data.frames[1][i][0]}" data-anim="${data.frames[1][i][2]}" class="tinyLottie frame_lottie animated_bounceIn bounceIn">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
                        speed="1"
                        style="" hover loop>
@@ -325,7 +325,7 @@ function buildForm(data, data_kind,color_palettes) {
         createColorUi(colorUi, colorId,color_palettes_json)
     }
     //disabled
-    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="disabled  btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
+    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
@@ -600,7 +600,12 @@ function modael_data(data) {
 
     if (data.event_kind == "button_switch")
     {
-        $('#modal_main_btn').prop('disabled', true);
+        //reset and set modal_main_btn listeners and class soshake animation will play from disabledFunc
+        $( "#modal_main_btn" ).on('click', disabledFunc);
+        $( "#modal_main_btn" ).off('click', change_animation_handler);
+        $("#modal_main_btn").removeClass("animated_shake jello");
+        $("#modal_main_btn").addClass("disabled");
+
         for (i = 0; i < data.frames.length; i++) {
             source = data.path + data.frames[i][1];
             let collection_svg= ""
@@ -635,15 +640,15 @@ function disabledFunc(event)
 {
     if(event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled"))
     {
-        if(event.currentTarget.classList.contains("secondaryBtn_disabled"))
+        if(event.currentTarget.id=="button_switch" && event.currentTarget.classList.contains("secondaryBtn_disabled"))
         {
             $( "#button_switch" ).off('click', open_modal_handler);
         }
 
         event.preventDefault();
-        $("#"+event.currentTarget.id).addClass("animated_shake shake");
+        $("#"+event.currentTarget.id).addClass("animated_shake jello");
         setTimeout(function() {
-            $("#"+event.currentTarget.id).removeClass("animated_shake shake");
+            $("#"+event.currentTarget.id).removeClass("animated_shake jello");
         }, 3000);
     }
 
@@ -652,7 +657,11 @@ function disabledFunc(event)
 function select_from_general(event) {
     let id = (event.currentTarget.id).substr(12);
     changeActive(id, ".general_kind_anim");
-    $('#modal_main_btn').prop('disabled', false);
+
+    //reset and set modal_main_btn listeners and class so shake animation will not play and animation will change
+    $("#modal_main_btn").removeClass("animated_shake jello");
+    $("#modal_main_btn").removeClass("disabled");
+    $( "#modal_main_btn" ).off('click', disabledFunc);
     $('#modal_main_btn').on('click', change_animation_handler);
 }
 
