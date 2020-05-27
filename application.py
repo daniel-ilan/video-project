@@ -391,6 +391,10 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frames_props= get_frames_from_db()
 
+        color_palettes = db.get_colors_by_palette("1")
+        color_palettes_array = []
+        for color in color_palettes:
+            color_palettes_array.append([color[1],color[0]])
         lit_anim = get_animations_by_kind(kind)
 
         if event_kind == "select_from_general":
@@ -412,7 +416,8 @@ def frame_change():
         if check_if_in_collection == False:
             #it it's false then add the anim props to the page
             lit_anim.append([general_frame[0], "static/content/animations/" + general_frame[1], general_frame[2], True])
-        return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind)
+
+        return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame =current_frame, animation_by_kind =lit_anim, kind = kind, color_palettes=color_palettes_array)
 
 
 def update_anim_props(file_name, data,frame_prop, kind_of_update_event):

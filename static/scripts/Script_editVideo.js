@@ -12,35 +12,8 @@ $(document).ready(function () {
     $(".sidebarCol li a").on('click', change_animation_handler);
     $("#button_switch").on('click', open_modal_handler);
 
-
-    sortable('.sortable');
-
-    sortable('.o-sortable', {
-// options
-    });
 });
-var _el;
 
-function dragOver(e) {
-    if (isBefore(_el, e.target))
-        e.target.parentNode.insertBefore(_el, e.target);
-    else
-        e.target.parentNode.insertBefore(_el, e.target.nextSibling);
-}
-
-function dragStart(e) {
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", null); // Thanks to bqlou for their comment.
-    _el = e.target;
-}
-
-function isBefore(el1, el2) {
-    if (el2.parentNode === el1.parentNode)
-        for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
-            if (cur === el2)
-                return true;
-    return false;
-}
 
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
@@ -160,7 +133,7 @@ function contentChangeHandler(data) {
     let frame_id = "frame_" + data.current_frame[0];
     let kind = data.kind
 
-    buildForm(data.anim_props)
+    buildForm(data.anim_props, kind, data.color_palettes)
     changeActive(frame_id, ".frame_lottie");
     if (event_kind == "change_kind_click" || event_kind=="change_mini_lottie" || event_kind=="select_from_general" ) {
         $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
@@ -261,7 +234,19 @@ function changeActive(id, name_of_class) {
     }
 }
 
-function buildForm(data) {
+function create_color_pelettes_json(color_palettes) {
+    var color_palettes_array = {};
+    for (var i = 0 ; i < color_palettes.length; i++) {
+        color_palettes_array[color_palettes[i][0]] = color_palettes[i][1];
+    }
+    $.extend(color_palettes_array, {'black': '#000000'});
+    $.extend(color_palettes_array, {'white': '#ffffff'});
+
+    return color_palettes_array
+}
+
+
+function buildForm(data, data_kind,color_palettes) {
     editForm.html("");
     animProps = data;
     /**
@@ -271,6 +256,7 @@ function buildForm(data) {
 
     let colorUi = [];
     let colorId = [];
+    color_palettes_json = create_color_pelettes_json(color_palettes);
 
     if (data != null) {
         // const content = $('#content');
@@ -287,15 +273,36 @@ function buildForm(data) {
                     colorUi.push(getColor(elem, data[elem]))
                     colorId.push(elem)
                 } else if (elem === "text") {
-                    editForm.append(getText(elem, data[elem]));
+                    editForm.append(getText(elem, data[elem],data_kind));
+                    $('#text_color').colorpicker({
+                        extensions: [
+                            {
+                                name: 'swatches', // extension name to load
+                                options: { // extension options
+                                    colors: color_palettes_json
+                                }
+                            }
+                        ]
+                    });
+
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
                 } else if (elem === 'image') {
                     editForm.append(getImage());
                 } else if (elem === 'listItem') {
-                    editForm.append(getText(elem, data[elem].text));
+                    editForm.append(getText(elem, data[elem].text,"listItem"));
+                    $('#listItem_color').colorpicker({
+                        extensions: [
+                            {
+                                name: 'swatches', // extension name to load
+                                options: { // extension options
+                                    colors: color_palettes_json
+                                }
+                            }
+                        ]
+                    });
+
                     let colorListUi = [];
                     let colorListId = [];
-
                     Object.keys(data[elem]).forEach(function (item) {
                         if (item === "primary") {
                             colorListUi.push(getColor('listItem_' + item, data[elem][item]));
@@ -310,7 +317,7 @@ function buildForm(data) {
                         /**
                          *checks how many shape layers there are in the animation and building the color-picker UI
                          */
-                        createColorUi(colorListUi, colorListId)
+                        createColorUi(colorListUi, colorListId,color_palettes_json)
                     }
                 }
 
@@ -324,10 +331,9 @@ function buildForm(data) {
         /**
          *checks how many shape layers there are in the animation and building the color-picker UI
          */
-        createColorUi(colorUi, colorId)
+        createColorUi(colorUi, colorId,color_palettes_json)
     }
-    editForm.append(`<input type="submit" name="submitChange" id="submitChange" class="btn btn-primary color-submit-btn">שנה</input>`);
-    editForm.append(`<button id="dltFrameBtn" class="btn btn-primary color-submit-btn">מחק שקף</button>`);
+    editForm.append(`<input type="submit" name="submitChange" id="submitChange" disabled class="btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
@@ -336,10 +342,29 @@ function buildForm(data) {
 
 function getImage() {
     return `<div id="editImage" enctype="multipart/form-data">
-                <label for="imageUpload">העלה תמונה</label>
-                <input type="file" id="imageUpload_file" name="imageUpload_file" class="btn btn-secondary" value="+">
+                <h3>העלאת תמונה</h3>
+                <div class="imageUpload_file_div">
+                   <input type="file" id="imageUpload_file" name="imageUpload_file" style="display:none;"  onchange="loadFile(event)" value="+">
+                  <input type="button" id="imageUpload_file_btn" value="החלפת תמונה" class="btn secondaryBtn justify-content-center"  onclick="document.getElementById('imageUpload_file').click();" />
+                  <h6 id="p_preview_imageUpload" style="display:none;">תצוגה מקדימה לתמונה:</h6>
+                  <img id="preview_imageUpload" src="#" class="mainAnimation" style="display:none;" alt="your upload image" />
+                </di>
             </div>`
 }
+
+function loadFile(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+        document.getElementById('p_preview_imageUpload').style.display= "block";
+        var output = document.getElementById('preview_imageUpload');
+        output.style.display= "block";
+        output.src = reader.result;
+
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+
+
 
 function getColor(name, color) {
     /**
@@ -347,53 +372,111 @@ function getColor(name, color) {
      * @param {list}    color   the color of the layer
      * @return {HTMLElement}
      */
-    return `<div id=${name} class="input-group color-wrapper">
-                <label for=${name}>צבע   ${name}</label>
+
+    return `<div id=${name} class=" color-wrapper">
                   <input type="hidden"  name=${name} class="form-control" value=${color.color} />
-                  <span class="input-group-append">
+                  <div id="name_${name}" class="name-of-color"></div>
+                  <span class="color-edit-line" data-toggle="tooltip" data-placement="right" title="${name}">
                         <span class="colorpicker-input-addon"><i class="colorUi"></i></span>
                     </span>
             </div>`
 }
 
 
-function getText(name, text) {
+function getText(name, text, data_kind) {
     /**
      * @param {string}  name    name of the animation attribute to use for HTML names
      * @param {list}    color   the color of the layer
      * @return {HTMLElement}
      */
-    return `<div id="editText" class="col-6">
-                <div class="form-group text-form">
-                    <label for="animText"> הכנס טקסט</label>
-                    <div class="input-group mb-3 w-75">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="selectedAlignment">יישור</label>
-                        </div>
-                            <select name=${name + 'alignment'} id=${name + 'alignment'} class="custom-select" value=${text.alignment} >
-                                <option value="0">שמאל</option>
-                                <option value="1">ימין</option>
-                                <option value="2">מרכז</option>
+    let h3_name = "";
+    if(data_kind == "intro")
+    {
+        h3_name = "תוכן פתיח";
+    }
+    else if(data_kind == "ending")
+    {
+        h3_name = "תוכן סיום";
+
+    }
+    else if(data_kind == "text")
+    {
+        h3_name = "תוכן ";
+
+    }
+    else if(data_kind == "list")
+    {
+        h3_name = "סעיפי הרשימה";
+    }
+    else if(data_kind == "listItem")
+    {
+        h3_name = "כותרת הרשימה";
+    }
+     let my_color = getColor(name+'_color',text.color)
+
+    return `<div id="editText" class="form-group text-form">
+                <h3>${h3_name}</h3>
+                    <div class="input-group text-edit-line-control">
+                    <span class="text-edit-line-after">
+                            <select name=${name + 'font'} id=${name + 'font'} class="custom-select text-edit-line" value="Arial" >
+                                <option value="0">Arial</option>
+                            </select>    
+                    </span>
+                    <span class="text-edit-line-after">
+                           <select name=${name + 'font_size'} id=${name + 'font'} class="custom-select text-edit-line" value="גודל בינוני" >
+                                <option value="0">גודל קטן</option>
+                                 <option value="1">גודל בינוני</option>
+                                 <option value="2">גודל גדול</option>
+                                 <option value="3">גודל גדול מאוד</option>
                             </select>
+                    </span>
+                    <span class="text-edit-line-after">
+                           <select name=${name + 'alignment'} id=${name + 'alignment'} class="custom-select text-edit-line" value=${text.alignment} >
+                                <option value="0">יישור לשמאל</option>
+                                <option value="1">יישור לימין</option>
+                                <option value="2">יישור למרכז</option>
+                            </select>
+                    </span>
+                             ${my_color}
                     </div>
                     <input type="text" maxlength="24" name=${name + 'content'} id=${name + 'content'} name="animText" value="${text.content}" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="textColor">בחר צבע</label>
-                    <input type="color" name=${name + 'color'} id=${name + 'color'}  value=${text.color} class="form-control">\n
-                </div>
             </div>`;
 }
 
-function createColorUi(colors, colorId) {
-    let colorForm = `<div id="editColor" class="col-5">
-                            <div id="inputWrapper_${colorId[0]}" class="form-group color-form"></div>
+function createColorUi(colors, colorId,color_palettes_json) {
+    let colorForm = `<div id="editColor" class="form-group">
+                                <h3>צבעי רקע</h3>
+                            <div id="inputWrapper_${colorId[0]}" class="text-edit-line-control color-edit-line-control">
+                        </div>
+                            
                         </div>`;
     editForm.append(colorForm);
     const inputWrapper = $('#inputWrapper_' + colorId[0]);
+
     for (i = 0; i < colors.length; i++) {
         inputWrapper.append(colors[i]);
-        $('#' + colorId[i]).colorpicker();
+        let myName = "";
+         if(colorId[i] == "primary")
+        {
+            myName = "צבע ראשי";
+        }
+        else if(colorId[i] =="secondary")
+        {
+            myName = "צבע רקע";
+        }
+        $('#name_' +colorId[i]).html(myName);
+        $('#' + colorId[i]).colorpicker({
+            customClass: 'colorpicker-2x',
+            extensions: [
+                {
+                    name: 'swatches', // extension name to load
+                    // customClass: 'colorpicker-2x',
+                    options: { // extension options
+                        colors: color_palettes_json
+                    }
+                }
+            ]
+        });
     }
 }
 

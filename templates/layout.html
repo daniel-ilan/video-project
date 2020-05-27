@@ -73,7 +73,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a  id="temp_ending" class="nav-link" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
                                  width="24">
                                 <path d="M12.01 4.25H0V6.75H12.01V10.5L16 5.5L12.01 0.5V4.25Z" />
@@ -81,7 +81,15 @@
                             <span>סיום</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
+                        <a  id="dltFrameBtn" class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="svgFill" height="24" viewBox="0 0 24 24"
+                                 width="24">
+                                <path d="M1.66672 14.7222C1.66672 15.7 2.46672 16.5 3.4445 16.5H10.5556C11.5334 16.5 12.3334 15.7 12.3334 14.7222V4.05556H1.66672V14.7222ZM3.4445 5.83333H10.5556V14.7222H3.4445V5.83333ZM10.1112 1.38889L9.22228 0.5H4.77783L3.88894 1.38889H0.777832V3.16667H13.2223V1.38889H10.1112Z"/>                            </svg>
+                            </svg>
+                            <span>מחיקה</span>
+                        </a>
                     </li>
                 </ul>
             </nav>
@@ -98,7 +106,7 @@
             </div>
         </div>
 
-        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 px-4 greyBG ">
+        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 px-5 greyBG ">
             <div class="overflow-auto main-container">
                 <div id="mainContent" class="col-6 float-left ">
                     <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">{{ title }}</h1>
@@ -107,14 +115,14 @@
 
                 <div class="col-6 animation-container">
                     <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
-                                   class="lottiePlayer" id="mainAnimation" style="width: 94%">
+                                   class="lottiePlayer mainAnimation" id="mainAnimation" style="width: 94%">
                     </lottie-player>
                     <!--                    <div class="lottie lottiePlayer" id="mainAnimation" data-animation-path="../static/content/animations/temp1_anim3.json" data-anim-loop="true"></div>-->
                     <div id="h3_kindAnim">
                         <div>
-                            <h3>בחירה מאנימציות המותג</h3>
+                            <h4>בחירה מאנימציות המותג</h4>
                             <!--  data-toggle="modal" data-target="#modal" -->
-                              <button id="button_switch" type="button" class="secondaryBtn lit_sec"   data-toggle="modal" data-target="#modal" >בחירה מכלל התבניות</button>
+                              <button id="button_switch" type="button" class="btn secondaryBtn lit_sec"   data-toggle="modal" data-target="#modal" >בחירה מכלל התבניות</button>
                           </div>
                       </div>
                       <div id="kindAnimationsArea" >
