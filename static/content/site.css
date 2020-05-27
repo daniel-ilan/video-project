@@ -421,6 +421,7 @@ svg {
     align-self: center;
     display: flex;
     flex-direction: column;
+    padding-left: 0px;
 }
 
 #frames_Area {
