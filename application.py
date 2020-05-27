@@ -443,7 +443,7 @@ def update_anim_props(file_name, data,frame_prop, kind_of_update_event):
                 text.update({"textalignment": item[1]})
             elif item[0] == "textcontent":
                 text.update({"textcontent": item[1]})
-            elif item[0] == "textcolor":
+            elif item[0] == "text_color":
                 text.update({"textcolor": item[1]})
             elif item[0] == "f":
                 image = True

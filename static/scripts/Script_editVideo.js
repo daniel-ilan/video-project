@@ -19,6 +19,8 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })
 
+
+
 function frameChangeHandler(event) {
     let event_kind = ""
     let frame_id = ""
@@ -45,87 +47,98 @@ function change_animation_handler(event) {
     let selected_kind = ""
     let form_data = ""
 
-    if (event.currentTarget.classList.contains("frame_lottie")) {
-        event_kind = "frame_click"
-        frame_id = event.currentTarget.id;
-    } else if (event.currentTarget.classList.contains("nav-link")) {
-        event_kind = "change_kind_click"
-        frame_id = $(".active_frame_lottie")[0].id;
-        selected_kind = (event.currentTarget.id).slice(5);
-        console.log("xxx")
-
-    } else if (event.currentTarget.id == "submitChange") {
-        event_kind = "submitChange";
-        event.preventDefault();
-        frame_id = $(".active_frame_lottie")[0].id;
-        form_data = []
-        $('#content input').each(function () {
-            form_data.push([$(this).attr('name'), $(this).val()])
-        });
-        $('#content select').each(function () {
-            form_data.push([$(this).attr('name'), $(this).val()])
-        });
-    }
-    else if (event.currentTarget.classList.contains("anim_kind")) {
-        // change between two animation from the same kind and brand
-        event_kind = "change_mini_lottie"
-        frame_id =$(".active_frame_lottie")[0].id;
-        // selected_kind in this function represent the selected mini anim for replace to
-        selected_kind = event.currentTarget.id;
-        //selected_kind = event.target.src;
-    }
-    else if (event.currentTarget.id == "modal_main_btn") {
-        event_kind = "select_from_general";
-        frame_id = $(".active_frame_lottie")[0].id;
-        // selected_kind in this function represent the selected mini anim for replace to
-        selected_kind = $('.active_from_general')[0].id;
-        $('#modal').modal('hide')
-    }
-
-
-    // check if their is image upload input
-    var is_imageUpload_file = false;
-    for(var i=0; i<form_data.length;i++)
+    if(event.currentTarget.classList.contains("disabled"))
     {
-        if(form_data[i].includes("imageUpload_file"))
-        {
-            is_imageUpload_file= true;
-        }
-    }
-
-    if(is_imageUpload_file)
-    {
-        //submit imageUpload_file
-
-        /**
-         * @param {event} eve
-         * @fires   loadImageProps
-         * @listens onsubmit: #editImage
-         */
-        const file_data = $('#imageUpload_file').prop('files')[0];
-        const form_data_image = new FormData();
-        form_data_image.append('file', file_data);
         event.preventDefault();
-        form_data_image.append('event_kind', "submitChange");
-        form_data_image.append('frame_id', $(".active_frame_lottie")[0].id);
-        $.ajax({
-            processData: false,
-            contentType: false,
-            method: 'POST',
-            url: '/frame_change',
-            data: form_data_image
-        }).done(contentChangeHandler);
+        $("#"+event.currentTarget.id).addClass("animated shake");
+        setTimeout(function() {
+            $("#"+event.currentTarget.id).removeClass("animated shake");
+        }, 3000);
+
     }
     else
     {
-        //submit others inputs
-        $.ajax({
-            method: 'POST',
-            url: '/frame_change',
-            data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind, 'form_data': JSON.stringify(form_data)}
-        }).done(contentChangeHandler);
-    }
+        if (event.currentTarget.classList.contains("frame_lottie")) {
+            event_kind = "frame_click"
+            frame_id = event.currentTarget.id;
+        } else if (event.currentTarget.classList.contains("nav-link")) {
+            event_kind = "change_kind_click"
+            frame_id = $(".active_frame_lottie")[0].id;
+            selected_kind = (event.currentTarget.id).slice(5);
+            console.log("xxx")
 
+        } else if (event.currentTarget.id == "submitChange") {
+            event_kind = "submitChange";
+            event.preventDefault();
+            frame_id = $(".active_frame_lottie")[0].id;
+            form_data = []
+            $('#content input').each(function () {
+                form_data.push([$(this).attr('name'), $(this).val()])
+            });
+            $('#content select').each(function () {
+                form_data.push([$(this).attr('name'), $(this).val()])
+            });
+        }
+        else if (event.currentTarget.classList.contains("anim_kind")) {
+            // change between two animation from the same kind and brand
+            event_kind = "change_mini_lottie"
+            frame_id =$(".active_frame_lottie")[0].id;
+            // selected_kind in this function represent the selected mini anim for replace to
+            selected_kind = event.currentTarget.id;
+            //selected_kind = event.target.src;
+        }
+        else if (event.currentTarget.id == "modal_main_btn") {
+            event_kind = "select_from_general";
+            frame_id = $(".active_frame_lottie")[0].id;
+            // selected_kind in this function represent the selected mini anim for replace to
+            selected_kind = $('.active_from_general')[0].id;
+            $('#modal').modal('hide')
+        }
+
+
+        // check if their is image upload input
+        var is_imageUpload_file = false;
+        for(var i=0; i<form_data.length;i++)
+        {
+            if(form_data[i].includes("imageUpload_file"))
+            {
+                is_imageUpload_file= true;
+            }
+        }
+
+        if(is_imageUpload_file)
+        {
+            //submit imageUpload_file
+
+            /**
+             * @param {event} eve
+             * @fires   loadImageProps
+             * @listens onsubmit: #editImage
+             */
+            const file_data = $('#imageUpload_file').prop('files')[0];
+            const form_data_image = new FormData();
+            form_data_image.append('file', file_data);
+            event.preventDefault();
+            form_data_image.append('event_kind', "submitChange");
+            form_data_image.append('frame_id', $(".active_frame_lottie")[0].id);
+            $.ajax({
+                processData: false,
+                contentType: false,
+                method: 'POST',
+                url: '/frame_change',
+                data: form_data_image
+            }).done(contentChangeHandler);
+        }
+        else
+        {
+            //submit others inputs
+            $.ajax({
+                method: 'POST',
+                url: '/frame_change',
+                data: {'event_kind': event_kind, 'frame_id': frame_id, 'selected_kind': selected_kind, 'form_data': JSON.stringify(form_data)}
+            }).done(contentChangeHandler);
+        }
+    }
 }
 
 function contentChangeHandler(data) {
@@ -237,10 +250,10 @@ function changeActive(id, name_of_class) {
 function create_color_pelettes_json(color_palettes) {
     var color_palettes_array = {};
     for (var i = 0 ; i < color_palettes.length; i++) {
-        color_palettes_array[color_palettes[i][0]] = color_palettes[i][1];
+        color_palettes_array[color_palettes[i][1]] = color_palettes[i][1];
     }
-    $.extend(color_palettes_array, {'black': '#000000'});
-    $.extend(color_palettes_array, {'white': '#ffffff'});
+    $.extend(color_palettes_array, {'#000000': 'black'});
+    $.extend(color_palettes_array, {'#ffffff': 'white'});
 
     return color_palettes_array
 }
@@ -333,8 +346,8 @@ function buildForm(data, data_kind,color_palettes) {
          */
         createColorUi(colorUi, colorId,color_palettes_json)
     }
-    editForm.append(`<input type="submit" name="submitChange" id="submitChange" disabled class="btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
-
+    //disabled
+    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="  btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
@@ -372,9 +385,17 @@ function getColor(name, color) {
      * @param {list}    color   the color of the layer
      * @return {HTMLElement}
      */
+    if(color.color == null)
+    {
+        color = color;
+    }
+    else
+    {
+        color = color.color;
+    }
 
     return `<div id=${name} class=" color-wrapper">
-                  <input type="hidden"  name=${name} class="form-control" value=${color.color} />
+                  <input type="hidden"  name=${name} class="form-control" value=${color} />
                   <div id="name_${name}" class="name-of-color"></div>
                   <span class="color-edit-line" data-toggle="tooltip" data-placement="right" title="${name}">
                         <span class="colorpicker-input-addon"><i class="colorUi"></i></span>
@@ -511,11 +532,11 @@ function changeNavItem(kind) {
 
     if(kind== "empty")
     {
-        $('#button_switch').prop('disabled', true);
+        $('#button_switch').addClass("disabled");
     }
     else
     {
-        $('#button_switch').prop('disabled', false);
+        $('#button_switch').removeClass("disabled");
 
     }
 }
@@ -631,5 +652,7 @@ function select_from_general(event) {
     changeActive(id, ".general_kind_anim");
     $('#modal_main_btn').prop('disabled', false);
     $('#modal_main_btn').on('click', change_animation_handler);
-
 }
+
+
+
