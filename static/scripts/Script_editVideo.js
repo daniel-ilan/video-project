@@ -287,32 +287,14 @@ function buildForm(data, data_kind,color_palettes) {
                     colorId.push(elem)
                 } else if (elem === "text") {
                     editForm.append(getText(elem, data[elem],data_kind));
-                    $('#text_color').colorpicker({
-                        extensions: [
-                            {
-                                name: 'swatches', // extension name to load
-                                options: { // extension options
-                                    colors: color_palettes_json
-                                }
-                            }
-                        ]
-                    });
+                    addCustomColor('#text_color')
 
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
                 } else if (elem === 'image') {
                     editForm.append(getImage());
                 } else if (elem === 'listItem') {
                     editForm.append(getText(elem, data[elem].text,"listItem"));
-                    $('#listItem_color').colorpicker({
-                        extensions: [
-                            {
-                                name: 'swatches', // extension name to load
-                                options: { // extension options
-                                    colors: color_palettes_json
-                                }
-                            }
-                        ]
-                    });
+                    addCustomColor('#listItem_color')
 
                     let colorListUi = [];
                     let colorListId = [];
@@ -486,17 +468,7 @@ function createColorUi(colors, colorId,color_palettes_json) {
             myName = "צבע רקע";
         }
         $('#name_' +colorId[i]).html(myName);
-        $('#' + colorId[i]).colorpicker({
-            extensions: [
-                {
-                    name: 'swatches', // extension name to load
-                    // customClass: 'colorpicker-2x',
-                    options: { // extension options
-                        colors: color_palettes_json
-                    }
-                }
-            ]
-        });
+        addCustomColor('#' + colorId[i]);
     }
 }
 
@@ -654,4 +626,29 @@ function select_from_general(event) {
 }
 
 
+function addCustomColor(id) {
+    $(id).colorpicker({
+        customClass: 'colorpicker-2x',
+        sliders: {
+            saturation: {
+                maxLeft: 160,
+                maxTop: 160
+            },
+            hue: {
+                maxTop: 160
+            },
+            alpha: {
+                maxTop: 160
+            }
+        },
+        extensions: [
+            {
+                name: 'swatches', // extension name to load
+                options: { // extension options
+                    colors: color_palettes_json
+                },
 
+            }
+        ]
+    });
+}
