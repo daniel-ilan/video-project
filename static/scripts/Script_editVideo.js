@@ -10,7 +10,6 @@ $(document).ready(function () {
         boolX = true;
     }
     $(".sidebarCol li a").on('click', change_animation_handler);
-    $("#button_switch").on('click', open_modal_handler);
 
 });
 
@@ -41,6 +40,8 @@ function frameChangeHandler(event) {
     }).done(buildFrames, contentChangeHandler);
 }
 
+
+
 function change_animation_handler(event) {
     let event_kind = ""
     let frame_id = ""
@@ -49,12 +50,7 @@ function change_animation_handler(event) {
 
     if(event.currentTarget.classList.contains("disabled"))
     {
-        event.preventDefault();
-        $("#"+event.currentTarget.id).addClass("animated shake");
-        setTimeout(function() {
-            $("#"+event.currentTarget.id).removeClass("animated shake");
-        }, 3000);
-
+        disabledFunc(event)
     }
     else
     {
@@ -329,7 +325,7 @@ function buildForm(data, data_kind,color_palettes) {
         createColorUi(colorUi, colorId,color_palettes_json)
     }
     //disabled
-    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="  btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
+    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="disabled  btn primaryBTN color-submit-btn justify-content-center" value="שמירה" />`);
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
@@ -480,18 +476,27 @@ function changeNavItem(kind) {
     $('.sidebar a').each(
         function () {
             if ($(this).attr('id') == "temp_" + kind) {
+                $(this).parent().addClass('animated fadeInLeft');
+                $(this).addClass('animated fadeInLeft');
+
                 $(this).children().removeClass('svgFill');
                 $(this).children().addClass('svgFillActive');
                 $(this).addClass('active');
                 $(this).removeClass('text-white');
                 $(this).parent().addClass('activeNav');
+
             } else {
                 if ($(this).hasClass('active')) {
+                    $(this).removeClass('animated fadeInLeft');
+                    $(this).parent().removeClass('animated fadeInLeft');
                     $(this).removeClass('text-white');
                     $(this).children().removeClass('svgFillActive');
                     $(this).children().addClass('svgFill');
                     $(this).removeClass('active');
                     $(this).parent().removeClass('activeNav');
+
+
+
                     $(".sidebar li:nth-child(" + (indexActive).toString() + ")").removeClass('upNavUI');
                     $(".sidebar li:nth-child(" + (indexActive + 2).toString() + ")").removeClass('downNavUI');
                 }
@@ -503,12 +508,17 @@ function changeNavItem(kind) {
 
     if(kind== "empty")
     {
-        $('#button_switch').addClass("disabled");
+        $('#button_switch').addClass("secondaryBtn_disabled");
+        $('#button_switch').on('click',  disabledFunc);
+        $( "#button_switch" ).off('click', open_modal_handler);
+
+
     }
     else
     {
-        $('#button_switch').removeClass("disabled");
-
+        $('#button_switch').removeClass("secondaryBtn_disabled");
+        $('#button_switch').on('click', open_modal_handler);
+        $( "#button_switch" ).off('click', disabledFunc);
     }
 }
 
@@ -567,8 +577,12 @@ function buildAnim_byKind(data) {
 
 function open_modal_handler(event) {
     let event_kind = ""
+    $('#button_switch').removeClass('secondaryBtn_disabled');
+    $( "#button_switch" ).off('click', disabledFunc);
+
+    $('#modal').modal('show')
      if (event.currentTarget.id == "button_switch") {
-        event_kind = "button_switch"
+         event_kind = "button_switch"
         frame_id = $(".active_frame_lottie")[0].id;
 
          $.ajax({
@@ -577,8 +591,6 @@ function open_modal_handler(event) {
              data: {'event_kind': event_kind, 'frame_id': frame_id}
          }).done(modael_data);
     }
-
-
 }
 
 
@@ -616,6 +628,25 @@ function modael_data(data) {
         
         $('.general_kind_anim').on("click", select_from_general)
     }
+}
+
+
+function disabledFunc(event)
+{
+    if(event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled"))
+    {
+        if(event.currentTarget.classList.contains("secondaryBtn_disabled"))
+        {
+            $( "#button_switch" ).off('click', open_modal_handler);
+        }
+
+        event.preventDefault();
+        $("#"+event.currentTarget.id).addClass("animated_shake shake");
+        setTimeout(function() {
+            $("#"+event.currentTarget.id).removeClass("animated_shake shake");
+        }, 3000);
+    }
+
 }
 
 function select_from_general(event) {

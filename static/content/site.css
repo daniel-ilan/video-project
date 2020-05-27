@@ -460,17 +460,19 @@ svg {
     box-shadow: 0px 0.393927px 0.324411px rgba(6, 94, 105, 0.0387487), 0px 0.915912px 0.754281px rgba(6, 94, 105, 0.0559829), 0px 1.64477px 1.35451px rgba(6, 94, 105, 0.0690078), 0px 2.7297px 2.24799px rgba(6, 94, 105, 0.0809922), 0px 4.49709px 3.70349px rgba(6, 94, 105, 0.0940171), 0px 5px 6.47262px rgba(6, 94, 105, 0.111251);
 }
 
-.secondaryBtn:disabled{
+ .secondaryBtn_disabled{
     border-color: #BDBDBD;
-    color: #BDBDBD ;
+    color: #BDBDBD !important;
 }
 
-.secondaryBtn:disabled:hover, .primaryBTN:disabled:hover{
+.secondaryBtn_disabled:hover, .disabled:hover{
     box-shadow: none;
     cursor: default;
+    border-color: #BDBDBD;
+
 }
 
-.primaryBTN:disabled:hover{
+.disabled:hover{
     background-color:#BDBDBD ;
     border-color: #BDBDBD;
 }
@@ -780,6 +782,14 @@ select:focus {
 
 
 /*          ----------            anmations          ----------          */
+/*              ----    shake       ----         */
+.animated_shake {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
 @-webkit-keyframes shake {
     from, to {
         -webkit-transform: translate3d(0, 0, 0);
@@ -819,9 +829,46 @@ select:focus {
     animation-name: shake;
 }
 
+
+/*              ----    fadeInLeft       ----         */
+
 .animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
+@-webkit-keyframes fadeInLeft {
+    from {
+        opacity: 0.5;
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0.5;
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.fadeInLeft {
+    -webkit-animation-name: fadeInLeft;
+    animation-name: fadeInLeft;
+}
+
