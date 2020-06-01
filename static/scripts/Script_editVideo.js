@@ -61,7 +61,6 @@ function change_animation_handler(event) {
             event_kind = "change_kind_click";
             frame_id = $(".active_frame_lottie")[0].id;
             selected_kind = (event.currentTarget.id).slice(5);
-            console.log("xxx")
 
         } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";
@@ -74,6 +73,11 @@ function change_animation_handler(event) {
             $('#content select').each(function () {
                 form_data.push([$(this).attr('name'), $(this).val()])
             });
+            $('#content textarea').each(function () {
+                form_data.push([$(this).attr('name'), $(this).val()])
+            });
+
+
         }
         else if (event.currentTarget.classList.contains("anim_kind")) {
             // change between two animation from the same kind and brand
@@ -349,6 +353,12 @@ function buildForm(data, data_kind,color_palettes, frameText) {
 
     editForm.append(displayText);
 
+    $('textarea').change(function () {
+        $('#submitChange').removeClass("secondaryBtn_disabled");
+    });
+    $('textarea').keyup(function () {
+        $('#submitChange').removeClass("secondaryBtn_disabled");
+    });
 
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
@@ -363,7 +373,7 @@ function getFrameText(text) {
     }
         return `<div class="form-group frame-text-wrapper mr-3"> 
   <h3>הערות לצילום: </h3>
-<textarea id="frameText" class="form-control" placeholder="ניתן להקליד פה הערות למצולם אשר יופיעו לו בזמן הצילום אך לא בסרטון הסופי">${text}</textarea></div>`
+<textarea id="frameText" name="side_note" class="form-control" placeholder="ניתן להקליד פה הערות למצולם אשר יופיעו לו בזמן הצילום אך לא בסרטון הסופי">${text}</textarea></div>`
 }
 
 function getImage() {

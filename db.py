@@ -253,10 +253,10 @@ def get_frame_kind_by_id(id: str):
     return select_one_query(query)
 
 
-def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str):
+def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str, notes = None):
     frame_id = int(frame_id)
     selected_anim = int(selected_anim)
-    query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}' WHERE frame_id={frame_id};"
+    query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}', frame_text= '{notes}' WHERE frame_id={frame_id};"
     update_query(query)
 
 

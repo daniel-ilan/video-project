@@ -377,7 +377,6 @@ def frame_change():
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
-            frame_text = current_frame[6]
             if kind == "image":
                 form_data = request.files
             else:
@@ -392,6 +391,8 @@ def frame_change():
 
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frames_props = get_frames_from_db()
+            frame_text = current_frame[6]
+
 
         elif event_kind == "change_mini_lottie" or event_kind == "select_from_general":
             # origimal anim
@@ -451,6 +452,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     text = {}
     color = {}
     image = False
+    notes = ""
 
     if kind_of_update_event == "submitChange":
         for item in data:
@@ -464,6 +466,8 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text.update({"textcontent": item[1]})
             elif item[0] == "text_color":
                 text.update({"textcolor": item[1]})
+            elif item[0] == "side_note":
+                notes = item[1]
             elif item[0] == "f":
                 image = True
     else:
@@ -493,11 +497,11 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     if kind_of_update_event == "submitChange":
         os.remove(path)
         # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5])
+        db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5],notes)
     else:
         os.remove(WORKING_PATH + frame_prop[3])
         # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2])
+        db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2],notes)
     return get_anim_props(new_path)
 
 

@@ -713,7 +713,7 @@ svg {
 /*          ----------            -text edit options-          ----------          */
 
 .text-edit-line{
-    width: 98px;
+    width: 104px;
     border: none;
     background-color: rgba(255, 255, 255, 0);
 }
@@ -874,6 +874,7 @@ select:focus {
 
 .imageUpload_file_div{
     display: block;
+    margin-bottom: 5%;
 }
 
 #preview_imageUpload{
