@@ -39,6 +39,7 @@ function loadNextAnim(num) {
         name: "large" + num,
     };
     animItem = lottie.loadAnimation(animData);
+    document.getElementById("slides_Notes").innerHTML  = myFrames[1][num][4];
 }
 
 function createSmallSlide(num){
@@ -47,7 +48,7 @@ function createSmallSlide(num){
 
 
     const slide = `<div class="frame_container_class">
-                        <div id="${myFrames[1][animNum + 1][0]}" class="lottie-small rounded  border border-dark"> </div>
+                        <div id="${myFrames[1][animNum + 1][0]}" class="lottie-small rounded  My_border-dark animated_slideInRight slideInRight"> </div>
                     </div>`;
         framesArea.innerHTML = slide;
         const smallAnimContainer = document.getElementById(myFrames[1][animNum + 1][0]);

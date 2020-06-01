@@ -1,12 +1,16 @@
-/* Styles go here */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 html, body {
     height: 100%;
     margin-top: -2px;
     margin-bottom: -2px;
-    background-color: black;
+    background-color: #020208;
     overflow: hidden;
+    font-family: 'Rubik', sans-serif;
+
 }
+
+
 
 #container {
     display: flex;
@@ -22,10 +26,9 @@ html, body {
 }
 
 .text-container{
-    height: 65%;
+    height: 50%;
     text-align: right;
     margin: .5rem .5rem .5rem 1rem;
-    border-bottom: 1px solid #343a40;
 }
 
 #mainWrapper {
@@ -36,12 +39,37 @@ html, body {
     width: 85%;
 }
 
+h1{
+    font-size: 1rem;
+    margin-top: 1rem;
+    padding: 1rem 0;
+    padding-right: 0.5rem;
+    color: #454545;
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
 .slide-text{
-    margin-top: 1.5rem;
+    color: #c0c0c0;
+    background-color: black;
+    padding: 0.75rem 1rem;
+    background-color: black;
+}
+
+.lottie-small{
+    background-color: black;
+}
+
+.My_border-dark{
+border: solid 2px rgba(17, 17, 17, 0.5);
 }
 
 .divider{
     border-left: 1px solid #343a40;
+}
+
+.dark_bg{
+    background-color: rgba(4, 3, 12, 0.5);
 }
 
 #video{
@@ -71,4 +99,46 @@ html, body {
 
 .bottom-row-left{
     height: 20vh;
+}
+
+.btn-group .btn{
+    border-left: rgba(38, 42, 46, 0.3) 2px solid;
+}
+
+/*          ----    bounceIn    -----       */
+@-webkit-keyframes slideInRight {
+    from {
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
+        visibility: visible;
+    }
+
+    to {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
+        visibility: visible;
+    }
+
+    to {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.slideInRight {
+    -webkit-animation-name: slideInRight;
+    animation-name: slideInRight;
+}
+.animated_slideInRight {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
