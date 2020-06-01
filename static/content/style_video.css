@@ -1,0 +1,74 @@
+/* Styles go here */
+
+html, body {
+    height: 100%;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    background-color: black;
+    overflow: hidden;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    align-items: center;
+    width: auto;
+}
+
+.frame_container_class{
+    width: 100%;
+    height: 100%;
+}
+
+.text-container{
+    height: 65%;
+    text-align: right;
+    margin: .5rem .5rem .5rem 1rem;
+    border-bottom: 1px solid #343a40;
+}
+
+#mainWrapper {
+    margin: auto;
+}
+
+#framesArea{
+    width: 85%;
+}
+
+.slide-text{
+    margin-top: 1.5rem;
+}
+
+.divider{
+    border-left: 1px solid #343a40;
+}
+
+#video{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#animationsContainer{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.scene-display-wrapper{
+    height: 80vh;
+}
+
+.lottie-large{
+    width: 100%;
+    height: 80vh;
+}
+
+.top-row-left {
+    height: 80vh;
+}
+
+.bottom-row-left{
+    height: 20vh;
+}

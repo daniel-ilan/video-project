@@ -59,6 +59,7 @@ function buildFrames(data) {
     $('#newFrameBtn').on('click', addFrame);
     $('.frame_lottie').on('click', {name: "user_change"}, changeFrame);
 
+
 }
 
 
@@ -145,7 +146,7 @@ function buildForm(data) {
 function deleteFrameFunc() {
     /**
     todo: db get deleted id and return the previous id
-     we need to change done funcations because buildFrames gets  ---> check if it's works
+     we need to change done functions because buildFrames gets  ---> check if it's works
      a = event.result ---> check this line!
      */
 
@@ -215,6 +216,9 @@ function buildSideNav(data)
 }
 
 function changeNavItem(kind) {
+    /**
+     * todo: I think this function is written twice - need to check if we can delete one
+     */
 
     /* change the color of the selceted nav item */
     var indexActive = 1;
@@ -255,7 +259,7 @@ function buildAnim_byKind(data) {
     let animations = [];
     let source;
     if (data != null) {
-        for (i = 0; i < data.animations.length; i++) {
+        for (let i = 0; i < data.animations.length; i++) {
             source = data.animations[i][1];
             let animKindPlayer = `<div id="anim_${data.animations[i][2]}" class="tinyLottie anim_kind">
         <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"

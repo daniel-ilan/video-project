@@ -43,10 +43,10 @@ function frameChangeHandler(event) {
 
 
 function change_animation_handler(event) {
-    let event_kind = ""
-    let frame_id = ""
-    let selected_kind = ""
-    let form_data = ""
+    let event_kind = "";
+    let frame_id = "";
+    let selected_kind = "";
+    let form_data = "";
 
     if(event.currentTarget.classList.contains("secondaryBtn_disabled"))
     {
@@ -55,19 +55,19 @@ function change_animation_handler(event) {
     else
     {
         if (event.currentTarget.classList.contains("frame_lottie")) {
-            event_kind = "frame_click"
+            event_kind = "frame_click";
             frame_id = event.currentTarget.id;
         } else if (event.currentTarget.classList.contains("nav-link")) {
-            event_kind = "change_kind_click"
+            event_kind = "change_kind_click";
             frame_id = $(".active_frame_lottie")[0].id;
             selected_kind = (event.currentTarget.id).slice(5);
             console.log("xxx")
 
-        } else if (event.currentTarget.id == "submitChange") {
+        } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";
             event.preventDefault();
             frame_id = $(".active_frame_lottie")[0].id;
-            form_data = []
+            form_data = [];
             $('#content input').each(function () {
                 form_data.push([$(this).attr('name'), $(this).val()])
             });
@@ -83,7 +83,7 @@ function change_animation_handler(event) {
             selected_kind = event.currentTarget.id;
             //selected_kind = event.target.src;
         }
-        else if (event.currentTarget.id == "modal_main_btn") {
+        else if (event.currentTarget.id === "modal_main_btn") {
             event_kind = "select_from_general";
             frame_id = $(".active_frame_lottie")[0].id;
             // selected_kind in this function represent the selected mini anim for replace to
@@ -117,6 +117,7 @@ function change_animation_handler(event) {
             event.preventDefault();
             form_data_image.append('event_kind', "submitChange");
             form_data_image.append('frame_id', $(".active_frame_lottie")[0].id);
+            form_data_image.append('form_data', JSON.stringify(form_data));
             $.ajax({
                 processData: false,
                 contentType: false,
@@ -138,20 +139,21 @@ function change_animation_handler(event) {
 }
 
 function contentChangeHandler(data) {
-    const event_kind = data.event_kind
+    const event_kind = data.event_kind;
     let frame_id = "frame_" + data.current_frame[0];
-    let kind = data.kind
+    let kind = data.kind;
+    const frameText = data.frame_text;
 
-    buildForm(data.anim_props, kind, data.color_palettes)
+    buildForm(data.anim_props, kind, data.color_palettes, frameText);
     changeActive(frame_id, ".frame_lottie");
-    if (event_kind == "change_kind_click" || event_kind=="change_mini_lottie" || event_kind=="select_from_general" ) {
+    if (event_kind === "change_kind_click" || event_kind ==="change_mini_lottie" || event_kind ==="select_from_general" ) {
         $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
     }
 
     changeNavItem(kind);
     buildAnim_byKind(data.animation_by_kind);
     // document.querySelector('#mainAnimation').load(data.anim_props.path);
-    if (event_kind == "submitChange") {
+    if (event_kind === "submitChange") {
         document.querySelector("#"+ frame_id+ " lottie-player").load(data.anim_props.path);
     }
     // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
@@ -161,7 +163,7 @@ function contentChangeHandler(data) {
 
 function submitChange_function(event) {
     event.preventDefault();
-    event_kind = "submitChange"
+    event_kind = "submitChange";
     const form_data = new FormData(editForm[0]);
     form_data.append('event_kind', event_kind);
     $.ajax({
@@ -195,6 +197,14 @@ function buildFrames(data) {
     $('#frames_Area').html(numSlides);
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', change_animation_handler);
+    document.querySelectorAll(".tinyLottiePlayer").forEach(function seekToMiddle(player) {
+        player.addEventListener("ready", function(){
+            player.seek("50%");
+        });
+        player.addEventListener("stop", function(){
+            player.seek("50%");
+        });
+    });
 }
 
 
@@ -255,7 +265,7 @@ function create_color_pelettes_json(color_palettes) {
 }
 
 
-function buildForm(data, data_kind,color_palettes) {
+function buildForm(data, data_kind,color_palettes, frameText) {
     editForm.html("");
     animProps = data;
     /**
@@ -324,6 +334,8 @@ function buildForm(data, data_kind,color_palettes) {
          */
         createColorUi(colorUi, colorId,color_palettes_json)
     }
+
+
     //disabled
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#content input').change(function () {
@@ -333,11 +345,25 @@ function buildForm(data, data_kind,color_palettes) {
         $('#submitChange').removeClass("secondaryBtn_disabled");
     });
 
+    const displayText = getFrameText(frameText);
+
+    editForm.append(displayText);
+
 
 
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
+}
+
+function getFrameText(text) {
+    if (text == null)
+    {
+        text= ""
+    }
+        return `<div class="form-group frame-text-wrapper mr-3"> 
+  <h3>הערות לצילום: </h3>
+<textarea id="frameText" class="form-control" placeholder="ניתן להקליד פה הערות למצולם אשר יופיעו לו בזמן הצילום אך לא בסרטון הסופי">${text}</textarea></div>`
 }
 
 function getImage() {
@@ -362,7 +388,7 @@ function loadFile(event) {
 
     };
     reader.readAsDataURL(event.target.files[0]);
-};
+}
 
 
 
@@ -545,6 +571,8 @@ function roundItemsBorder() {
 
 function buildAnim_byKind(data) {
     /**
+     * I think this function is written twice
+     * @Ruby check if we can delete 1 function
      * todo indicate which type is now playing
      * update main animation with all props applied
      * @type {*[]}

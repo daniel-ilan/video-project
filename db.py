@@ -232,7 +232,7 @@ def create_new_frame(video_id: str, url: str):
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
     return select_all_query(query)
 
 
