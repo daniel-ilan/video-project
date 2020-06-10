@@ -71,32 +71,30 @@ def get_anim_props(path, image_path=""):
     anim_props = {'path': path}
     for layer in anim.layers:
         list_changed = False
-        if layer.name == '.myText':
-            text_color = layer.data.data.keyframes[0].start.color
-            text_content = layer.data.data.keyframes[0].start.text
-            text_alignment = layer.data.data.keyframes[0].start.justify.value
-            text_dict = {'color': colors.to_hex(list(text_color[0:3])),
-                         'content': correct_text(text_content),
-                         'alignment': text_alignment}
-            anim_props['text'] = text_dict
 
-        elif layer.name == '.primaryColor':
+        if 'primary' in layer.name:
             color = colors.to_hex(layer.find('Fill 1').color.value.components)
             prim_opacity = layer.find('Fill 1').opacity.value
             primary_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
             anim_props.update(primary_dict)
 
-        elif layer.name == '.baseColor':
+        elif 'base' in layer.name:
             out_color = colors.to_hex(layer.find('Fill 1').color.value.components)
             sec_opacity = layer.find('Fill 1').opacity.value
             secondary_dict = {'secondary': {'color': out_color, 'opacity': sec_opacity}}
             anim_props.update(secondary_dict)
 
+        elif 'third' in layer.name:
+            color = colors.to_hex(layer.find('Fill 1').color.value.components)
+            prim_opacity = layer.find('Fill 1').opacity.value
+            primary_dict = {'third': {'color': color, 'opacity': prim_opacity}}
+            anim_props.update(primary_dict)
+
         elif layer.name == '.image':
             # image_dict = {'image': "name"}
             anim_props['image'] = "true"
 
-        elif layer.name.find(".listText") != -1 and list_changed is False:
+        elif layer.name.startswith(".listText") and list_changed is False:
             text_layer_num = int(layer.name[-1])
             if text_layer_num == 1:
                 text_color = layer.data.data.keyframes[0].start.color
@@ -111,26 +109,38 @@ def get_anim_props(path, image_path=""):
 
             else:
                 text_content = layer.data.data.keyframes[0].start.text
-                anim_props['listItem']['text']['content'].append(text_content)
+                anim_props['listItem']['text']['content'].append(correct_text(text_content))
 
-        elif layer.name.find(".primaryColorList") != -1:
-            primary_layer_num = int(layer.name[-1])
-            if primary_layer_num == 1:
-                color = colors.to_hex(layer.find('Fill 1').color.value.components)
-                prim_opacity = layer.find('Fill 1').opacity.value
-                color_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
-                anim_props['listItem'].update(color_dict)
 
-        elif layer.name.find(".baseColorList") != -1:
-            secondary_layer_num = int(layer.name[-1])
-            if secondary_layer_num == 1:
-                color = colors.to_hex(layer.find('Fill 1').color.value.components)
-                prim_opacity = layer.find('Fill 1').opacity.value
-                color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
-                anim_props['listItem'].update(color_dict)
+        ### This code is for individual layer colors we are doing only 3 colors
+        # elif layer.name.find(".primaryColorList") != -1:
+        #     primary_layer_num = int(layer.name[-1])
+        #     if primary_layer_num == 1:
+        #         color = colors.to_hex(layer.find('Fill 1').color.value.components)
+        #         prim_opacity = layer.find('Fill 1').opacity.value
+        #         color_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
+        #         anim_props['listItem'].update(color_dict)
+        #
+        # elif layer.name.find(".baseColorList") != -1:
+        #     secondary_layer_num = int(layer.name[-1])
+        #     if secondary_layer_num == 1:
+        #         color = colors.to_hex(layer.find('Fill 1').color.value.components)
+        #         prim_opacity = layer.find('Fill 1').opacity.value
+        #         color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
+        #         anim_props['listItem'].update(color_dict)
+
+
         elif layer.name == ".empty":
             empty_dict = {'empty': 'empty'}
             anim_props.update(empty_dict)
+        elif layer.name == '.myText':
+            text_color = layer.data.data.keyframes[0].start.color
+            text_content = layer.data.data.keyframes[0].start.text
+            text_alignment = layer.data.data.keyframes[0].start.justify.value
+            text_dict = {'color': colors.to_hex(list(text_color[0:3])),
+                         'content': correct_text(text_content),
+                         'alignment': text_alignment}
+            anim_props['text'] = text_dict
     return anim_props
 
 
@@ -342,7 +352,6 @@ def frame_change():
 
 
         elif event_kind == "frame_click":
-            frames_props = get_frames_from_db()
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             anim_props = get_anim_props(path + current_frame[3])
@@ -351,7 +360,6 @@ def frame_change():
             frame_text = current_frame[6]
 
         elif event_kind == "change_kind_click":
-            frames_props = get_frames_from_db()
 
             selected_kind = request.form["selected_kind"]
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -436,11 +444,15 @@ def frame_change():
             # it it's false then add the anim props to the page
             lit_anim.append([general_frame[0], "static/content/animations/" + general_frame[1], general_frame[2], True])
 
+
+
+
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array, frame_text=frame_text)
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
+
     if kind_of_update_event == "submitChange":
         path = WORKING_PATH + file_name
         name_for_new_name = frame_prop[4]
@@ -451,6 +463,10 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     an = readable(path)
     text = {}
     color = {}
+    list_text = {'listItem_color': "",
+                 'listItemalignment': "",
+                 'listContent': []}
+    list_color = {}
     image = False
     notes = ""
 
@@ -459,7 +475,9 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
             if item[0] == "primary":
                 color.update({"primary": item[1]})
             elif item[0] == "secondary":
-                color.update({"secondary": item[1]})
+                color.update({"base": item[1]})
+            elif item[0] == "third":
+                color.update({"third": item[1]})
             elif item[0] == "textalignment":
                 text.update({"textalignment": item[1]})
             elif item[0] == "textcontent":
@@ -470,12 +488,32 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 notes = item[1]
             elif item[0] == "f":
                 image = True
+
+            # bullets text
+            elif item[0].startswith('listItemcontent'):
+                list_num = item[0][-1]
+                list_text['listContent'].append([item[1], list_num])
+
+            # bullets color
+            elif item[0] == "listItem_color":
+                list_text.update({"listItem_color": item[1]})
+            # bullets alignment
+            elif item[0] == 'listItemalignment':
+                list_text.update({"listItemalignment": item[1]})
+
+            ### This code is for individual bullet color - we are doing three colors alltogether
+            # # bullets color 1
+            # elif item[0] == 'listItem_primary':
+            #     list_color.update({"primary": item[1]})
+            # # bullets color 2
+            # elif item[0] == 'listItem_secondary':
+            #     list_color.update({"secondary": item[1]})
     else:
         for item in data:
             if item == "primary":
                 color.update({"primary": data[item]['color']})
             elif item == "secondary":
-                color.update({"secondary": data[item]['color']})
+                color.update({"base": data[item]['color']})
             elif item == "text":
                 text.update({"textcontent": data[item]['content']})
                 text.update({"textcolor": data[item]['color']})
@@ -484,10 +522,12 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     if len(text) > 0:
         an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"])
     if len(color) > 0:
-        an = change_color(an, color["primary"], color["secondary"], 100)
-
+        an = change_color(an, color, 100)
     if image is True:
         an = save_image(data, an)
+    if len(list_text['listContent']) > 0:
+        an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"])
+
 
     # create new name & file
     new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
@@ -497,11 +537,11 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     if kind_of_update_event == "submitChange":
         os.remove(path)
         # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5],notes)
+        db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], notes)
     else:
         os.remove(WORKING_PATH + frame_prop[3])
         # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2],notes)
+        db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], notes)
     return get_anim_props(new_path)
 
 
@@ -529,7 +569,7 @@ def save_image(data, an):
 
 
 def convert_row_to_list(row_data):
-    # 0 -frame_id, 1- video_id, 2- connectionReplace, 3- lottie_url, 4- selected_animation_kind, 5-selected_animation_id
+    # 0 -frame_id, 1- video_id, 2- connectionReplace, 3- lottie_url, 4- selected_animation_kind, 5-selected_animation_id 6
     frames_list = []
     for my_data in row_data:
         frames_list.append(my_data)
@@ -576,7 +616,9 @@ def add_frame():
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    db.create_new_frame("27", new_name)
+    num_frames = len(db.get_all_frames("27"))
+    db.create_new_frame("27", new_name, num_frames)
+
 
 
 def copy_animations(kind, new_path, old_path='static/content/animations/'):
@@ -613,8 +655,8 @@ def get_frames_from_db():
     myArray = [frames_arrayPath, frames_list]
 
     for frame in frames_array:
-        # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
-        frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4]])
+        # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[order]
+        frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5]])
     return myArray
 
 
@@ -629,15 +671,168 @@ def change_text(an, text, color, alignment=1):
     return an
 
 
-def change_color(an, color, outline_color, opacity):
-    correct_color = colors.to_rgba(color, float)
-    correct_outline_color = colors.to_rgba(outline_color, float)
+def change_list_text(an, text: list, color, alignment=1):
+    """
+    :param an: animation object
+    :param text: content and num of bullet
+    :param color: the text color
+    :return: an: animation object
+    """
+    layers = an.layers
+    correct_color = list(colors.to_rgba(color, float) + (1,))
+    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]         # only layers with text
+    num_layers = len(text_layers)
+    bullet_deleted = False
+    layers_to_delete = []
+    while num_layers < len(text):
+        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)      # adds the new bullet to text_layers
+        num_layers += 1
+
+    n = len(layers)+5
+    for text_item in text:
+        for i in range(n):
+            try:
+                layer = layers[i]
+            except IndexError:
+                layer = False
+            if layer:
+                redundant_layer = layer.name[-1]  # Last letter in the layer's name to check which layers to delete
+
+                if layer.name == f'.listText_{text_item[1]}':
+                    anim_text = correct_text(text_item[0])
+                    layer.data.data.keyframes[0].start.color = correct_color[0:3]
+                    layer.data.data.keyframes[0].start.text = anim_text
+                    layer.data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
+
+                # check if redundant_layer can be assigned to type: int
+                # checks if redundant_layer is bigger then amount of text boxes == opposite of the while loop
+                # deletes the layer
+                #
+                elif redundant_layer.isdigit():
+                    if int(redundant_layer) > len(text):
+                        bullet_deleted = True
+                        del layers[i]   # do here !layer.remove! in the next few days
+    for layer in layers:
+        for name in layers_to_delete:
+            if name == layer.name:
+                del []
+    if bullet_deleted is True:
+        properties = {1: "anchor_point", 2: "position", 6: "scale", 10: "color", 11: "opacity"}
+        layer_to_change = [layer for layer in layers if layer.name != ".hiddenText"]
+        for layer in layer_to_change:
+            type_transform = layer.find(True, propname='animated').property_index
+            for i in range(-1, -3, -1):
+                getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time -= 60
+                layer.out_point -= 60
+        an.out_point -= 60
+    return an
+
+
+def create_new_list_bullet(an, layers, text_layers, alignment=1):
+    """
+    :param an: animation
+    :param layers: all layers
+    :param text_layers: only text layers
+    :return: an, text_layers: adds the new layer to both objects
+    """
+    from lottie import Point
+    num_layers = len(text_layers)
+
+    # holds the changable properties of layer.Transform
+    # uses type_transform to find the correct property to change
+    properties = {1: "anchor_point", 2: "position", 6: "scale", 10: "color", 11: "opacity"}
+
+    for layer in layers:
+        if layer.name == '.hiddenText':
+            pass
+        else:
+            # type_transform & frames_to_change can hold only 1 parameter. if we animate more then 1 we need a list
+            type_transform = layer.find(True, propname='animated').property_index
+
+            # copies only layers from the first bullet
+            if layer.name.endswith("1"):
+                frames_to_change = layer.find(True, propname='animated').keyframes
+
+                a = layer.clone()
+
+
+                # changes the new name to the last name +1 in the end
+                a.name = a.name.replace("1", str(num_layers + 1))
+                if a.name.startswith(".listText"):
+                    text_layers.append(a)
+
+                # changes the y index of the new frame according
+                # to the amount of all bullets in the animation
+                # a.transform.position.value.y = layer.transform.position.value.y  + layer.transform.position.value.y  * num_layers
+                anim_x = a.transform.position.value.x
+                anim_y = a.transform.position.value.y + 250 * num_layers
+
+                # we need to change the time of the transformation of the animated layer so we can see the animation
+                # the in_point (start frame) of each layer is not enough
+                # we need to keep the exit animation on the same time because we want all layers to exit together
+                for i in range(0, len(frames_to_change)):
+                    """
+                    :param i represents the keyframe index -- we need to decide here how many keyframes we add to
+                    an animation
+                    in_time of the animation is the first 3 keyframes, here we add 60 * num_layers because
+                    the last 3 frames are added again to layer.transform (== the animation gets in the same time it
+                    always did but gets out later so we see all of it)
+                    """
+                    if i < 3:
+                        getattr(a.transform, f"{properties[type_transform]}").keyframes[i].time += 60 * num_layers
+                    else:
+                        getattr(a.transform, f"{properties[type_transform]}").keyframes[i].time += 60
+                a.out_point += 60
+                layer.out_point += 60
+                a.transform.position.value = Point(anim_x, anim_y)
+                an.add_layer(a)
+
+            if layer.name.endswith(str(num_layers + 1)):
+                pass
+            else:
+                for i in range(-1, -3, -1):
+                    getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time += 60
+                    layer.out_point += 60
+
+    an.out_point += 60
+    return an, text_layers
+
+
+def change_color(an, all_colors, opacity=1):
+
     layers = an.layers
     for layer in layers:
-        if layer.name == ".primaryColor":
+        for name, color in all_colors.items():
+            if name is not None:
+                correct_color = colors.to_rgba(color, float)
+                if name in layer.name:
+                    layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
+                    layer.find('Fill 1').opacity.value = float(opacity)
+
+
+    # Old code need to delete
+    # for layer in layers:
+    #     if layer.name.contains(".primary"):
+    #         layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
+    #         layer.find('Fill 1').opacity.value = float(opacity)
+    #     elif layer.name.contains(".baseColor"):
+    #         layer.find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
+
+    return an
+
+
+def change_list_color(an, color, outline_color, name, opacity):
+
+    correct_color = colors.to_rgba(color, float)
+    correct_outline_color = colors.to_rgba(outline_color, float)
+
+
+    layers = an.layers
+    for layer in layers:
+        if layer.name.endswith(f"{name}") and layer.name.startswith('.primaryColor'):
             layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
             layer.find('Fill 1').opacity.value = float(opacity)
-        elif layer.name ==".baseColor":
+        elif layer.name.endswith(f"{name}") and layer.name.startswith('.baseColor'):
             layer.find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
 
     return an

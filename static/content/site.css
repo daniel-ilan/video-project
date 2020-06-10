@@ -300,6 +300,7 @@ svg {
 .frame_container_class{
     display: inline-block;
     margin:0.5rem 0.75rem;
+    padding: 0 1rem;
 }
 
 .tinyLottie_continer{
@@ -335,22 +336,19 @@ svg {
 .tinyLottie:hover {
     -webkit-box-shadow: 3px 10px 20px 0px rgba(182, 195, 199, 0.63);
     -moz-box-shadow: 3px 10px 20px 0px rgba(182, 195, 199, 0.63);
-    box-shadow: 3px 10px 20px 0px rgba(182, 195, 199, 0.63);
-    border-width: 2px !important;
+    box-shadow: 2px 6px 10px 0px rgba(182, 195, 199, 0.63);
+    border-width: 1px !important;
     color: black;
     border-color: #00B6DE;
-    font-weight: bold;
-
-
+    /* font-weight: bold; */
     -webkit-transition: border-color 0.3s ease-out;
     -moz-transition: border-color 0.3s ease-out;
     -o-transition: border-color 0.3s ease-out;
     transition: border-color 0.3s ease-out;
-
     -webkit-transition: box-shadow 0.3s ease-out;
     -moz-transition: box-shadow 0.3s ease-out;
     -o-transition: box-shadow 0.3s ease-out;
-    transition: box-shadow 0.3s ease-out;
+    transition: box-shadow 0.1s ease-in-out;
 }
 
 
@@ -363,29 +361,29 @@ svg {
 .frame_lottie{
     width: 5vw;
     height: 10vh;
-    border: 1.5px solid #828282;
+    border: 1px solid #828282;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 
 .frame_container_class:hover, .tinyLottie_continer:hover{
     border-color: #00B6DE;
 
-    -webkit-transition: border-color 0.3s ease-out;
-    -moz-transition: border-color 0.3s ease-out;
-    -o-transition: border-color 0.3s ease-out;
-    transition: border-color 0.3s ease-out;
+    -webkit-transition: border-color 0.1s ease-out;
+    -moz-transition: border-color 0.1s ease-out;
+    -o-transition: border-color 0.1s ease-out;
+    transition: border-color 0.1s ease-out;
 }
 
 .frame_container_class:hover p, .tinyLottie_continer:hover p{
     color: #00B6DE;
     font-weight: 500;
 
-    -webkit-transition: color 0.2s ease-out;
-    -moz-transition: color 0.2s ease-out;
-    -o-transition: color 0.2s ease-out;
-    transition: color 0.2s ease-out;
+    -webkit-transition: color 0.1s ease-out;
+    -moz-transition: color 0.1s ease-out;
+    -o-transition: color 0.1s ease-out;
+    transition: color 0.1s ease-out;
 }
 
 .anim_kind{
@@ -579,7 +577,7 @@ svg {
 }
 
 .disabled:hover{
-    background-color:#BDBDBD ;
+    background-color:#BDBDBD;
     border-color: #BDBDBD;
 }
 
@@ -864,6 +862,14 @@ select:focus {
     background: none;
     -webkit-box-shadow: none;
     box-shadow: none;
+}
+
+
+.spinner-wrapper {
+    width: 90%;
+    height: 100%;
+    background-color: #8282820d;
+    position: absolute;
 }
 
 .name-of-color{

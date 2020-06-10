@@ -13,7 +13,9 @@ $(document).ready(function () {
 
     deleteFrameBtn = $('#dltFrameBtn');
     deleteFrameBtn.on('click', deleteFrameFunc)
-
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 
 });
 
