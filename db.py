@@ -223,16 +223,16 @@ def update_video_status(video_id: str, new_status: str):
     update_query(query)
 
 
-def create_new_frame(video_id: str, url: str):
+def create_new_frame(video_id: str, url: str, num_frames: int):
     video_id = int(video_id)
 
-    query = f"INSERT INTO frames([video_id],[lottie_url]) VALUES({video_id},'{url}');"
+    query = f"INSERT INTO frames([video_id],[lottie_url],[frame_order]) VALUES({video_id},'{url}','{num_frames +1}');"
     update_query(query)
 
 
 def get_all_frames(video_id: str):
     video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text] FROM frames WHERE video_id={video_id} ORDER BY frame_id ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[frame_order] FROM frames WHERE video_id={video_id} ORDER BY frame_order ASC;"
     return select_all_query(query)
 
 
@@ -253,7 +253,7 @@ def get_frame_kind_by_id(id: str):
     return select_one_query(query)
 
 
-def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str, notes = None):
+def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str, notes=None):
     frame_id = int(frame_id)
     selected_anim = int(selected_anim)
     query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}', frame_text= '{notes}' WHERE frame_id={frame_id};"

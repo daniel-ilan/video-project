@@ -115,6 +115,11 @@
 
                 <div class="col-6 animation-container">
                     <div  class="mr-auto pt-1 pb-4 "></div>
+                    <div class="spinner-wrapper invisible align-items-center d-flex justify-content-center spinner-wrapper" id="animSpinner">
+                        <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
                                    class="lottiePlayer mainAnimation" id="mainAnimation" style="width: 94%">
                     </lottie-player>
@@ -134,10 +139,9 @@
               </div>
           </main>
       </div>
-      <div id="frames_Area" class="flex-md-nowrap p-0 row" style="height:15vh; overflow-x: scroll">
+      <div id="frames_Area" class="row" style="height:15vh; overflow-x: scroll" uk-sortable>
 
       </div>
-  </div>
 
   <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -158,13 +162,13 @@
 
 </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
 <script src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"
         integrity="sha384-a9xOd0rz8w0J8zqj1qJic7GPFfyMfoiuDjC9rqXlVOcGO/dmRqzMn34gZYDTel8k"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.5.3/dist/js/uikit.min.js"></script>
 <script src="../static/scripts/JavaScript.js" type="text/javascript"></script>
 <script src="../static/scripts/Script_editVideo.js"></script>
 
