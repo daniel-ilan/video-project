@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+
+html{
+    overflow: hidden;
+}
 body {
     /*background: linear-gradient(1.37deg, #2F1359 2.49%, #6515DD 93.78%);*/
     background-color: #2F1359;
@@ -299,7 +303,7 @@ svg {
 /*          ----------            edit Template Page          ----------          */
 .frame_container_class{
     display: inline-block;
-    margin:0.5rem 0.75rem;
+    margin:0.5rem 0;
     padding: 0 1rem;
 }
 
@@ -364,8 +368,19 @@ svg {
     border: 1px solid #828282;
     box-sizing: border-box;
     border-radius: 6px;
+    cursor: grab;
 }
 
+.frame_lottie:active{
+    cursor: grabbing;
+}
+.frame_lottie:active:hover{
+    cursor: grabbing;
+}
+
+.dragged {
+    cursor: grabbing;
+}
 
 .frame_container_class:hover, .tinyLottie_continer:hover{
     border-color: #00B6DE;
@@ -866,10 +881,13 @@ select:focus {
 
 
 .spinner-wrapper {
-    width: 90%;
-    height: 100%;
-    background-color: #8282820d;
+    width: 87vh;
+    height: 25vw;
+    background-color: #ececec;
     position: absolute;
+    border-radius: 1rem;
+    z-index: 1;
+    top: 2vh;
 }
 
 .name-of-color{

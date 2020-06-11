@@ -7,7 +7,7 @@ import os
 import time
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Flask, redirect
+from flask import render_template, request, jsonify, Flask, redirect, session
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
@@ -15,12 +15,12 @@ from werkzeug.utils import secure_filename
 
 import db
 
+
+
 application = Flask(__name__)
-UPLOAD_FOLDER = "static/content/animations/images"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-WORKING_PATH = 'static/db/users/10/11/videos/27/frames/'
-COLLECTION_PATH = "static/content/animations/"
+application.secret_key = os.urandom(24)
+
 
 
 def correct_text(sentence):
@@ -144,7 +144,6 @@ def get_anim_props(path, image_path=""):
     return anim_props
 
 
-frames_arrayPath = "static/content/animations/"
 colorsArray = []
 
 
@@ -279,6 +278,16 @@ def homePage():
 @application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
+
+    current_project = 11
+    current_video = 27
+
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+    application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'editContent.html',
         title='שם הסרטון',
@@ -294,7 +303,7 @@ def get_all_animation_by_kind():
         event_kind = request.form["event_kind"]
         if (event_kind == "button_switch"):
             frames_props = get_frames_from_db()
-            my_path = COLLECTION_PATH
+            my_path = session.get('COLLECTION_PATH')
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
@@ -316,34 +325,32 @@ def get_all_animation_by_kind():
 @application.route('/frame_change', methods=['POST', 'GET'])
 def frame_change():
     anim_props = ""
-    frames_props = []
     current_frame = []
     lit_anim = []
     kind = ""
-    path = get_frames_from_db()[0]
+    frames_props = get_frames_from_db()
+    path = frames_props[0]
     general_frame = []
     frame_text = ""
 
+
     if request.method == 'POST':
+        frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
         if (event_kind == "onLoad"):
-            frames_props = get_frames_from_db()
             anim_props = get_anim_props(path + str(frames_props[1][0][1]))
             current_frame = frames_props[1][0]
             kind = current_frame[3]
             frame_text = current_frame[4]
 
         elif event_kind == "delete_frame":
-            frame_id = request.form["frame_id"]
             current_frame = delete_frame(frame_id)
-            frames_props = get_frames_from_db()
             anim_props = get_anim_props(path + str(current_frame[3]))
             kind = current_frame[4]
             frame_text = current_frame[6]
 
         elif event_kind == "new_frame":
             add_frame()
-            frames_props = get_frames_from_db()
             last_frame = len(frames_props[1]) - 1
             anim_props = get_anim_props(path + str(frames_props[1][last_frame][1]))
             current_frame = frames_props[1][last_frame]
@@ -352,7 +359,6 @@ def frame_change():
 
 
         elif event_kind == "frame_click":
-            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             anim_props = get_anim_props(path + current_frame[3])
             frames_props = None
@@ -362,14 +368,13 @@ def frame_change():
         elif event_kind == "change_kind_click":
 
             selected_kind = request.form["selected_kind"]
-            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
             # create a copy of new lottie by the kind
             new_lottie = copy_animations(selected_kind, "")
 
             # remove old file from dit
-            remove_path = WORKING_PATH + str(db.get_frame_by_id(frame_id)[3])
+            remove_path = session.get('WORKING_PATH') + str(db.get_frame_by_id(frame_id)[3])
             os.remove(remove_path)
 
             # change data in db
@@ -382,7 +387,6 @@ def frame_change():
             frame_text = current_frame[6]
 
         elif event_kind == "submitChange":
-            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
             if kind == "image":
@@ -397,14 +401,12 @@ def frame_change():
             # anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
             #                                "submitChange")
 
-            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
-            frames_props = get_frames_from_db()
+            # current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frame_text = current_frame[6]
 
 
         elif event_kind == "change_mini_lottie" or event_kind == "select_from_general":
             # origimal anim
-            frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
             anim_props_original = get_anim_props(path + current_frame[3])
@@ -414,9 +416,6 @@ def frame_change():
             anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
                                            "change_mini_lottie")
 
-            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
-            frames_props = get_frames_from_db()
-
         color_palettes = db.get_colors_by_palette("1")
         color_palettes_array = []
         for color in color_palettes:
@@ -424,8 +423,7 @@ def frame_change():
         lit_anim = get_animations_by_kind(kind)
 
         if event_kind == "select_from_general":
-            general_frame = db.get_genral_anim_props_by_id(
-                new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
+            general_frame = db.get_genral_anim_props_by_id(new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
 
         elif event_kind == "onLoad" or event_kind == "new_frame":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[2]))
@@ -442,9 +440,7 @@ def frame_change():
                     check_if_in_collection = True
         if check_if_in_collection == False:
             # it it's false then add the anim props to the page
-            lit_anim.append([general_frame[0], "static/content/animations/" + general_frame[1], general_frame[2], True])
-
-
+            lit_anim.append([general_frame[0], session.get('COLLECTION_PATH') + general_frame[1], general_frame[2], True])
 
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
@@ -454,10 +450,10 @@ def frame_change():
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
 
     if kind_of_update_event == "submitChange":
-        path = WORKING_PATH + file_name
+        path = session.get('WORKING_PATH') + file_name
         name_for_new_name = frame_prop[4]
     else:
-        path = COLLECTION_PATH + file_name
+        path = session.get('COLLECTION_PATH') + file_name
         name_for_new_name = frame_prop[1]
 
     an = readable(path)
@@ -531,7 +527,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
 
     # create new name & file
     new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
-    new_path = WORKING_PATH + new_name
+    new_path = session.get('WORKING_PATH') + new_name
     exporters.export_lottie(an, new_path)
 
     if kind_of_update_event == "submitChange":
@@ -539,7 +535,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
         # update frame props on db
         db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], notes)
     else:
-        os.remove(WORKING_PATH + frame_prop[3])
+        os.remove(session.get('WORKING_PATH') + frame_prop[3])
         # update frame props on db
         db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], notes)
     return get_anim_props(new_path)
@@ -577,8 +573,8 @@ def convert_row_to_list(row_data):
 
 
 def delete_frame(id: str):
-    data = id
-    my_id = data[data.find('_') + 1:]
+    my_id = id
+    # my_id = data[data.find('_') + 1:]
     all_frames = db.get_all_frames("27")
     prev_id = all_frames[0][1]
     for i in range(1, len(all_frames)):
@@ -586,7 +582,7 @@ def delete_frame(id: str):
             prev_id = all_frames[i - 1][0]
             break
 
-    path = WORKING_PATH + str(db.get_frame_by_id(my_id)[3])
+    path = session.get('WORKING_PATH') + str(db.get_frame_by_id(my_id)[3])
     os.remove(path)
     db.delete_frame(int(my_id))
     return convert_row_to_list(db.get_frame_by_id(str(prev_id)))
@@ -601,13 +597,13 @@ def get_animations_by_kind(kind):
     animations = db.get_animations_by_project_and_kind('11', kind)
 
     for anim in animations:
-        myArray.append([anim[0], "static/content/animations/" + anim[1], anim[2]])
+        myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
     return myArray
 
 
 def add_frame():
-    frame_path = WORKING_PATH
-    with open(frames_arrayPath + "empty.json", 'r') as in_file:
+    frame_path = session.get('WORKING_PATH')
+    with open(session.get('COLLECTION_PATH') + "empty.json", 'r') as in_file:
         # Reading from json file
         json_object = json.load(in_file)
 
@@ -621,7 +617,8 @@ def add_frame():
 
 
 
-def copy_animations(kind, new_path, old_path='static/content/animations/'):
+def copy_animations(kind, new_path, old_path=''):
+    old_path = session.get('COLLECTION_PATH')
     if kind == 'empty new project':
         empty_anim = db.get_animations_by_kind('empty')
         old_path = old_path + empty_anim[0][0]  # url
@@ -631,7 +628,7 @@ def copy_animations(kind, new_path, old_path='static/content/animations/'):
         get_anims = get_animations_by_kind(kind)
         old_path = get_anims[0][1]  # url
         anim_id = get_anims[0][2]
-        new_path = WORKING_PATH
+        new_path = session.get('WORKING_PATH')
 
     with open(old_path, 'r', encoding='utf-8') as in_file:
         # Reading from json file
@@ -646,11 +643,11 @@ def copy_animations(kind, new_path, old_path='static/content/animations/'):
 
 def get_frames_from_db():
     # need to change "27"
-    frames_array = db.get_all_frames("27")
+    frames_array = db.get_all_frames('27')
 
     "need to change frames_arrayPath"
     # line velow should come out of a functions called get_frames_path
-    frames_arrayPath = "static/db/users/10/11/videos/27/frames/"
+    frames_arrayPath = session.get('WORKING_PATH')
     frames_list = []
     myArray = [frames_arrayPath, frames_list]
 
@@ -843,5 +840,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
 if __name__ == '__main__':
     application.run()
+
+
