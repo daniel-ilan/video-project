@@ -197,7 +197,14 @@ function buildFrames(data) {
     // creates the option to drag the frames around
     framesArea = document.querySelector('#frames_Area');
     UIkit.sortable(framesArea, {
-        clsNoDrag: "no-drag"});
+        clsNoDrag: "no-drag",
+        animation: 200,
+        clsCustom: ".dragged",
+        clsPlaceholder: ".dragged",
+        clsItem: ".dragged",
+        clsDrag: ".dragged",
+        clsDragState: ".dragged",
+        clsBase: ".dragged"});
     UIkit.util.on(framesArea, 'moved', getDraggedInfo);
 
     // plays all animations to 50%
