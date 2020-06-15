@@ -1554,7 +1554,16 @@ select:focus {
     border: 1.5px solid #6515DD;
 }
 
+.paletteGrid_modal:hover {
+    background: linear-gradient(0deg, rgba(0, 182, 222, 0.04), rgba(0, 182, 222, 0.04)), #FFFFFF;
+    cursor: pointer;
+}
+
 hr.solid {
-    border-top: 1px solid rgba(187, 187, 187, 0.22);
+    border-top: 1px solid rgba(187, 187, 187, 0.16);
+}
+
+.colorBranModalDiv {
+    width: 12vw;
 }
 

@@ -207,27 +207,44 @@ function modael_data(data) {
         for (i = 0; i < data.colors.length; i++) {
             let colorPalette =""
             let spaceDiv = ""
+            let colorDesc_all=""
             for(z = 0; z < data.colors[i][1].length; z++) {
                 if (z< data.colors[i][1].length-1)
                 {
                     spaceDiv= `<hr class="solid">`;
                 }
                 let colorPaletteZ = `<div id="color_${data.colors[i][1][z][1]}" class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"> </div>`;
+                let colorDesc = `<div id=${"colorDiv_" +data.colors[i][0][0]} class="ml-2 colorBranModalDiv ">
+                                        <div class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"></div>
+                                        <div>${data.colors[i][1][z][1]}</div>
+                                 </div>`
                 colorPalette += colorPaletteZ;
+                colorDesc_all+=colorDesc;
             }
-            let divGrid = `<div class="row paletteGrid_modal mb-4">  
+            let divGrid = `<div id="gridLinePalette_${data.colors[i][0][0]}" class="row paletteGrid_modal mb-4">  
                             <div id="paletteArea_${data.colors[i][0][0]}" class="col-4">
                             <div class="d-flex flex-row "> ${colorPalette}</div>
                                     
                             </div>
-                             <div id="paletteDescription_${data.colors[i][0][0]}" class="col-8"> </div>
+                             <div class="col-8"> 
+                             <div id="paletteDescription_${data.colors[i][0][0]}" style="display: none">
+                                    <div class="d-flex flex-row">${colorDesc_all}</div></div>
+                             </div>
                         </div>
                             ${spaceDiv}`;
             divGrids += divGrid;
         }
         $('.modal-title').text("בחירה מפלטות מוכנות");
         $('.modal-body').html(divGrids);
-
+        $(".paletteGrid_modal").hover(function(){
+            //hover on
+            current_id= this.id.slice(16);
+            $("#paletteDescription_"+current_id).css("display", "block");
+        }, function(){
+            //hover off
+            current_id= this.id.slice(16);
+            $("#paletteDescription_"+current_id).css("display", "none");
+        });
         // $('.general_kind_anim').on("click", select_from_general)
     }
 }
