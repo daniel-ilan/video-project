@@ -147,8 +147,8 @@ def get_anim_props(path, image_path=""):
 colorsArray = []
 
 
-@application.route('/home')
-def home():
+@application.route('/index')
+def index():
 
     frames_props = get_frames_from_db()
 
@@ -275,7 +275,7 @@ def homePage():
     )
 
 
-@application.route("/")
+# @application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
 
@@ -839,6 +839,108 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+@application.route("/")
+@application.route('/projectPage', methods=['POST', 'GET'])
+def projectPage():
+
+    current_project = 11
+    current_video = 27
+
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['CURRENT_PROJECT'] = current_project
+
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+    application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
+    return render_template(
+        'projectPage.html',
+        title='מותג',
+        # var=anim_properties
+    )
+
+@application.route('/onLoad', methods=['POST', 'GET'])
+def onLoad():
+    if request.method == 'POST':
+        page_name = request.form["page_name"]
+        if page_name =='' or page_name == 'projectPage':
+            collections_props,animations_props, collection_id, collection_length = collectionChange()
+            colors = changePalette()
+            return jsonify(collections_props=collections_props,animations_props=animations_props,
+                           collection_id=collection_id,collection_length=collection_length,
+                           selected_collection_id =collection_id , page_name=page_name, colors = colors)
+
+
+def convert_row_to_list_include_childrens(data):
+    collections_props = convert_row_to_list(data)
+    new_collections_props = []
+    for my_data in collections_props:
+        dataToArray = []
+        for data in my_data:
+            dataToArray.append(data)
+        new_collections_props.append(dataToArray)
+    return new_collections_props
+
+
+@application.route('/collectionChange', methods=['POST', 'GET'])
+def collectionChange():
+    event_kind=""
+    selected_collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+    collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+
+
+    collections_props = convert_row_to_list_include_childrens(db.get_all_collections())
+    check_if_collection_isInclude = False
+    for col_id in collections_props:
+        if col_id[0] == collection_id:
+            check_if_collection_isInclude = True
+
+    if check_if_collection_isInclude == False:
+        collections_props.append(convert_row_to_list(db.get_collections_by_id(collection_id)))
+
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        if event_kind =='switch_event':
+            selected_collection_id = request.form["col_id"]
+        elif event_kind == 'ChooseCollection':
+            selected_collection_id = request.form["col_id"]
+            db.update_project_collection(selected_collection_id,session.get('CURRENT_PROJECT'))
+            collection_id = selected_collection_id
+
+
+    animations_props = [session.get('COLLECTION_PATH'),
+                        convert_row_to_list_include_childrens(db.get_collection(selected_collection_id))]
+    collection_length = len(convert_row_to_list_include_childrens(db.get_collection(collection_id)))
+
+    if event_kind == 'pageLoad':
+        return collections_props,animations_props, collection_id, collection_length,
+    elif event_kind =='switch_event':
+        return jsonify(collections_props=collections_props, animations_props=animations_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
+    elif event_kind =='ChooseCollection':
+        return jsonify(collections_props=collections_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
+
+    return ""
+
+
+@application.route('/changePalette', methods=['POST', 'GET'])
+def changePalette():
+    palette_id = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
+    colors = convert_row_to_list_include_childrens(db.get_colors_by_palette(palette_id))
+    return colors
+
+
+@application.route('/get_all_palettes', methods=['POST', 'GET'])
+def get_all_palettes():
+    colors =[]
+
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        palettes_id = convert_row_to_list_include_childrens(db.get_all_palettes_id())
+        for palette in palettes_id:
+            colors.append([palette, convert_row_to_list_include_childrens(db.get_colors_by_palette(palette[0]))])
+    return jsonify(colors = colors,event_kind=event_kind )
 
 
 if __name__ == '__main__':

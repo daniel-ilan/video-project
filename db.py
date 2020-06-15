@@ -165,8 +165,16 @@ def get_palette(palette_id: str):
     return select_one_query(query)
 
 
+def get_palette_by_projcect(project_id: str):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [palette_id] FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
 def get_colors_by_palette(palette_id: str):
-    palette_id = int(palette_id.strip())
+    if isinstance(palette_id, str):
+        palette_id = int(palette_id)
     query = f"SELECT hex,kind FROM colors WHERE palette_id={palette_id};"
     return select_all_query(query)
 
@@ -297,3 +305,41 @@ def create_directory(my_path: str, name: str):
 
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def get_all_collections():
+       query = f"SELECT * FROM themes WHERE generalYN=true;"
+       return select_all_query(query)
+
+
+def get_collection(themed_id):
+    if isinstance(themed_id, str):
+        themed_id = int(themed_id)
+    query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={themed_id};"
+    new_query = f"SELECT [animation_id],[animation_name],[animation_url] FROM animations WHERE NOT animation_kind ='empty' AND animation_id IN({query} );"
+    return select_all_query(new_query)
+
+
+def get_project_collections_id(project_id: str):
+    project_id = int(project_id)
+    theme_query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
+    return select_one_query(theme_query)[0]
+
+
+def get_collections_by_id(id):
+    if isinstance(id, str):
+        id = int(id)
+    query = f"SELECT * FROM themes WHERE theme_id={id};"
+    return select_one_query(query)
+
+
+def update_project_collection(new_theme:str,project_id:str):
+    new_theme = int(new_theme)
+    project_id = int(project_id)
+    query = f"UPDATE projects SET theme_id='{new_theme}' WHERE project_id={project_id};"
+    update_query(query)
+
+
+def get_all_palettes_id():
+    query = f"SELECT [palette_id] FROM palettes WHERE generalYN=true;"
+    return select_all_query(query)

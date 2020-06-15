@@ -751,7 +751,6 @@ function disabledFunc(event) {
             $("#" + event.currentTarget.id).removeClass("animated_shake jello");
         }, 3000);
     }
-
 }
 
 function select_from_general(event) {
