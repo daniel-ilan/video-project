@@ -985,7 +985,7 @@ def PaletteHandler():
                 # check if the palette is custom or from general, if it's custom delete and create new one
                 if  db.check_palette_generalYN(proj_palette) == False:
                     db.delete_palette(proj_palette)
-
+                        #im here
                 db.update_project_palette(new_palette_id,proj_id)
             else:
                 db.update_color_hex(colorId,colorValue)
