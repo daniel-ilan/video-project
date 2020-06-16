@@ -117,6 +117,7 @@ function change_collection_handler(event) {
 
 
 function change_palette_handler(event) {
+    const spinner = $("#animSpinner");
     let event_kind = ""
     let pal_id = ""
     let colorId=""
@@ -158,6 +159,8 @@ function disabledFunc(event) {
 }
 
 function buildPalette(data) {
+    const spinner = $("#animSpinner");
+    spinner.addClass("invisible");
     let colorArray = []
     let names = ["צבע ראשי", "צבע משני ", "צבע רקע", "צבע טקסט"]
     if (data.event_kind != null) {
@@ -168,7 +171,7 @@ function buildPalette(data) {
             data = data.colors
         }
     }
-    if(data!= [])
+    if(data.length >=1)
     {
         for (i = 0; i < data.length; i++) {
             let color = `<div id=${"colorDiv_" + data[i][1]} dataId="${data[i][2]}" class=" color-wrapper brand_colors">

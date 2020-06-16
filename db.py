@@ -371,5 +371,7 @@ def get_last_palette_id(name: str):
 
 
 def delete_palette(palette_id: int):
+    query = f"DELETE FROM colors WHERE palette_id =({palette_id});"
+    update_query(query)
     query = f"DELETE FROM palettes WHERE palette_id =({palette_id});"
     update_query(query)

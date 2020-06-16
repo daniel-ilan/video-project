@@ -198,6 +198,18 @@ def about():
 
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
+    current_project = 19
+    current_video = 36
+
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['CURRENT_PROJECT'] = current_project
+    session['CURRENT_VIDEO'] = current_project
+
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_id':
             # get user info
@@ -217,7 +229,7 @@ def newProject():
 
             frame_name = copy_animations("empty new project", frame_path)
             id = db.get_last_video_id(str(project_id))[0]
-            db.create_new_frame(id, frame_name)
+            db.create_new_frame(id, frame_name,0)
 
         else:
             # new user
@@ -279,8 +291,8 @@ def homePage():
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
 
-    current_project = 11
-    current_video = 27
+    current_project = 19
+    current_video = 36
 
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
@@ -575,7 +587,7 @@ def convert_row_to_list(row_data):
 def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
-    all_frames = db.get_all_frames("27")
+    all_frames = db.get_all_frames("36")
     prev_id = all_frames[0][1]
     for i in range(1, len(all_frames)):
         if all_frames[i][0] == int(my_id):
@@ -590,11 +602,11 @@ def delete_frame(id: str):
 
 def get_animations_by_kind(kind):
     """
-    todo: change '11' to the project we are working on
+    todo: change '19' to the project we are working on
     :return:
     """
     myArray = []
-    animations = db.get_animations_by_project_and_kind('11', kind)
+    animations = db.get_animations_by_project_and_kind('19', kind)
 
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
@@ -612,8 +624,8 @@ def add_frame():
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    num_frames = len(db.get_all_frames("27"))
-    db.create_new_frame("27", new_name, num_frames)
+    num_frames = len(db.get_all_frames("36"))
+    db.create_new_frame("36", new_name, num_frames)
 
 
 
@@ -642,8 +654,8 @@ def copy_animations(kind, new_path, old_path=''):
 
 
 def get_frames_from_db():
-    # need to change "27"
-    frames_array = db.get_all_frames('27')
+    # need to change "36"
+    frames_array = db.get_all_frames('36')
 
     "need to change frames_arrayPath"
     # line velow should come out of a functions called get_frames_path
@@ -844,8 +856,8 @@ def allowed_file(filename):
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
 
-    current_project = 11
-    current_video = 27
+    current_project = 19
+    current_video = 36
 
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
