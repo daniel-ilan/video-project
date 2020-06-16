@@ -2,7 +2,6 @@ import pyodbc
 import os
 
 
-
 def create_conn():
     connStr = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
@@ -13,39 +12,39 @@ def create_conn():
     return (conn, cursor)
 
 
-def get_row(query:str):
-    conn, cursor= create_conn()
+def get_row(query: str):
+    conn, cursor = create_conn()
     cursor.execute(query)
     data = len(cursor.fetchall())
     cursor.close()
     return data
 
 
-def update_query(query:str):
-    conn, cursor= create_conn()
+def update_query(query: str):
+    conn, cursor = create_conn()
     cursor.execute(query)
     conn.commit()
     cursor.close()
 
 
-def select_one_query(query:str):
-    conn, cursor= create_conn()
+def select_one_query(query: str):
+    conn, cursor = create_conn()
     cursor.execute(query)
     query_data = cursor.fetchone()
     cursor.close()
     return query_data
 
 
-def select_many_query(query:str, some:str):
-    conn, cursor= create_conn()
+def select_many_query(query: str, some: str):
+    conn, cursor = create_conn()
     cursor.execute(query)
     query_data = cursor.fetchmany(some)
     cursor.close()
     return query_data
 
 
-def select_all_query(query:str):
-    conn, cursor= create_conn()
+def select_all_query(query: str):
+    conn, cursor = create_conn()
     cursor.execute(query)
     query_data = cursor.fetchall()
     cursor.close()
@@ -120,13 +119,13 @@ def get_project_owner(project_id: str):
     return select_one_query(query)
 
 
-def update_project_name(project_id: str, new_name:str):
+def update_project_name(project_id: str, new_name: str):
     project_id = int(project_id.strip())
     query = f"UPDATE projects SET project_name='{new_name}' WHERE project_id={project_id}  ;"
     update_query(query)
 
 
-def update_project_image(project_id: str, new_img:str):
+def update_project_image(project_id: str, new_img: str):
     project_id = int(project_id.strip())
     query = f"UPDATE projects SET image='{new_img}' WHERE project_id={project_id}  ;"
     update_query(query)
@@ -138,7 +137,7 @@ def update_project_last_update(project_id: str):
     update_query(query)
 
 
-def update_project_status(project_id: str, status:str):
+def update_project_status(project_id: str, status: str):
     status = status.strip()
     project_id = int(project_id.strip())
     query = f"UPDATE projects SET status='{status}' WHERE project_id={project_id}  ;"
@@ -148,14 +147,16 @@ def update_project_status(project_id: str, status:str):
 def create_color(my_hex: str, kind: str, palette_id: str):
     my_hex = my_hex.strip()
     kind = kind.strip()
-    palette_id = int(palette_id.strip())
+    if isinstance(palette_id, str):
+        palette_id = int(palette_id)
     query = f"INSERT INTO colors ([hex],[kind],[palette_id]) VALUES('{my_hex}','{kind}', {palette_id});"
     update_query(query)
 
 
 def create_palette(project_id: str, palette_name: str):
-    project_id = int(project_id.strip())
-    query = f"INSERT INTO palettes ([project_id],[palette_name]) VALUES({project_id},'{palette_name}');"
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"INSERT INTO palettes ([palette_name]) VALUES('{palette_name}');"
     update_query(query)
 
 
@@ -165,9 +166,17 @@ def get_palette(palette_id: str):
     return select_one_query(query)
 
 
+def get_palette_by_projcect(project_id: str):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [palette_id] FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
 def get_colors_by_palette(palette_id: str):
-    palette_id = int(palette_id.strip())
-    query = f"SELECT hex,kind FROM colors WHERE palette_id={palette_id};"
+    if isinstance(palette_id, str):
+        palette_id = int(palette_id)
+    query = f"SELECT hex,kind,color_id FROM colors WHERE palette_id={palette_id};"
     return select_all_query(query)
 
 
@@ -183,7 +192,7 @@ def get_animations_by_template(template_id: str):
     return select_all_query(query)
 
 
-def new_doc(project_id: int, doc_url: str, doc_name:str):
+def new_doc(project_id: int, doc_url: str, doc_name: str):
     query = f"INSERT INTO docs([project_id], [doc_url], [doc_name]) VALUES({project_id}, '{doc_url}', '{doc_name}');"
     update_query(query)
 
@@ -226,7 +235,7 @@ def update_video_status(video_id: str, new_status: str):
 def create_new_frame(video_id: str, url: str, num_frames: int):
     video_id = int(video_id)
 
-    query = f"INSERT INTO frames([video_id],[lottie_url],[frame_order]) VALUES({video_id},'{url}','{num_frames +1}');"
+    query = f"INSERT INTO frames([video_id],[lottie_url],[frame_order]) VALUES({video_id},'{url}','{num_frames + 1}');"
     update_query(query)
 
 
@@ -269,8 +278,7 @@ def get_animations_by_project_and_kind(project_id: str, kind: str):
     return select_all_query(new_query)
 
 
-
-def get_all_animation_by_kind( kind: str):
+def get_all_animation_by_kind(kind: str):
     query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind='{kind}';"
     return select_all_query(query)
 
@@ -297,3 +305,73 @@ def create_directory(my_path: str, name: str):
 
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def get_all_collections():
+    query = f"SELECT * FROM themes WHERE generalYN=true;"
+    return select_all_query(query)
+
+
+def get_collection(themed_id):
+    if isinstance(themed_id, str):
+        themed_id = int(themed_id)
+    query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={themed_id};"
+    new_query = f"SELECT [animation_id],[animation_name],[animation_url] FROM animations WHERE NOT animation_kind ='empty' AND animation_id IN({query} );"
+    return select_all_query(new_query)
+
+
+def get_project_collections_id(project_id: str):
+    project_id = int(project_id)
+    theme_query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
+    return select_one_query(theme_query)[0]
+
+
+def get_collections_by_id(id):
+    if isinstance(id, str):
+        id = int(id)
+    query = f"SELECT * FROM themes WHERE theme_id={id};"
+    return select_one_query(query)
+
+
+def update_project_collection(new_theme: str, project_id: str):
+    new_theme = int(new_theme)
+    project_id = int(project_id)
+    query = f"UPDATE projects SET theme_id='{new_theme}' WHERE project_id={project_id};"
+    update_query(query)
+
+
+def get_all_palettes_id():
+    query = f"SELECT [palette_id] FROM palettes WHERE generalYN=true;"
+    return select_all_query(query)
+
+
+def check_palette_generalYN(id):
+    if isinstance(id, str):
+        id = int(id)
+    query = f"SELECT [generalYN] FROM palettes WHERE palette_id={id};"
+    return select_all_query(query)
+
+
+def update_project_palette(new_palette: str, project_id: str):
+    new_palette = int(new_palette)
+    project_id = int(project_id)
+    query = f"UPDATE projects SET palette_id='{new_palette}' WHERE project_id={project_id};"
+    update_query(query)
+
+
+def update_color_hex(color_id: str, new_color: str):
+    color_id = int(color_id)
+    query = f"UPDATE colors SET hex='{new_color}' WHERE color_id={color_id};"
+    update_query(query)
+
+
+def get_last_palette_id(name: str):
+    query = f"SELECT TOP 1 palette_id FROM palettes WHERE palette_name='{name}' ORDER BY palette_id DESC;"
+    return select_one_query(query)
+
+
+def delete_palette(palette_id: int):
+    query = f"DELETE FROM colors WHERE palette_id =({palette_id});"
+    update_query(query)
+    query = f"DELETE FROM palettes WHERE palette_id =({palette_id});"
+    update_query(query)

@@ -1,0 +1,165 @@
+{% extends "user_layout.html" %}
+{% block head %}
+<link href="../static/modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block sideNav %}
+
+<div class=" whiteBG">
+    <img src="../static/images/logo.png" class="img-thumbnail" style="width: 100px; height:100px" alt="">
+    <p>{{projectName}}</p>
+    <button class="primaryBTN">+ פרויקט חדש</button>
+</div>
+
+<nav class="sidebar slidetextSize">
+    <ul class="nav flex-column">
+        <li class="nav-item emptyNav">
+        </li>
+        <li class="nav-item">
+            <a id="temp_empty" class="nav-link " href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class=" svgFillNone" height="24" viewBox="0 0 24 24"
+                     width="24">
+                    <path d="M1.30034 0.818679L1.28733 0.832605L1.27541 0.847481C1.10403 1.06152 1.0376 1.31671 1.0376 1.57143V16.4514C1.0376 16.7244 1.13143 16.9777 1.32169 17.1813C1.51317 17.3863 1.76525 17.5 2.05005 17.5H8.43439C10.1338 17.5 11.5255 17.0391 12.5403 16.0563C13.5478 15.0805 14.0376 13.8011 14.0376 12.2686C14.0376 11.3442 13.8086 10.5036 13.3414 9.76205C13.048 9.29636 12.7057 8.90496 12.3127 8.59545C12.5988 8.34673 12.8544 8.04504 13.0809 7.69603C13.5128 7.03756 13.7173 6.26053 13.7173 5.38857C13.7173 3.92466 13.2676 2.71591 12.3233 1.82611C11.3696 0.911983 9.97725 0.5 8.24222 0.5H2.05005C1.76622 0.5 1.50196 0.602841 1.30034 0.818679ZM9.17789 6.62712L9.17784 6.62706L9.17138 6.63346C8.90913 6.8934 8.49838 7.06 7.85788 7.06H5.04827V3.94571H7.85788C8.52592 3.94571 8.94813 4.10408 9.20781 4.34088C9.46499 4.5754 9.62123 4.92283 9.62123 5.45714C9.62123 5.98453 9.46172 6.35584 9.17789 6.62712ZM9.41421 10.9413L9.4201 10.9476L9.42619 10.9537C9.74857 11.2758 9.92016 11.6918 9.92016 12.2457C9.92016 12.8026 9.75325 13.2313 9.43859 13.5697C9.14219 13.8743 8.70951 14.0543 8.0714 14.0543H5.04827V10.4371H8.0714C8.68892 10.4371 9.11468 10.6207 9.41421 10.9413Z"
+                          stroke=""/>
+                </svg>
+                <span>מותג</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="temp_intro" class="nav-link " href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class=" svgFillNone" height="24" viewBox="0 0 24 24"
+                     width="24">
+                    <rect x="0.76123" y="0.75" width="19.5526" height="18.5" rx="3.25" stroke="" stroke-width="1.5"/>
+                    <path d="M5.55151 6.31579H15.5238M5.55151 9.47368H15.5238M5.55151 12.6316H15.5238" stroke=""/>
+                </svg>
+                <span>מסמכים</span>
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a id="temp_list" class="nav-link " href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class=" svgFillNone" height="24" viewBox="0 0 24 24"
+                     width="24">
+                    <rect x="0.787598" y="1.25" width="17.5" height="17.5" rx="3.25" stroke="" stroke-width="1.5"/>
+                    <path d="M13.2779 10.0659L7.78567 6.92747C7.45234 6.73699 7.0376 6.97768 7.0376 7.36159V13.6384C7.0376 14.0223 7.45234 14.263 7.78567 14.0725L13.2779 10.9341C13.6138 10.7422 13.6138 10.2578 13.2779 10.0659Z"
+                          stroke=""/>
+                </svg>
+                <span>סרטונים</span>
+            </a>
+        </li>
+        <li class="nav-item">
+        </li>
+    </ul>
+</nav>
+{% endblock %}
+{% block content %}
+<div>
+    <div class="row h-5 container-fluid mr-4 pt-2">
+        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">{{ title }}</h1>
+    </div>
+    <div id="brandPageContainer" class="container-fluid mr-4" >
+        <div class="h-60 pt-2">
+
+            <div class="d-flex flex-row h2_projectPage">
+                <svg viewBox="0 0 32 32" fill="svgFill" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.22222 12.2222H8.55556C9.22778 12.2222 9.77778 11.6722 9.77778 11V1.22222C9.77778 0.55 9.22778 0 8.55556 0H1.22222C0.55 0 0 0.55 0 1.22222V11C0 11.6722 0.55 12.2222 1.22222 12.2222ZM1.22222 22H8.55556C9.22778 22 9.77778 21.45 9.77778 20.7778V15.8889C9.77778 15.2167 9.22778 14.6667 8.55556 14.6667H1.22222C0.55 14.6667 0 15.2167 0 15.8889V20.7778C0 21.45 0.55 22 1.22222 22ZM13.4444 22H20.7778C21.45 22 22 21.45 22 20.7778V11C22 10.3278 21.45 9.77778 20.7778 9.77778H13.4444C12.7722 9.77778 12.2222 10.3278 12.2222 11V20.7778C12.2222 21.45 12.7722 22 13.4444 22ZM12.2222 1.22222V6.11111C12.2222 6.78333 12.7722 7.33333 13.4444 7.33333H20.7778C21.45 7.33333 22 6.78333 22 6.11111V1.22222C22 0.55 21.45 0 20.7778 0H13.4444C12.7722 0 12.2222 0.55 12.2222 1.22222Z"
+                          fill="#2F1359"/>
+                </svg>
+                <h2>אוספים</h2>
+                <button type="button" class="btn helpBtn" data-toggle="tooltip" data-placement="right"
+                        title="בחלק זה ניתן להרכיב סט אנימציות, אנימציות אלו יבואו לידי ביטוי בפרויקט זה.
+                               אך אין מה לדאוג, ניתן לשנות את האנימציות בכל שלב בפרויקט">
+                    ?
+                </button>
+            </div>
+            <div style="display: none">
+                <div class="d-flex flex-row alert" >
+                    <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 1C9.73889 1 10.4472 1.09444 11.125 1.28333C11.8083 1.47222 12.4472 1.74167 13.0417 2.09167C13.6361 2.43611 14.175 2.85278 14.6583 3.34167C15.1472 3.825 15.5639 4.36389 15.9083 4.95833C16.2583 5.55278 16.5278 6.19167 16.7167 6.875C16.9056 7.55278 17 8.26111 17 9C17 9.73889 16.9056 10.45 16.7167 11.1333C16.5278 11.8111 16.2583 12.4472 15.9083 13.0417C15.5639 13.6361 15.1472 14.1778 14.6583 14.6667C14.175 15.15 13.6361 15.5667 13.0417 15.9167C12.4472 16.2611 11.8083 16.5278 11.125 16.7167C10.4472 16.9056 9.73889 17 9 17C8.26111 17 7.55 16.9056 6.86667 16.7167C6.18889 16.5278 5.55278 16.2611 4.95833 15.9167C4.36389 15.5667 3.82222 15.15 3.33333 14.6667C2.85 14.1778 2.43333 13.6361 2.08333 13.0417C1.73889 12.4472 1.47222 11.8111 1.28333 11.1333C1.09444 10.45 1 9.73889 1 9C1 8.26111 1.09444 7.55278 1.28333 6.875C1.47222 6.19167 1.73889 5.55278 2.08333 4.95833C2.43333 4.36389 2.85 3.825 3.33333 3.34167C3.82222 2.85278 4.36389 2.43611 4.95833 2.09167C5.55278 1.74167 6.18889 1.47222 6.86667 1.28333C7.55 1.09444 8.26111 1 9 1ZM9 15.9333C9.63333 15.9333 10.2444 15.85 10.8333 15.6833C11.4278 15.5167 11.9806 15.2833 12.4917 14.9833C13.0083 14.6833 13.4778 14.3222 13.9 13.9C14.3222 13.4778 14.6833 13.0111 14.9833 12.5C15.2833 11.9833 15.5167 11.4306 15.6833 10.8417C15.85 10.2528 15.9333 9.63889 15.9333 9C15.9333 8.36667 15.85 7.75556 15.6833 7.16667C15.5167 6.57222 15.2833 6.01944 14.9833 5.50833C14.6833 4.99167 14.3222 4.52222 13.9 4.1C13.4778 3.67778 13.0083 3.31667 12.4917 3.01667C11.9806 2.71667 11.4278 2.48333 10.8333 2.31667C10.2444 2.15 9.63333 2.06667 9 2.06667C8.36111 2.06667 7.74722 2.15 7.15833 2.31667C6.56944 2.48333 6.01667 2.71667 5.5 3.01667C4.98889 3.31667 4.52222 3.67778 4.1 4.1C3.67778 4.52222 3.31667 4.99167 3.01667 5.50833C2.71667 6.01944 2.48333 6.57222 2.31667 7.16667C2.15 7.75556 2.06667 8.36667 2.06667 9C2.06667 9.63333 2.15 10.2472 2.31667 10.8417C2.48333 11.4306 2.71667 11.9833 3.01667 12.5C3.31667 13.0111 3.67778 13.4778 4.1 13.9C4.52222 14.3222 4.98889 14.6833 5.5 14.9833C6.01667 15.2833 6.56944 15.5167 7.15833 15.6833C7.74722 15.85 8.36111 15.9333 9 15.9333ZM8.46667 5.26667H9.53333V10H8.46667V5.26667ZM8.46667 11.6667H9.53333V12.7333H8.46667V11.6667Z"
+                              fill="black" stroke="black" stroke-width="0.4"/>
+                    </svg>
+                    <span>לפרויקט המושלם עדיף להשתמש בעד 2 תבניות</span>
+                </div>
+
+            </div>
+
+            <div id="collection_area" class="brandArea ">
+                <div class="d-flex pb-3">
+                    <div>
+                        <ul id="collection_nav" class="nav">
+                        </ul>
+                    </div>
+                    <div id="counterCollection" class="ml-auto align-self-center">אספת <span
+                            id="totalAnimationCounter"></span> אנימציות במותגך
+                    </div>
+                </div>
+
+                <div id="collection_animation_area">
+                </div>
+
+                <div class="d-flex float-right">
+                    <input type="submit" name="submitChange" id="selectCollection"
+                           class="disabled btn primaryBTN justify-content-center ml-auto align-self-center" value="בחירה"/>
+                </div>
+            </div>
+        </div>
+        <div class="row h-35 pt-2">
+            <div class="container col">
+                <div class="d-flex flex-row h2_projectPage">
+                    <svg viewBox="0 0 32 32" fill="svgFill" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 0C5.82111 0 0 5.82111 0 13C0 20.1789 5.82111 26 13 26C14.1989 26 15.1667 25.0322 15.1667 23.8333C15.1667 23.27 14.95 22.7644 14.6033 22.3744C14.2711 21.9989 14.0544 21.4933 14.0544 20.9444C14.0544 19.7456 15.0222 18.7778 16.2211 18.7778H18.7778C22.7644 18.7778 26 15.5422 26 11.5556C26 5.17111 20.1789 0 13 0ZM5.05556 13C3.85667 13 2.88889 12.0322 2.88889 10.8333C2.88889 9.63444 3.85667 8.66667 5.05556 8.66667C6.25444 8.66667 7.22222 9.63444 7.22222 10.8333C7.22222 12.0322 6.25444 13 5.05556 13ZM9.38889 7.22222C8.19 7.22222 7.22222 6.25444 7.22222 5.05556C7.22222 3.85667 8.19 2.88889 9.38889 2.88889C10.5878 2.88889 11.5556 3.85667 11.5556 5.05556C11.5556 6.25444 10.5878 7.22222 9.38889 7.22222ZM16.6111 7.22222C15.4122 7.22222 14.4444 6.25444 14.4444 5.05556C14.4444 3.85667 15.4122 2.88889 16.6111 2.88889C17.81 2.88889 18.7778 3.85667 18.7778 5.05556C18.7778 6.25444 17.81 7.22222 16.6111 7.22222ZM20.9444 13C19.7456 13 18.7778 12.0322 18.7778 10.8333C18.7778 9.63444 19.7456 8.66667 20.9444 8.66667C22.1433 8.66667 23.1111 9.63444 23.1111 10.8333C23.1111 12.0322 22.1433 13 20.9444 13Z"
+                              fill="#2F1359"/>
+                    </svg>
+                    <h2>פלטת צבעים</h2>
+                    <button type="button" class="btn helpBtn" data-toggle="tooltip" data-placement="right"
+                            title="בחלק זה יש להגדיר את הצבעים הגלובלים שברצונך להשתמש בפרויקט זה.
+                                    צבעים אלו יבואו לידי ביטוי באנימציות ובתוכן אך הם אינם הצבעים היחידים">
+                        ?
+                    </button>
+                </div>
+                <div id="palette_area " class="brandArea ">
+                    <div id="colors_area" class="d-flex flex-row">
+                        <div class="spinner-wrapper invisible align-items-center d-flex justify-content-center" id="animSpinner">
+                            <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse ml-auto">
+                    <input type="submit" name="chooseFromReadyPalette" id="chooseFromReadyPalette"
+                           class=" btn secondaryBtn  align-self-center " value="בחירה מפלטות מוכנות"/>
+                    <input type="submit" name="submitChange" id="readyPalette"
+                           class="secondaryBtn_disabled secondaryBtn btn align-self-center mr-2" value="דגימה מתמונה"/>
+                </div>
+            </div>
+            <div class="container  col">
+                <div class="d-flex flex-row h2_projectPage">
+                    <svg viewBox="0 0 32 32" fill="svgFill" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 0V4.4H6.84211V22H10.9474V4.4H17.7895V0H0ZM26 7.33333H13.6842V11.7333H17.7895V22H21.8947V11.7333H26V7.33333Z"
+                              fill="#2F1359"/>
+                    </svg>
+                    <h2>סגנונות הטקסט</h2>
+                    <button type="button" class="btn helpBtn" data-toggle="tooltip" data-placement="right"
+                            title="בחלק זה יש להגדיר את סגנונות הטקסט הגלובלים שברצונך להשתמש בפרויקט זה.
+                                    צבעים אלו יבואו לידי ביטוי באנימציות ובתוכן">
+                        ?
+                    </button>
+                </div>
+                <div id="textArea_area " class="brandArea ">
+                    <p> בקרוב</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    {% endblock %}
+
+
+    {% block scripts %}
+    <script src="../static/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js"></script>
+    <!--<script src="../static/scripts/Script_editContent.js"></script>-->
+    <!--<script src="../static/scripts/Script_editVideo.js"></script>-->
+    {% endblock %}

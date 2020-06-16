@@ -147,8 +147,8 @@ def get_anim_props(path, image_path=""):
 colorsArray = []
 
 
-@application.route('/home')
-def home():
+@application.route('/index')
+def index():
 
     frames_props = get_frames_from_db()
 
@@ -198,6 +198,18 @@ def about():
 
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
+    current_project = 19
+    current_video = 36
+
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['CURRENT_PROJECT'] = current_project
+    session['CURRENT_VIDEO'] = current_project
+
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_id':
             # get user info
@@ -217,7 +229,7 @@ def newProject():
 
             frame_name = copy_animations("empty new project", frame_path)
             id = db.get_last_video_id(str(project_id))[0]
-            db.create_new_frame(id, frame_name)
+            db.create_new_frame(id, frame_name,0)
 
         else:
             # new user
@@ -275,12 +287,12 @@ def homePage():
     )
 
 
-@application.route("/")
+# @application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
 
-    current_project = 11
-    current_video = 27
+    current_project = 19
+    current_video = 36
 
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
@@ -575,7 +587,7 @@ def convert_row_to_list(row_data):
 def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
-    all_frames = db.get_all_frames("27")
+    all_frames = db.get_all_frames("36")
     prev_id = all_frames[0][1]
     for i in range(1, len(all_frames)):
         if all_frames[i][0] == int(my_id):
@@ -590,11 +602,11 @@ def delete_frame(id: str):
 
 def get_animations_by_kind(kind):
     """
-    todo: change '11' to the project we are working on
+    todo: change '19' to the project we are working on
     :return:
     """
     myArray = []
-    animations = db.get_animations_by_project_and_kind('11', kind)
+    animations = db.get_animations_by_project_and_kind('19', kind)
 
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
@@ -612,8 +624,8 @@ def add_frame():
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    num_frames = len(db.get_all_frames("27"))
-    db.create_new_frame("27", new_name, num_frames)
+    num_frames = len(db.get_all_frames("36"))
+    db.create_new_frame("36", new_name, num_frames)
 
 
 
@@ -642,8 +654,8 @@ def copy_animations(kind, new_path, old_path=''):
 
 
 def get_frames_from_db():
-    # need to change "27"
-    frames_array = db.get_all_frames('27')
+    # need to change "36"
+    frames_array = db.get_all_frames('36')
 
     "need to change frames_arrayPath"
     # line velow should come out of a functions called get_frames_path
@@ -840,6 +852,144 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+@application.route("/")
+@application.route('/projectPage', methods=['POST', 'GET'])
+def projectPage():
+
+    current_project = 19
+    current_video = 36
+
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['CURRENT_PROJECT'] = current_project
+    session['CURRENT_VIDEO'] = current_project
+
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+    application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
+    return render_template(
+        'projectPage.html',
+        title='מותג',
+        # var=anim_properties
+    )
+
+@application.route('/onLoad', methods=['POST', 'GET'])
+def onLoad():
+    if request.method == 'POST':
+        page_name = request.form["page_name"]
+        if page_name =='' or page_name == 'projectPage':
+            collections_props,animations_props, collection_id, collection_length = collectionChange()
+            colors = getPalette()
+            return jsonify(collections_props=collections_props,animations_props=animations_props,
+                           collection_id=collection_id,collection_length=collection_length,
+                           selected_collection_id =collection_id , page_name=page_name, colors = colors)
+
+
+def convert_row_to_list_include_childrens(data):
+    collections_props = convert_row_to_list(data)
+    new_collections_props = []
+    for my_data in collections_props:
+        dataToArray = []
+        for data in my_data:
+            dataToArray.append(data)
+        new_collections_props.append(dataToArray)
+    return new_collections_props
+
+
+@application.route('/collectionChange', methods=['POST', 'GET'])
+def collectionChange():
+    event_kind=""
+    selected_collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+    collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+
+
+    collections_props = convert_row_to_list_include_childrens(db.get_all_collections())
+    check_if_collection_isInclude = False
+    for col_id in collections_props:
+        if col_id[0] == collection_id:
+            check_if_collection_isInclude = True
+
+    if check_if_collection_isInclude == False:
+        collections_props.append(convert_row_to_list(db.get_collections_by_id(collection_id)))
+
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        if event_kind =='switch_event':
+            selected_collection_id = request.form["col_id"]
+        elif event_kind == 'ChooseCollection':
+            selected_collection_id = request.form["col_id"]
+            db.update_project_collection(selected_collection_id,session.get('CURRENT_PROJECT'))
+            collection_id = selected_collection_id
+
+
+    animations_props = [session.get('COLLECTION_PATH'),
+                        convert_row_to_list_include_childrens(db.get_collection(selected_collection_id))]
+    collection_length = len(convert_row_to_list_include_childrens(db.get_collection(collection_id)))
+
+    if event_kind == 'pageLoad':
+        return collections_props,animations_props, collection_id, collection_length,
+    elif event_kind =='switch_event':
+        return jsonify(collections_props=collections_props, animations_props=animations_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
+    elif event_kind =='ChooseCollection':
+        return jsonify(collections_props=collections_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
+
+    return ""
+
+
+@application.route('/getPalette', methods=['POST', 'GET'])
+def getPalette():
+    palette_id = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
+    colors = convert_row_to_list_include_childrens(db.get_colors_by_palette(palette_id))
+    return colors
+
+
+@application.route('/get_all_palettes', methods=['POST', 'GET'])
+def get_all_palettes():
+    colors =[]
+
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        palettes_id = convert_row_to_list_include_childrens(db.get_all_palettes_id())
+        for palette in palettes_id:
+            colors.append([palette, convert_row_to_list_include_childrens(db.get_colors_by_palette(palette[0]))])
+    return jsonify(colors = colors,event_kind=event_kind )
+
+
+@application.route('/PaletteHandler', methods=['POST', 'GET'])
+def PaletteHandler():
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        colors = []
+        if event_kind =='ChoosePaletteFromCollection':
+            new_palette_id = request.form["pal_id"]
+            db.update_project_palette(new_palette_id,session.get('CURRENT_PROJECT'))
+            colors = getPalette()
+
+        if event_kind == 'ChangeColor':
+            colorId = request.form["colorId"]
+            colorValue =request.form["pal_id"]
+            proj_palette = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
+            check = db.check_palette_generalYN(proj_palette)[0][0]
+            if check:
+                proj_id = session.get('CURRENT_PROJECT')
+                db.create_palette(proj_id,proj_id)
+                initial_colors = getPalette();
+                new_palette_id = db.get_last_palette_id(proj_id)[0]
+                for color in initial_colors:
+                     color_v = color[0]
+                     if color[2] == colorId:
+                         color_v =colorValue
+                     db.create_color(color_v,color[1],new_palette_id)
+
+                # check if the palette is custom or from general, if it's custom delete and create new one
+                if  db.check_palette_generalYN(proj_palette) == False:
+                    db.delete_palette(proj_palette)
+                        #im here
+                db.update_project_palette(new_palette_id,proj_id)
+            else:
+                db.update_color_hex(colorId,colorValue)
+        return jsonify(colors = colors, event_kind = event_kind)
 
 if __name__ == '__main__':
     application.run()
