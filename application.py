@@ -850,6 +850,7 @@ def projectPage():
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
     session['CURRENT_PROJECT'] = current_project
+    session['CURRENT_VIDEO'] = current_project
 
     session['COLLECTION_PATH'] = "static/content/animations/"
     session['UPLOAD_FOLDER'] = "static/content/animations/images"
@@ -867,7 +868,7 @@ def onLoad():
         page_name = request.form["page_name"]
         if page_name =='' or page_name == 'projectPage':
             collections_props,animations_props, collection_id, collection_length = collectionChange()
-            colors = changePalette()
+            colors = getPalette()
             return jsonify(collections_props=collections_props,animations_props=animations_props,
                            collection_id=collection_id,collection_length=collection_length,
                            selected_collection_id =collection_id , page_name=page_name, colors = colors)
@@ -924,8 +925,8 @@ def collectionChange():
     return ""
 
 
-@application.route('/changePalette', methods=['POST', 'GET'])
-def changePalette():
+@application.route('/getPalette', methods=['POST', 'GET'])
+def getPalette():
     palette_id = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
     colors = convert_row_to_list_include_childrens(db.get_colors_by_palette(palette_id))
     return colors
@@ -942,6 +943,41 @@ def get_all_palettes():
             colors.append([palette, convert_row_to_list_include_childrens(db.get_colors_by_palette(palette[0]))])
     return jsonify(colors = colors,event_kind=event_kind )
 
+
+@application.route('/PaletteHandler', methods=['POST', 'GET'])
+def PaletteHandler():
+    if request.method == 'POST':
+        event_kind = request.form["event_kind"]
+        colors = []
+        if event_kind =='ChoosePaletteFromCollection':
+            new_palette_id = request.form["pal_id"]
+            db.update_project_palette(new_palette_id,session.get('CURRENT_PROJECT'))
+            colors = getPalette()
+
+        if event_kind == 'ChangeColor':
+            colorId = request.form["colorId"]
+            colorValue =request.form["pal_id"]
+            proj_palette = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
+            check = db.check_palette_generalYN(proj_palette)[0][0]
+            if check:
+                proj_id = session.get('CURRENT_PROJECT')
+                db.create_palette(proj_id,proj_id)
+                initial_colors = getPalette();
+                new_palette_id = db.get_last_palette_id(proj_id)[0]
+                for color in initial_colors:
+                     color_v = color[0]
+                     if color[2] == colorId:
+                         color_v =colorValue
+                     db.create_color(color_v,color[1],new_palette_id)
+
+                # check if the palette is custom or from general, if it's custom delete and create new one
+                if  db.check_palette_generalYN(proj_palette) == False:
+                    db.delete_palette(proj_palette)
+
+                db.update_project_palette(new_palette_id,proj_id)
+            else:
+                db.update_color_hex(colorId,colorValue)
+        return jsonify(colors = colors, event_kind = event_kind)
 
 if __name__ == '__main__':
     application.run()

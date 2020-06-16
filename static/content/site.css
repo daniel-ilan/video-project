@@ -1418,6 +1418,14 @@ select:focus {
 }
 
 /* ---                  brand Page         --- */
+.tooltip-inner {
+    max-width: 26vw;
+    padding: 0.5rem 0.6rem;
+    border-radius: .4rem;
+}
+
+/*      ---     headiine & alert   ---     */
+
 .h2_projectPage h2 {
     margin-right: 0.5vw;
 }
@@ -1454,6 +1462,8 @@ select:focus {
     font-weight: 400;
 }
 
+/*      ---     collections   ---     */
+
 .brandArea {
     background: #F3F5F7;
     border-radius: 1.5rem;
@@ -1461,10 +1471,6 @@ select:focus {
     margin-bottom: 2.5%;
     margin-top: 0.6%;
 
-}
-
-#collection_nav > li {
-    /*height: 32px;*/
 }
 
 #collection_nav > li a {
@@ -1524,6 +1530,8 @@ select:focus {
     padding: 0.25rem 0.4rem;
 }
 
+/*      ---     brand_colors   ---     */
+
 .brand_colors {
     display: flex;
     margin-left: 3%;
@@ -1555,13 +1563,18 @@ select:focus {
     height: 12vh;
 }
 
-.paletteGrid_modal_Selected{
-    border: 1.5px solid #6515DD;
-}
+
 
 .paletteGrid_modal:hover {
     background: linear-gradient(0deg, rgba(0, 182, 222, 0.04), rgba(0, 182, 222, 0.04)), #FFFFFF;
-    cursor: pointer;
+    cursor: pointer !important;
+}
+
+.paletteGrid_modal_Selected{
+    border: 1.5px solid #6515DD;
+    cursor: pointer !important;
+    background: rgba(101, 21, 221, 0.03);
+
 }
 
 hr.solid {
@@ -1572,6 +1585,8 @@ hr.solid {
     width: 12vw;
 }
 
+/*      ---     brandPageContainer scrolls and sizes   ---     */
+
 #brandPageContainer{
     padding-right: 0;
     overflow: auto;
@@ -1579,15 +1594,9 @@ hr.solid {
     overflow-x: hidden;
 }
 
-
-.tooltip-inner {
-    max-width: 26vw;
-    padding: 0.5rem 0.6rem;
-    border-radius: .4rem;
-}
-
 #selectCollection{
     margin-top: -32%;
+    z-index: 10000;
 }
 
 #collection_animation_area{
@@ -1595,7 +1604,6 @@ hr.solid {
     overflow-x: hidden;
     height: 42.5vh;
     width: 84vw;
-    /*direction: ltr;*/
 }
 
 #collection_area{
