@@ -171,8 +171,6 @@ function buildPalette(data) {
             data = data.colors
         }
     }
-    if(data.length >=1)
-    {
         for (i = 0; i < data.length; i++) {
             let color = `<div id=${"colorDiv_" + data[i][1]} dataId="${data[i][2]}" class=" color-wrapper brand_colors">
                   <input type="hidden"  name=${data[i][1]} class="form-control" value=${data[i][0]} />
@@ -189,7 +187,6 @@ function buildPalette(data) {
             let id = "#" + event.id;
             addCustomColor(id)
         });
-    }
 }
 
 

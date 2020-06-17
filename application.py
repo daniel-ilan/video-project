@@ -939,7 +939,7 @@ def collectionChange():
 
 @application.route('/getPalette', methods=['POST', 'GET'])
 def getPalette():
-    palette_id = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
+    palette_id = db.get_palette_id_by_project(session.get('CURRENT_PROJECT'))[0]
     colors = convert_row_to_list_include_childrens(db.get_colors_by_palette(palette_id))
     return colors
 
@@ -962,33 +962,46 @@ def PaletteHandler():
         event_kind = request.form["event_kind"]
         colors = []
         if event_kind =='ChoosePaletteFromCollection':
+            # switch to palette from general
             new_palette_id = request.form["pal_id"]
-            db.update_project_palette(new_palette_id,session.get('CURRENT_PROJECT'))
-            colors = getPalette()
+            proj_id = session.get('CURRENT_PROJECT')
+            initial_palette = db.get_palette_id_by_project(proj_id)[0]
+            x = db.check_palette_generalYN(initial_palette)[0]
+
+            # check if the palette is custom or from general, if it's custom delete it
+            if db.check_palette_generalYN(initial_palette)[0] == False:
+                db.update_project_palette("1", proj_id)
+                db.delete_palette(initial_palette)
+            db.update_project_palette(new_palette_id,proj_id)
 
         if event_kind == 'ChangeColor':
-            colorId = request.form["colorId"]
+            colorId = int(request.form["colorId"])
             colorValue =request.form["pal_id"]
-            proj_palette = db.get_palette_by_projcect(session.get('CURRENT_PROJECT'))[0]
-            check = db.check_palette_generalYN(proj_palette)[0][0]
+            proj_palette = db.get_palette_id_by_project(session.get('CURRENT_PROJECT'))[0]
+            check = db.check_palette_generalYN(proj_palette)[0]
+
+            # check if the current palette is from general or not, if it's create new one. if not - change the color
             if check:
                 proj_id = session.get('CURRENT_PROJECT')
-                db.create_palette(proj_id,proj_id)
                 initial_colors = getPalette();
-                new_palette_id = db.get_last_palette_id(proj_id)[0]
-                for color in initial_colors:
-                     color_v = color[0]
-                     if color[2] == colorId:
-                         color_v =colorValue
-                     db.create_color(color_v,color[1],new_palette_id)
 
-                # check if the palette is custom or from general, if it's custom delete and create new one
-                if  db.check_palette_generalYN(proj_palette) == False:
-                    db.delete_palette(proj_palette)
-                        #im here
+                # create new palette
+                db.create_palette(proj_id,proj_id)
+                new_palette_id = db.get_last_palette_id(proj_id)[0]
+
+                # insert colors to new palette
+                for color in initial_colors:
+                    color_v = color[0]
+                    if color[2] == colorId:
+                        color_v = colorValue
+                    db.create_color(color_v,color[1],new_palette_id)
+
                 db.update_project_palette(new_palette_id,proj_id)
             else:
+                # already custom palette, the change is only on the individual color
                 db.update_color_hex(colorId,colorValue)
+
+        colors = getPalette()
         return jsonify(colors = colors, event_kind = event_kind)
 
 if __name__ == '__main__':

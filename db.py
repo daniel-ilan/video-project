@@ -166,7 +166,7 @@ def get_palette(palette_id: str):
     return select_one_query(query)
 
 
-def get_palette_by_projcect(project_id: str):
+def get_palette_id_by_project(project_id: str):
     if isinstance(project_id, str):
         project_id = int(project_id)
     query = f"SELECT [palette_id] FROM projects WHERE project_id={project_id};"
@@ -349,7 +349,7 @@ def check_palette_generalYN(id):
     if isinstance(id, str):
         id = int(id)
     query = f"SELECT [generalYN] FROM palettes WHERE palette_id={id};"
-    return select_all_query(query)
+    return select_one_query(query)
 
 
 def update_project_palette(new_palette: str, project_id: str):
