@@ -1596,7 +1596,7 @@ hr.solid {
 
 #selectCollection{
     margin-top: -32%;
-    z-index: 10000;
+    z-index: 5;
 }
 
 #collection_animation_area{
