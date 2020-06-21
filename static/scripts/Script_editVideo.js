@@ -219,8 +219,9 @@ function buildFrames(data) {
 }
 
 function getDraggedInfo(eve){
-    currentMove = eve.detail[1].dataset.order;
-    indexes = [];
+    let currentMove = eve.detail[1].dataset.order;
+    let indexes = [];
+    let db_order = [];
     $(this).find('.frame_container_class').each(function() {
         indexes.push($(this).attr("data-order"));
     });
@@ -228,12 +229,19 @@ function getDraggedInfo(eve){
     console.log(currentMove);
 
     $(this).find('.frame_container_class').each(function(i) {
+        frameId = this.firstElementChild.id.split("_")[1];
         $(this).attr("data-order", i + 1);
         indexes.push(i);
-        $(this).find('p').text(`${i + 1}`)
+        $(this).find('p').text(`${i + 1}`);
+        db_order.push([frameId, i])
     });
 
-    console.log(indexes);
+    console.log(db_order);
+    $.ajax({
+        method: 'POST',
+        url: '/frame_order',
+        data: {'db_order': JSON.stringify(db_order)}
+    }).done();
 }
 
 function changeActive(id, name_of_class) {

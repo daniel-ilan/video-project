@@ -201,6 +201,7 @@ def create_new_video(project_id: int, video_name: str, image: str = None):
     create_directory(path, get_id)
     path = path + "/" + str(get_id)
     create_directory(path, "frames")
+    create_directory(path, "filmed") # meybe delete!
 
 
 def get_last_video_id(project_id: str):
@@ -297,3 +298,10 @@ def create_directory(my_path: str, name: str):
 
     if not os.path.exists(path):
         os.mkdir(path)
+
+
+def update_frame_order(frame_id: str, order: str):
+    frame_id = int(frame_id)
+    order = int(order)
+    query = f"UPDATE frames SET frame_order='{order}' WHERE frame_id={frame_id};"
+    update_query(query)
