@@ -10,6 +10,40 @@ html, body {
 
 }
 
+/*          buttons            */
+
+.icon-btn{
+    vertical-align: middle;
+}
+#canvasRecordContainer{
+    position: fixed;
+    top: 100%;
+    width: 1280px;
+    height: 720px;
+}
+
+.primaryBTN {
+    background-color: #6515DD;
+    border: solid 0.125rem #6515DD;
+    color: white;
+
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.primaryBTN:hover:enabled {
+    background-color: #00B6DE;
+    border: solid 0.125rem #00A7CC;
+    /* box-shadow: 5px 6px 12px rgba(0, 83, 101, 0.12); */
+    color: white;
+
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
 
 
 #container {
@@ -20,7 +54,7 @@ html, body {
     width: auto;
 }
 
-.frame_container_class{
+.frame-container {
     width: 100%;
     height: 100%;
 }
@@ -37,6 +71,7 @@ html, body {
 
 #framesArea{
     width: 85%;
+    overflow: hidden;
 }
 
 h1{
@@ -58,11 +93,12 @@ h1{
 
 .lottie-small{
     background-color: black;
+    border: solid 2px rgba(17, 17, 17, 0.5);
 }
 
-.My_border-dark{
-border: solid 2px rgba(17, 17, 17, 0.5);
-}
+/*.My_border-dark{*/
+
+/*}*/
 
 .divider{
     border-left: 1px solid #343a40;
@@ -119,26 +155,22 @@ border: solid 2px rgba(17, 17, 17, 0.5);
     }
 }
 
-@keyframes slideInRight {
-    from {
-        -webkit-transform: translate3d(100%, 0, 0);
-        transform: translate3d(100%, 0, 0);
-        visibility: visible;
-    }
-
-    to {
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-}
-
 .slideInRight {
     -webkit-animation-name: slideInRight;
-    animation-name: slideInRight;
+
 }
 .animated_slideInRight {
+    animation-name: slideInRight;
     -webkit-animation-duration: 1s;
-    animation-duration: 1s;
+    animation-duration: 0.6s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
+.vjs-icon-av-perm:before {
+    font-family: inherit;
+    content: 'פתח מצלמה';
+    font-size: 1.6rem !important;
+    line-height: 1.5rem !important;
+    vertical-align: text-top;
+  }

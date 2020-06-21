@@ -147,8 +147,28 @@ def get_anim_props(path, image_path=""):
 colorsArray = []
 
 
-@application.route('/index')
-def index():
+@application.route('/upload', methods=['POST', 'GET'])
+def tests():
+    if request.method == 'POST':
+        files = request.files.getlist("files[]")
+        for file in files:
+            name = file.filename
+            file.save(os.path.join(application.config['UPLOAD_FOLDER'], name))
+
+        return redirect(request.url)
+    else:
+        frames_props = get_frames_from_db()
+        return render_template(
+            'index.html',
+            frames=frames_props,
+            title='אודות',
+            year=datetime.now().year
+        )
+
+
+
+@application.route('/home')
+def home():
 
     frames_props = get_frames_from_db()
 
@@ -1004,7 +1024,21 @@ def PaletteHandler():
         colors = getPalette()
         return jsonify(colors = colors, event_kind = event_kind)
 
+@application.route('/frame_order', methods=['POST', 'GET'])
+def frame_order():
+    if request.method == 'POST':
+        frames = json.loads(request.form['db_order'])
+        for frame in frames:
+            db.update_frame_order(frame[0], frame[1])
+        return ""
+    else:
+        return ""
+
+
+
+
 if __name__ == '__main__':
     application.run()
+
 
 
