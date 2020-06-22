@@ -1417,7 +1417,7 @@ select:focus {
     animation-name: flipInY;
 }
 
-/* ---                  brand Page         --- */
+/*                          -------------                  brand Page         -------------                  */
 .tooltip-inner {
     max-width: 26vw;
     padding: 0.5rem 0.6rem;
@@ -1449,7 +1449,7 @@ select:focus {
     border-radius: 24px;
     display: block;
     padding: 0.25rem 0.75rem;
-    max-width: fit-content;
+    /*max-width: fit-content;*/
     margin-top: 1rem;
 }
 
@@ -1608,4 +1608,13 @@ hr.solid {
 
 #collection_area{
     width: 84vw;
+}
+
+
+/*                          -------------                  videos Page         -------------                  */
+
+#videos_leangth_page{
+    font-weight: 400;
+    font-size: 1vw;
+    color: #6515DD;
 }

@@ -322,7 +322,8 @@ def get_collection(themed_id):
 
 
 def get_project_collections_id(project_id: str):
-    project_id = int(project_id)
+    if isinstance(project_id, str):
+        project_id = int(project_id)
     theme_query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
     return select_one_query(theme_query)[0]
 
@@ -383,3 +384,10 @@ def update_frame_order(frame_id: str, order: str):
     order = int(order)
     query = f"UPDATE frames SET frame_order='{order}' WHERE frame_id={frame_id};"
     update_query(query)
+
+
+def get_videos_by_project(project_id):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [video_id],[video_name],[image],[video_status] FROM videos WHERE project_id={project_id};"
+    return select_all_query(query)

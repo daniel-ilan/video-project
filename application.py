@@ -890,20 +890,27 @@ def projectPage():
     application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'projectPage.html',
-        title='מותג',
-        # var=anim_properties
+        title ='פרויקט'
     )
 
 @application.route('/onLoad', methods=['POST', 'GET'])
 def onLoad():
     if request.method == 'POST':
-        page_name = request.form["page_name"]
-        if page_name =='' or page_name == 'projectPage':
+        event_kind = request.form["event_kind"]
+        if event_kind == 'pageLoad' or event_kind == "link_brand":
             collections_props,animations_props, collection_id, collection_length = collectionChange()
             colors = getPalette()
             return jsonify(collections_props=collections_props,animations_props=animations_props,
                            collection_id=collection_id,collection_length=collection_length,
-                           selected_collection_id =collection_id , page_name=page_name, colors = colors)
+                           selected_collection_id=collection_id , event_kind=event_kind, colors=colors)
+        elif event_kind == "link_videos":
+            videos_props = convert_row_to_list_include_childrens(db.get_videos_by_project(session.get('CURRENT_PROJECT')))
+            palette_id = convert_row_to_list( db.get_palette_id_by_project(session.get('CURRENT_PROJECT')))[0]
+            collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+            changePaletteYN = False
+            if palette_id == 1 and collection_id== 1:
+                changePaletteYN = True
+            return jsonify(event_kind=event_kind, videos_props= videos_props, showAlert = changePaletteYN)
 
 
 def convert_row_to_list_include_childrens(data):
@@ -947,7 +954,7 @@ def collectionChange():
                         convert_row_to_list_include_childrens(db.get_collection(selected_collection_id))]
     collection_length = len(convert_row_to_list_include_childrens(db.get_collection(collection_id)))
 
-    if event_kind == 'pageLoad':
+    if event_kind == 'pageLoad' or event_kind == 'link_brand':
         return collections_props,animations_props, collection_id, collection_length,
     elif event_kind =='switch_event':
         return jsonify(collections_props=collections_props, animations_props=animations_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
