@@ -585,7 +585,7 @@ def convert_row_to_list(row_data):
 def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
-    all_frames = db.get_all_frames("36")
+    all_frames = db.get_all_frames(session.get('CURRENT_VIDEO'))
     prev_id = all_frames[0][1]
     for i in range(1, len(all_frames)):
         if all_frames[i][0] == int(my_id):
@@ -622,8 +622,8 @@ def add_frame():
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    num_frames = len(db.get_all_frames("36"))
-    db.create_new_frame("36", new_name, num_frames)
+    num_frames = len(db.get_all_frames(session.get('CURRENT_VIDEO')))
+    db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
 
@@ -652,7 +652,6 @@ def copy_animations(kind, new_path, old_path=''):
 
 
 def get_frames_from_db(video_id: int):
-    # need to change "36"
     frames_array = db.get_all_frames(video_id)
 
     "need to change frames_arrayPath"
