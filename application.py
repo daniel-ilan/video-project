@@ -1020,26 +1020,34 @@ def frame_order():
         return ""
 
 
-@application.route('/createNewVideo', methods=['POST', 'GET'])
-def createNewVideo():
-    event_kind = request.form['event_kind']
-    project_id =session.get('CURRENT_PROJECT')
-    db.create_new_video(project_id)
+@application.route('/video_handler', methods=['POST', 'GET'])
+def video_handler():
+    if request.method == 'POST':
+        event_kind = request.form['event_kind']
+        if event_kind == "newVideoBtn":
+            # create new video
+            project_id = session.get('CURRENT_PROJECT')
+            db.create_new_video(project_id)
 
-    # 3 lines below this needs to be in a function called get_frames_path
-    project_owner = db.get_project_owner(str(project_id))[0]
-    video_id = db.get_last_video_id(project_id)[0]
-    frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+            # 3 lines below this needs to be in a function called get_frames_path
+            project_owner = db.get_project_owner(str(project_id))[0]
+            video_id = db.get_last_video_id(project_id)[0]
+            frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
 
-    frame_name = copy_animations("empty new project", frame_path)
-    new_id = db.get_last_video_id(str(project_id))[0]
-    db.create_new_frame(new_id, frame_name[0], 0)
-    session['CURRENT_VIDEO'] = new_id
-    user_id = session.get('CURRENT_USER')
-    current_project = session.get('CURRENT_PROJECT')
-    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{new_id}/frames/'
+            frame_name = copy_animations("empty new project", frame_path)
+            new_id = db.get_last_video_id(str(project_id))[0]
+            db.create_new_frame(new_id, frame_name[0], 0)
+        else:
+            video_id = request.form['video_id']
 
-    return jsonify(event_kind = event_kind)
+        session['CURRENT_VIDEO'] = video_id
+        user_id = session.get('CURRENT_USER')
+        current_project = session.get('CURRENT_PROJECT')
+        session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
+
+        return jsonify(event_kind = event_kind)
+
+
 
 if __name__ == '__main__':
     application.run()
