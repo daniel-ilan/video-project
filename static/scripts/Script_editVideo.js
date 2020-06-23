@@ -1,3 +1,4 @@
+import {roundItemsBorder} from "./RoundItemsBorder.js";
 let editForm = "";
 let animProps = "";
 let boolX = false;
@@ -156,7 +157,7 @@ function contentChangeHandler(data) {
 
 function submitChange_function(event) {
     event.preventDefault();
-    event_kind = "submitChange";
+    const event_kind = "submitChange";
     const form_data = new FormData(editForm[0]);
     form_data.append('event_kind', event_kind);
     $.ajax({
@@ -171,7 +172,7 @@ function submitChange_function(event) {
 function buildFrames(data) {
     let numSlides = [];
 
-    for (i = 0; i < data.frames[1].length; i++) {
+    for (let i = 0; i < data.frames[1].length; i++) {
         frameOrder = data.frames[1][i][5];
         let source = data.frames[0] + data.frames[1][i][1];
         let slide = `<div class="frame_container_class" data-order="${frameOrder}">
@@ -195,7 +196,7 @@ function buildFrames(data) {
     $('.frame_lottie').on('click', change_animation_handler);
 
     // creates the option to drag the frames around
-    framesArea = document.querySelector('#frames_Area');
+    let framesArea = document.querySelector('#frames_Area');
     UIkit.sortable(framesArea, {
         clsNoDrag: "no-drag",
         animation: 200,
@@ -229,7 +230,7 @@ function getDraggedInfo(eve){
     console.log(currentMove);
 
     $(this).find('.frame_container_class').each(function(i) {
-        frameId = this.firstElementChild.id.split("_")[1];
+        let frameId = this.firstElementChild.id.split("_")[1];
         $(this).attr("data-order", i + 1);
         indexes.push(i);
         $(this).find('p').text(`${i + 1}`);
@@ -307,7 +308,8 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
     let colorUi = [];
     let colorId = [];
-    color_palettes_json = create_color_pelettes_json(color_palettes);
+    let path = "";
+    let color_palettes_json = create_color_pelettes_json(color_palettes);
     if (data != null) {
         // const content = $('#content');
         Object.keys(data).forEach(function (elem) {
@@ -570,7 +572,7 @@ function createColorUi(colors, colorId) {
     editForm.append(colorForm);
     const inputWrapper = $('#inputWrapper_' + colorId[0]);
 
-    for (i = 0; i < colors.length; i++) {
+    for (let i = 0; i < colors.length; i++) {
         inputWrapper.append(colors[i]);
         let myName = "";
         if (colorId[i].includes("primary")) {
@@ -633,19 +635,6 @@ function changeNavItem(kind) {
     }
 }
 
-/* round the before and after nav items borders */
-function roundItemsBorder() {
-    var indexActive = 0;
-    var counter = 0;
-    $(".sidebar li").each(function () {
-        counter++;
-        if ($(this).hasClass('activeNav')) {
-            indexActive = counter;
-        }
-    });
-    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
-    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
-}
 
 function buildAnim_byKind(data) {
     /**
@@ -661,7 +650,7 @@ function buildAnim_byKind(data) {
     let collection_svg = ""
 
     if (data != null) {
-        for (i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             source = data[i][1];
             if (data[i].length >= 4) {
                 collection_svg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -696,7 +685,7 @@ function open_modal_handler(event) {
     $('#modal').modal('show')
     if (event.currentTarget.id == "button_switch") {
         event_kind = "button_switch"
-        frame_id = $(".active_frame_lottie")[0].id;
+        let frame_id = $(".active_frame_lottie")[0].id;
 
         $.ajax({
             method: 'POST',
@@ -718,7 +707,7 @@ function modael_data(data) {
         $("#modal_main_btn").removeClass("animated_shake jello");
         $("#modal_main_btn").addClass("disabled");
 
-        for (i = 0; i < data.frames.length; i++) {
+        for (let i = 0; i < data.frames.length; i++) {
             source = data.path + data.frames[i][1];
             let collection_svg = ""
             if (data.frames[i][3] == true) {
@@ -738,7 +727,7 @@ function modael_data(data) {
             </div>`;
             animations.push(animKindPlayer);
         }
-        name_of_kind = $('#temp_' + data.kind).text();
+        let name_of_kind = $('#temp_' + data.kind).text();
         $('.modal-title').text("בחירה מתבניות כלליות-" + name_of_kind);
         $('.modal-body').html(animations);
 

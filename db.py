@@ -1,5 +1,6 @@
 import pyodbc
 import os
+import shutil
 
 
 def create_conn():
@@ -197,18 +198,16 @@ def new_doc(project_id: int, doc_url: str, doc_name: str):
     update_query(query)
 
 
-def create_new_video(project_id: int, video_name: str, image: str = None):
-    image = f"'{image}'" if image else 'null'
-    if video_name == "" or video_name == " ":
-        query = f"INSERT INTO videos([project_id],[image]) VALUES({project_id},{image});"
-    else:
-        query = f"INSERT INTO videos([project_id] ,[video_name],[image]) VALUES({project_id},'{video_name}', {image});"
+def create_new_video(project_id: int):
+    image = 'placeholderCardCover.png'
+    query = f"INSERT INTO videos([project_id]) VALUES({project_id});"
     update_query(query)
     get_id = get_last_video_id(str(project_id))[0]
     project_owner = get_project_owner(str(project_id))[0]
     path = str(project_owner) + "/" + str(project_id) + "/videos/"
     create_directory(path, get_id)
-    path = path + "/" + str(get_id)
+    path = path + str(get_id)
+    newPath = shutil.copy("static/images/"+image, "static/db/users/" + path)
     create_directory(path, "frames")
     create_directory(path, "filmed") # meybe delete!
 
@@ -234,14 +233,18 @@ def update_video_status(video_id: str, new_status: str):
 
 
 def create_new_frame(video_id: str, url: str, num_frames: int):
-    video_id = int(video_id)
-
-    query = f"INSERT INTO frames([video_id],[lottie_url],[frame_order]) VALUES({video_id},'{url}','{num_frames + 1}');"
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    if isinstance(num_frames, str):
+        num_frames = int(num_frames)
+    order = num_frames + 1
+    query = f"INSERT INTO frames([video_id],[lottie_url],[frame_order]) VALUES({video_id},'{url}','{order}');"
     update_query(query)
 
 
 def get_all_frames(video_id: str):
-    video_id = int(video_id)
+    if isinstance(video_id, str):
+        video_id = int(video_id)
     query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[frame_order] FROM frames WHERE video_id={video_id} ORDER BY frame_order ASC;"
     return select_all_query(query)
 
@@ -322,7 +325,8 @@ def get_collection(themed_id):
 
 
 def get_project_collections_id(project_id: str):
-    project_id = int(project_id)
+    if isinstance(project_id, str):
+        project_id = int(project_id)
     theme_query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
     return select_one_query(theme_query)[0]
 
@@ -383,3 +387,10 @@ def update_frame_order(frame_id: str, order: str):
     order = int(order)
     query = f"UPDATE frames SET frame_order='{order}' WHERE frame_id={frame_id};"
     update_query(query)
+
+
+def get_videos_by_project(project_id):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [video_id],[video_name],[image],[video_status] FROM videos WHERE project_id={project_id};"
+    return select_all_query(query)

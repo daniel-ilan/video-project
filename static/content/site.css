@@ -1417,7 +1417,7 @@ select:focus {
     animation-name: flipInY;
 }
 
-/* ---                  brand Page         --- */
+/*                          -------------                  brand Page         -------------                  */
 .tooltip-inner {
     max-width: 26vw;
     padding: 0.5rem 0.6rem;
@@ -1449,7 +1449,7 @@ select:focus {
     border-radius: 24px;
     display: block;
     padding: 0.25rem 0.75rem;
-    max-width: fit-content;
+    /*max-width: fit-content;*/
     margin-top: 1rem;
 }
 
@@ -1608,4 +1608,162 @@ hr.solid {
 
 #collection_area{
     width: 84vw;
+}
+
+
+/*                          -------------                  videos Page         -------------                  */
+
+#videos_length_page{
+    font-weight: 400;
+    font-size: 1vw;
+    color: #6515DD;
+}
+
+.video_sizes{
+    width: 10vw;
+    height: 30vh;
+    margin-left: 2rem !important;
+    padding: 1rem;
+}
+
+.card{
+    background: #FFFFFF;
+    box-sizing: border-box;
+    box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.02), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356);
+    border-radius: 1rem !important;
+    border: 2px solid #F9FAFB;
+    -webkit-transition: border 0.2s ease-out;
+    -moz-transition: border 0.2s ease-out;
+    -o-transition: border 0.2s ease-out;
+    transition: border 0.2s ease-out;
+    border-right: 2px white solid !important;
+
+}
+
+.card:hover{
+    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    border: 2px solid #00B6DE;
+    -webkit-transition: border 0.2s ease-out;
+    -moz-transition: border 0.2s ease-out;
+    -o-transition: border 0.2s ease-out;
+    transition: border 0.2s ease-out;
+    border-right: 2px #00B6DE solid !important;
+}
+
+.card-body{
+    padding: 0;
+    margin-top: 0.5rem;
+    width: 8vw;
+}
+
+h5.card-title{
+    font-style: normal;
+    font-weight: 500;
+    font-size:  0.9375vw;
+    align-items: center;
+    text-align: right;
+    color: #2F1359;
+    -webkit-transition: color 0.2s ease-out;
+    -moz-transition: color 0.2s ease-out;
+    -o-transition: color 0.2s ease-out;
+    transition: color 0.2s ease-out;
+}
+
+
+.card:hover h5.card-title{
+    color: #00B6DE;
+    -webkit-transition: color 0.2s ease-out;
+    -moz-transition: color 0.2s ease-out;
+    -o-transition: color 0.2s ease-out;
+    transition: color 0.2s ease-out;
+}
+
+.status{
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #F2F2F2;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+}
+
+.card-img-top{
+    max-width:100%;
+    max-height:100%;
+    margin: auto;
+}
+
+.img_wrapper {
+    background: #FCFCFD;
+    border-radius: 1rem;
+    width: 8vw;
+    height: 16vh;
+    display: flex;
+}
+
+.status_working{
+    border-color:  #FFE45E;
+
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.status_recording{
+    border-color:  #ff4966;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.status_done{
+    border-color:  #36AF7D;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.card:hover .status_working{
+    background-color:  #FFE45E;
+    color: black !important;
+    font-weight: 500;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.card:hover .status_recording{
+    background-color: #ff4966;
+    color: black !important;
+    font-weight: 500;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+
+.card:hover .status_done{
+    background-color:  #36AF7D;
+    color: white !important;
+    font-weight: 500;
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.more_actions_card{
+    cursor: pointer;
+}
+
+.plus_icon_more{
+    font-size: 6vw;
+}
+
+#newVideoBtn  div{
+    line-height: 3vh;
+
 }

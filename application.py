@@ -157,7 +157,7 @@ def tests():
 
         return redirect(request.url)
     else:
-        frames_props = get_frames_from_db()
+        frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
         return render_template(
             'index.html',
             frames=frames_props,
@@ -170,7 +170,7 @@ def tests():
 @application.route('/home')
 def home():
 
-    frames_props = get_frames_from_db()
+    frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
 
     """Renders the home page."""
     return render_template(
@@ -218,18 +218,6 @@ def about():
 
 @application.route('/newProject', methods=['POST', 'GET'])
 def newProject():
-    current_project = 19
-    current_video = 36
-
-    user_id = db.get_user_id('rubider@hotmail.com')[0]
-    session['CURRENT_USER'] = user_id
-    session['CURRENT_PROJECT'] = current_project
-    session['CURRENT_VIDEO'] = current_project
-
-    session['COLLECTION_PATH'] = "static/content/animations/"
-    session['UPLOAD_FOLDER'] = "static/content/animations/images"
-    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
-
     if request.method == 'POST':
         if request.form['submit_button'] == 'submit_id':
             # get user info
@@ -310,16 +298,6 @@ def homePage():
 # @application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
-
-    current_project = 19
-    current_video = 36
-
-    user_id = db.get_user_id('rubider@hotmail.com')[0]
-    session['CURRENT_USER'] = user_id
-    session['COLLECTION_PATH'] = "static/content/animations/"
-    session['UPLOAD_FOLDER'] = "static/content/animations/images"
-    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
-    application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'editContent.html',
         title='שם הסרטון',
@@ -334,7 +312,7 @@ def get_all_animation_by_kind():
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
         if (event_kind == "button_switch"):
-            frames_props = get_frames_from_db()
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             my_path = session.get('COLLECTION_PATH')
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
@@ -360,7 +338,7 @@ def frame_change():
     current_frame = []
     lit_anim = []
     kind = ""
-    frames_props = get_frames_from_db()
+    frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
     path = frames_props[0]
     general_frame = []
     frame_text = ""
@@ -607,7 +585,7 @@ def convert_row_to_list(row_data):
 def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
-    all_frames = db.get_all_frames("36")
+    all_frames = db.get_all_frames(session.get('CURRENT_VIDEO'))
     prev_id = all_frames[0][1]
     for i in range(1, len(all_frames)):
         if all_frames[i][0] == int(my_id):
@@ -644,8 +622,8 @@ def add_frame():
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    num_frames = len(db.get_all_frames("36"))
-    db.create_new_frame("36", new_name, num_frames)
+    num_frames = len(db.get_all_frames(session.get('CURRENT_VIDEO')))
+    db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
 
@@ -673,19 +651,17 @@ def copy_animations(kind, new_path, old_path=''):
     return new_name, anim_id
 
 
-def get_frames_from_db():
-    # need to change "36"
-    frames_array = db.get_all_frames('36')
+def get_frames_from_db(video_id: int):
+    frames_array = db.get_all_frames(video_id)
 
     "need to change frames_arrayPath"
     # line velow should come out of a functions called get_frames_path
     frames_arrayPath = session.get('WORKING_PATH')
     frames_list = []
-    myArray = [frames_arrayPath, frames_list]
-
     for frame in frames_array:
         # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[order]
         frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5]])
+    myArray = [frames_arrayPath, frames_list]
     return myArray
 
 
@@ -877,33 +853,41 @@ def allowed_file(filename):
 def projectPage():
 
     current_project = 19
-    current_video = 36
-
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
     session['CURRENT_PROJECT'] = current_project
-    session['CURRENT_VIDEO'] = current_project
 
     session['COLLECTION_PATH'] = "static/content/animations/"
     session['UPLOAD_FOLDER'] = "static/content/animations/images"
-    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{current_video}/frames/'
+    session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{current_project}/videos/'
+
     application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'projectPage.html',
-        title='מותג',
-        # var=anim_properties
+        title ='פרויקט'
     )
 
 @application.route('/onLoad', methods=['POST', 'GET'])
 def onLoad():
     if request.method == 'POST':
-        page_name = request.form["page_name"]
-        if page_name =='' or page_name == 'projectPage':
+        event_kind = request.form["event_kind"]
+        if event_kind == 'pageLoad' or event_kind == "link_brand":
             collections_props,animations_props, collection_id, collection_length = collectionChange()
             colors = getPalette()
             return jsonify(collections_props=collections_props,animations_props=animations_props,
                            collection_id=collection_id,collection_length=collection_length,
-                           selected_collection_id =collection_id , page_name=page_name, colors = colors)
+                           selected_collection_id=collection_id , event_kind=event_kind, colors=colors)
+        elif event_kind == "link_videos":
+            videos_props = convert_row_to_list_include_childrens(db.get_videos_by_project(session.get('CURRENT_PROJECT')))
+
+            # check if it's needed to add Alert about the brand
+            palette_id = convert_row_to_list( db.get_palette_id_by_project(session.get('CURRENT_PROJECT')))[0]
+            collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+            changePaletteYN = False
+            if palette_id == 1 and collection_id== 1:
+                changePaletteYN = True
+
+            return jsonify(event_kind=event_kind, videos_props=videos_props, showAlert=changePaletteYN, video_src = session.get('WORKING_PATH_IMG'))
 
 
 def convert_row_to_list_include_childrens(data):
@@ -947,7 +931,7 @@ def collectionChange():
                         convert_row_to_list_include_childrens(db.get_collection(selected_collection_id))]
     collection_length = len(convert_row_to_list_include_childrens(db.get_collection(collection_id)))
 
-    if event_kind == 'pageLoad':
+    if event_kind == 'pageLoad' or event_kind == 'link_brand':
         return collections_props,animations_props, collection_id, collection_length,
     elif event_kind =='switch_event':
         return jsonify(collections_props=collections_props, animations_props=animations_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
@@ -1024,6 +1008,7 @@ def PaletteHandler():
         colors = getPalette()
         return jsonify(colors = colors, event_kind = event_kind)
 
+
 @application.route('/frame_order', methods=['POST', 'GET'])
 def frame_order():
     if request.method == 'POST':
@@ -1035,7 +1020,26 @@ def frame_order():
         return ""
 
 
+@application.route('/createNewVideo', methods=['POST', 'GET'])
+def createNewVideo():
+    event_kind= request.form['event_kind']
+    project_id =session.get('CURRENT_PROJECT')
+    db.create_new_video(project_id)
 
+    # 3 lines below this needs to be in a function called get_frames_path
+    project_owner = db.get_project_owner(str(project_id))[0]
+    video_id = db.get_last_video_id(project_id)[0]
+    frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+
+    frame_name = copy_animations("empty new project", frame_path)
+    new_id = db.get_last_video_id(str(project_id))[0]
+    db.create_new_frame(new_id, frame_name[0], 0)
+    session['CURRENT_VIDEO'] = new_id
+    user_id = session.get('CURRENT_USER')
+    current_project = session.get('CURRENT_PROJECT')
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{new_id}/frames/'
+
+    return jsonify(event_kind = event_kind)
 
 if __name__ == '__main__':
     application.run()
