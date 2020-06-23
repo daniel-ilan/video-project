@@ -1,8 +1,8 @@
-import {roundItemsBorder} from "./RoundItemsBorder.js";
 let editForm = "";
 let animProps = "";
 let boolX = false;
 let frameOrder = "";
+let color_palettes_json = null;
 
 $(document).ready(function () {
     // const editForm = $('#content');
@@ -15,6 +15,18 @@ $(document).ready(function () {
 
 });
 
+function roundItemsBorder() {
+    var indexActive = 0;
+    var counter = 0;
+    $(".sidebar li").each(function () {
+        counter++;
+        if ($(this).hasClass('activeNav')) {
+            indexActive = counter;
+        }
+    });
+    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
+    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+}
 
 function frameChangeHandler(event) {
     let event_kind = "";
