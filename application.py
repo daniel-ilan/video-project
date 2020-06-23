@@ -295,7 +295,7 @@ def homePage():
     )
 
 
-# @application.route("/")
+
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     return render_template(
@@ -1022,7 +1022,7 @@ def frame_order():
 
 @application.route('/createNewVideo', methods=['POST', 'GET'])
 def createNewVideo():
-    event_kind= request.form['event_kind']
+    event_kind = request.form['event_kind']
     project_id =session.get('CURRENT_PROJECT')
     db.create_new_video(project_id)
 
