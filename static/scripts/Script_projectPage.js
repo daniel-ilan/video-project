@@ -425,11 +425,22 @@ function buildBrandPage() {
     </div>`;
     $('#containerForData').html(data);
     $("#chooseFromReadyPalette").on('click', open_modal_handler);
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 function buildVideoPage(data) {
     const videos_leangth = data.videos_props.length;
     let alertMessage = "";
+    let videos_cards = []
+    videos_cards.push(`<div id="newVideoBtn" class="video_sizes animated_zoomIn zoomIn secondaryBtn btn align-self-center mr-2 justify-content-center">
+                                <div class="plus_icon_more">+</di>
+                                <div style="font-size: 1vw;margin-top: 80%">
+                                    הוספת 
+                                    <br>
+                                    סרטון חדש
+                                </di>
+                                
+                        </div>`)
     if(data.showAlert == true)
     {
         alertMessage = `<div>
@@ -443,18 +454,51 @@ function buildVideoPage(data) {
                         </div>  `
     }
 
-
+    for (let i = 0; i < videos_leangth; i++) {
+        let className = ""
+        if (data.videos_props[i][3] == "בהכנה")
+        {
+            className= "status_working"
+        }
+        else if (data.videos_props[i][3] == "בצילום")
+        {
+            className= "status_recording"
+        }
+        else if (data.videos_props[i][3] == "הסתיים")
+        {
+            className= "status_done"
+        }
+        let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
+                            <div class="img_wrapper">
+                                  <img class="card-img-top" src="${"../"+data.video_src + data.videos_props[i][0] +"/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
+                            </div>
+                            <div class="card-body">
+                            <div class="flex-wrap">
+                                <h5 class="card-title p-2">${data.videos_props[i][1]}</h5>
+                                <svg class="more_actions_card" style=" float: left; margin-top: -2rem;" width="9" height="6" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.31084 0.815816C8.21522 0.728061 8.06836 0.728061 7.97275 0.815816L4.5 4.00313L1.02725 0.815816C0.931641 0.728061 0.784777 0.728061 0.689164 0.815816L0.330955 1.14458C0.279366 1.19193 0.25 1.25874 0.25 1.32877C0.25 1.39879 0.279366 1.4656 0.330955 1.51295L4.33095 5.18418C4.42657 5.27194 4.57343 5.27194 4.66905 5.18418L8.66905 1.51295C8.72063 1.4656 8.75 1.39879 8.75 1.32877C8.75 1.25874 8.72063 1.19193 8.66905 1.14458L8.31084 0.815816Z" fill="#828282" stroke="#828282" stroke-width="0.5" stroke-linejoin="round"/>
+                                </svg>
+                            
+                            </div>
+                                  <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
+                            </div>
+                        </div>`;
+        videos_cards.push(myCard);
+    }
 
     const initial = `   
        <div class="row h-5 container-fluid mr-4 pt-2">
-        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_leangth_page"> ${"(" +videos_leangth+ ")"}</span></h1>
+        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + videos_leangth + ")"}</span></h1>
     </div>
-   <div id="videosPageContainer" class="container-fluid mr-4" >
+   <div id="videosPageContainer" class="container-fluid mr-4  pt-2" >
    ${alertMessage}
-   
+                      <div class="card-group">
+ 
+                    </div>
     </div>`;
     $('#containerForData').html(initial);
-
+    $('.card-group').html(videos_cards);
+    $('#newVideoBtn').on("click",createNewVideo)
 }
 
 function changeNavItem(event_kind) {
@@ -513,3 +557,22 @@ function changeNavItem(event_kind) {
     }*/
 }
 
+function createNewVideo(event) {
+    const event_kind = event.currentTarget.id;
+    $.ajax({
+        method: 'POST',
+        url: '/createNewVideo',
+        data: {
+            'event_kind': event_kind
+        }
+    }).done(moveToPage);
+}
+
+function moveToPage(data)
+{
+    if (data.event_kind== "newVideoBtn")
+    {
+        window.location.href = "editContent";
+
+    }
+}

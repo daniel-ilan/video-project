@@ -11,3 +11,4 @@ export function roundItemsBorder() {
     $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
     $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
 }
+
