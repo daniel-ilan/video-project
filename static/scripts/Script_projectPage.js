@@ -268,6 +268,8 @@ function modael_data(data) {
         $("#modal_main_btn").off('click', change_palette_handler);
         $("#modal_main_btn").removeClass("animated_shake jello");
         $("#modal_main_btn").addClass("disabled");
+        $("#modal_main_btn").html(" בחירה");
+
 
         let divGrids = `<p>ניתן לעבור עם העכבר על הפלטה לצפייה בפרטיה  </p>`;
         for (let i = 0; i < data.colors.length; i++) {
@@ -313,10 +315,11 @@ function modael_data(data) {
                     //add Selected class
                     $("#gridLinePalette_" + id).addClass("paletteGrid_modal_Selected");
                     id_Clicked = id;
-                    //male btn sabled
+                    //male btn abled
                     $("#modal_main_btn").off('click', disabledFunc);
                     $("#modal_main_btn").on('click', change_palette_handler);
                     $("#modal_main_btn").removeClass("disabled");
+
 
                 } else {
                     //remove Selected & Hover class
@@ -491,7 +494,7 @@ function buildVideoPage(data) {
         }
         let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
                             <div class="img_wrapper">
-                                  <img class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
+                                  <img id="videoImg_${data.videos_props[i][0]}" class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
                             </div>
                             <div class="card-body">
                                 <div>
@@ -548,7 +551,7 @@ function buildVideoPage(data) {
                                         <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
                                     </svg>
                                           שינוי שם </a>
-                                          <a data-vid="${data.videos_props[i][0]}" class="dropdown-item"  href="#">
+                                          <a id="more_coverPic" data-vid="${data.videos_props[i][0]}" class="dropdown-item"  href="#">
                                             <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
                                             </svg>
@@ -599,22 +602,19 @@ function buildVideoPage(data) {
     $('.card-item').on("click", openVideo_Handler)
     $('.dropdown-item').on("click", openVideo_Handler)
     $('.saveNameChange').on("click", openVideo_Handler)
-    $('.changeName-input').on('keydown keyup change', function (event) {
+    $('.changeName-input').on('keyup change', function (event) {
         let video_id = event.currentTarget.id;
         let id = video_id.slice(10);
-        if( $("#" +video_id).val().length <=1)
-        {
+        if ($("#" + video_id).val().length <= 1) {
             // disabled change video name when it's less then 2 charts;
-            $("#addon-wrapping_"+id).addClass(" disabled");
-            $("#addon-wrapping_"+id).on('click', disabledFunc);
-            $("#addon-wrapping_"+id).off('click', openVideo_Handler);
-        }
-        else
-        {
+            $("#addon-wrapping_" + id).addClass(" disabled");
+            $("#addon-wrapping_" + id).on('click', disabledFunc);
+            $("#addon-wrapping_" + id).off('click', openVideo_Handler);
+        } else {
             // able change video name when it's more then 2 charts;
-            $("#addon-wrapping_"+id).removeClass("disabled");
-            $("#addon-wrapping_"+id).off('click', disabledFunc);
-            $("#addon-wrapping_"+id).on('click', openVideo_Handler);
+            $("#addon-wrapping_" + id).removeClass("disabled");
+            $("#addon-wrapping_" + id).off('click', disabledFunc);
+            $("#addon-wrapping_" + id).on('click', openVideo_Handler);
         }
     });
 
@@ -666,23 +666,26 @@ function changeNavItem(event_kind) {
 }
 
 function openVideo_Handler(event) {
+
+    // clear all edit name inputs
+    document.querySelectorAll(".card-title").forEach(function (event) {
+        let event_id = event.id.slice(3);
+        $("#h5_" + event_id).css("display", "block");
+        $("#changeNameArea_" + event_id).css("display", "none");
+    });
+
     let id = event.currentTarget.id
     let video_id = ""
     let name = ""
     if (id != "newVideoBtn") {
-        if($("#"+id).hasClass("saveNameChange"))
-        {
+        if ($("#" + id).hasClass("saveNameChange")) {
             video_id = id.slice(15);
-        }
-        else
-        {
+        } else {
             video_id = $(event.currentTarget).attr("data-vid")
         }
     }
 
-
-    if(id == "more_delete")
-    {
+    if (id == "more_delete") {
         //delete video
         $.ajax({
             method: 'POST',
@@ -691,19 +694,71 @@ function openVideo_Handler(event) {
                 'event_kind': id, 'video_id': video_id
             }
         }).done(buildVideoPage);
+    } else if (id == "more_changeName") {
+        //change name - show name input
+        $("#h5_" + video_id).css("display", "none");
+        $("#changeNameArea_" + video_id).css("display", "block");
+        $("#videoName_" + video_id).text($("#h5_" + video_id).text());
+        $("#videoName_" + video_id).focusout(function () {
+            if ($("#h5_" + video_id).text() == $("#videoName_" + video_id).val()) {
+                $("#h5_" + video_id).css("display", "block");
+                $("#changeNameArea_" + video_id).css("display", "none");
+            }
+        })
+    } else if (id == "more_coverPic") {
+
+        $('#modal').modal('show')
+        let vid_name = $("#h5_" + video_id).text();
+        $('.modal-title').text("שינוי תמונת וידיאו -" + vid_name);
+        let img_content = `<div id="editImage" enctype="multipart/form-data">
+        <div class="imageUpload_file_div d-flex justify-content-between"">
+         <div>
+                     <input type="file" id="imageUpload_file" name="imageUpload_file" style="display:none;"  onchange="loadFile(event)" value="+">
+            <input type="button" id="imageUpload_file_btn" value="החלפת תמונה" class="btn secondaryBtn justify-content-center"  onclick="document.getElementById('imageUpload_file').click();" />
+            <h5 id="p_preview_imageUpload" style="display:none;">תצוגה מקדימה לתמונה:</h5>
+                <div class="coverImg">
+                                <img id="preview_imageUpload2" src="#" class="mainAnimation" style="display:none; width: 100%; height: 100%" alt="your upload image" />
+                </div>
+               </div>
+        <div>
+                   <h5>תמונה נוכחית</h5>
+           <img id="exists_image" src="${ $("#videoImg_"+video_id).attr('src')}" class="mainAnimation coverImg" alt="your upload image" />
+         </div>
+            </div>`
+        $('.modal-body').html(img_content);
+        $("#modal_main_btn").html("החלפת תמונה");
+        $("#modal_main_btn").on('click', disabledFunc);
+        $("#modal_main_btn").off('click', openVideo_Handler);
+        $("#modal_main_btn").removeClass("animated_shake jello");
+        $("#modal_main_btn").addClass("disabled");
     }
-    else if(id == "more_changeName")
-    {
-        $("#h5_"+video_id).css("display", "none");
-        $("#changeNameArea_"+video_id).css("display", "block");
+    if (id === "modal_main_btn") {
+        event_kind = "changeCoverPic";
+        $('#modal').modal('hide')
+
+        const file_data = $('#imageUpload_file').prop('files')[0];
+        const form_data_image = new FormData();
+        form_data_image.append('file', file_data);
+        event.preventDefault();
+        form_data_image.append('event_kind', event_kind);
+        form_data_image.append('video_id', video_id);
+        form_data_image.append('form_data', JSON.stringify(form_data));
+        $.ajax({
+            processData: false,
+            contentType: false,
+            method: 'POST',
+            url: '/video_handler',
+            data: form_data_image
+        }).done(contentChangeHandler);
     }
-    else
-    {
+
+
+
+    else {
         // new video  / open video / change name
-         if(id == ("addon-wrapping_"+video_id.toString()))
-        {
-            id= "saveNameChange";
-            name = $("#videoName_"+video_id).val();
+        if (id == ("addon-wrapping_" + video_id.toString())) {
+            id = "saveNameChange";
+            name = $("#videoName_" + video_id).val();
         }
         $.ajax({
             method: 'POST',
@@ -717,35 +772,33 @@ function openVideo_Handler(event) {
 }
 
 function moveToPage(data) {
-    if (data.event_kind == "newVideoBtn" || data.event_kind=="edit_icon") {
+    if (data.event_kind == "newVideoBtn" || data.event_kind == "edit_icon") {
         window.location.href = "editContent";
-    }
-    else if(data.event_kind=="record_icon")
-    {
+    } else if (data.event_kind == "record_icon") {
 
         window.location.href = "filming";
 
-    }
-    else if(data.event_kind=="watch_icon")
-    {
+    } else if (data.event_kind == "watch_icon") {
 
-    }
-    else if(data.event_kind=="saveNameChange")
-    {
+    } else if (data.event_kind == "saveNameChange") {
         let video_id = data.video_id
-        $("#h5_"+video_id).text(data.name)
-        $("#h5_"+video_id).css("display", "block");
-        $("#changeNameArea_"+video_id).css("display", "none");
+        $("#h5_" + video_id).text(data.name)
+        $("#h5_" + video_id).css("display", "block");
+        $("#changeNameArea_" + video_id).css("display", "none");
     }
 }
 
+function loadFile(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+        document.getElementById('p_preview_imageUpload').style.display = "block";
+        var output = document.getElementById('preview_imageUpload2');
+        output.style.display = "block";
+        output.src = reader.result;
 
-
-// $('#modal').modal('show')
-// $('.modal-title').text("שינוי שם פרויקט");
-// let currentName = `
-// <div>
-//     <input type="text" maxlength="24" name="videoName" id="videoName" value="${$('#video_'+video_id + " h5").text()}" class="form-control">
-// </div>
-// `
-// $('.modal-body').html(currentName);
+    };
+    reader.readAsDataURL(event.target.files[0]);
+    $("#modal_main_btn").off('click', disabledFunc);
+    $("#modal_main_btn").on('click', openVideo_Handler);
+    $("#modal_main_btn").removeClass("disabled");
+}

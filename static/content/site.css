@@ -1926,3 +1926,8 @@ div.card-group{
 .changeName-btn span:hover svg{
     stroke: #e9ecef;
 }
+
+.coverImg{
+    width: 16vw;
+    height: 24vh;
+}

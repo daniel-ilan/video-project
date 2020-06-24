@@ -1030,6 +1030,8 @@ def video_handler():
             db.update_video_name(video_id, video_name)
             return jsonify(name = video_name, event_kind = event_kind, video_id=video_id)
 
+        if event_kind == "changeCoverPic":
+            print("xxxx")
         else:
             if event_kind == "newVideoBtn":
                 # create new video
@@ -1053,7 +1055,6 @@ def video_handler():
             session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
 
             return jsonify(event_kind = event_kind)
-
 
 
 
