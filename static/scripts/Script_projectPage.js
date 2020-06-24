@@ -542,6 +542,9 @@ function buildVideoPage(data) {
     $('.card-icons-svg').on("click", openVideo_Handler)
     $('.disabled_svg').off("click", openVideo_Handler)
     $('.disabled_svg').on("click", disabledFunc)
+    $('.card').on("click", openVideo_Handler)
+
+
 
 }
 
@@ -616,7 +619,17 @@ function openVideo_Handler(event) {
 }
 
 function moveToPage(data) {
-    if (data.event_kind == "newVideoBtn") {
+    if (data.event_kind == "newVideoBtn" || data.event_kind=="edit_icon") {
         window.location.href = "editContent";
+    }
+    else if(data.event_kind=="record_icon")
+    {
+
+        window.location.href = "filming";
+
+    }
+    else if(data.event_kind=="watch_icon")
+    {
+
     }
 }

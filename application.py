@@ -159,7 +159,7 @@ def tests():
     else:
         frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
         return render_template(
-            'index.html',
+            'filming.html',
             frames=frames_props,
             title='אודות',
             year=datetime.now().year
@@ -167,14 +167,12 @@ def tests():
 
 
 
-@application.route('/home')
-def home():
-
+@application.route('/filming')
+def filming():
     frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
-
     """Renders the home page."""
     return render_template(
-        'index.html',
+        'filming.html',
         frames=frames_props,
         title='אודות',
         year=datetime.now().year
@@ -1046,7 +1044,6 @@ def video_handler():
         session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
 
         return jsonify(event_kind = event_kind)
-
 
 
 if __name__ == '__main__':
