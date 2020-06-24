@@ -1619,14 +1619,14 @@ hr.solid {
     color: #6515DD;
 }
 
+/*          ---         card            ---             */
 .video_sizes{
     min-height:  30vh;
     max-height:  30vh;
     min-width: 10vw;
     max-width: 10vw;
-    margin-left: 2rem !important;
+    margin-left: 2.5rem !important;
     margin-bottom: 2rem !important;
-
     padding: 1rem;
 }
 
@@ -1652,7 +1652,6 @@ hr.solid {
     -o-transition: border 0.2s ease-out;
     transition: border 0.2s ease-out;
     border-right: 2px #00B6DE solid !important;
-
     cursor: pointer;
 }
 
@@ -1673,6 +1672,11 @@ h5.card-title{
     -moz-transition: color 0.2s ease-out;
     -o-transition: color 0.2s ease-out;
     transition: color 0.2s ease-out;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 160px;
+    height: 2.2em;
+    white-space: nowrap;
 }
 
 
@@ -1834,7 +1838,7 @@ div.card-group{
     fill: rgba(130, 130, 130, 0.11) !important;
 
 }
-.card-icons-svg:hover{
+.card-icons-svg:hover , .dropdown-item:hover .card-icons-svg{
     fill: black;
     -webkit-transition: fill 0.2s ease-out;
     -moz-transition: fill 0.2s ease-out;
@@ -1848,4 +1852,77 @@ div.card-group{
     display: none;
     background-color: transparent;
     border-top-color: rgba(72, 95, 110, 0.12);
+}
+
+
+/*          ---         card dropdown-menu            ---             */
+
+
+.dropdown-menu{
+    z-index: 200 !important;
+    border: 1px solid #F2F2F2;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 8px rgba(99, 99, 99, 0.2);
+    border-radius: 6px;
+}
+
+.dropdown-item{
+    margin:  0.25rem 0;
+    padding: 0.5rem;
+    font-size: 14px;
+    color: #4b4b4b;
+}
+
+.dropdown-item:hover{
+    color: black;
+    font-weight: 500;
+    background: linear-gradient(0deg, rgba(0, 182, 222, 0.02), rgba(0, 182, 222, 0.02)), #FFFFFF;
+}
+
+#videoName{
+    font-size: 0.73vw;
+    text-align: right;
+    font-weight: 500;
+    color: #2F1359;
+}
+
+.card-body div.changeName-btn{
+    width: 20%;
+}
+
+.card-body div.changeName-btn .input-group-text{
+    padding:  0.25rem 0.25rem;
+}
+
+.changeName-input{
+    padding: 0 0.75rem !important;
+    border-radius: 0px 0.25rem 0.25rem 0px !important;
+
+}
+
+.changeNameArea_div{
+    margin-bottom:  1rem;
+
+}
+
+.changeName-btn svg{
+    stroke: #6515DD;
+}
+
+
+.saveNameChange .disabled  > svg{
+    stroke: white !important;
+}
+
+.changeName-btn span{
+    border-radius: 0.25rem 0px 0px  0.25rem !important;
+}
+
+.changeName-btn span:hover{
+    background-color:  #00B6DE;
+    border-color: rgba(0, 189, 230, 0.69);
+}
+
+.changeName-btn span:hover svg{
+    stroke: #e9ecef;
 }

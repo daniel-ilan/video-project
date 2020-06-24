@@ -150,7 +150,6 @@ function contentChangeHandler(data) {
     const frameText = data.frame_text;
     const spinner = $("#animSpinner");
     spinner.addClass("invisible");
-
     buildForm(data.anim_props, kind, data.color_palettes, frameText);
     changeActive(frame_id, ".frame_lottie");
     if (event_kind === "change_kind_click" || event_kind === "change_mini_lottie" || event_kind === "select_from_general") {

@@ -450,10 +450,10 @@ function buildBrandPage() {
 }
 
 function buildVideoPage(data) {
-    const videos_leangth = data.videos_props.length;
+    const video_length = data.videos_props.length;
     let alertMessage = "";
     let videos_cards = []
-    videos_cards.push(`<div id="newVideoBtn" class="video_sizes animated_zoomIn zoomIn secondaryBtn btn align-self-center mr-2 justify-content-center">
+    videos_cards.push(`<div id="newVideoBtn" class="video_sizes animated_zoomIn zoomIn secondaryBtn btn mr-2 justify-content-center">
                                 <div class="plus_icon_more">+</di>
                                 <div style="font-size: 1vw;margin-top: 80%">
                                     הוספת 
@@ -474,7 +474,7 @@ function buildVideoPage(data) {
                         </div>  `
     }
 
-    for (let i = 0; i < videos_leangth; i++) {
+    for (let i = 0; i < video_length; i++) {
         let className = ""
         let classDisabled_rec = ""
         let classDisabled_show = ""
@@ -494,7 +494,21 @@ function buildVideoPage(data) {
                                   <img class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title p-2">${data.videos_props[i][1]}</h5>                           
+                                <div>
+                                <h5 id="h5_${data.videos_props[i][0]}" class="card-title p-2">${data.videos_props[i][1]}</h5>     
+                                <div id="changeNameArea_${data.videos_props[i][0]}" style="display: none">
+                                    <div class="input-group flex-nowrap changeNameArea_div">
+                                       <input type="text" class="form-control changeName-input" name="videoName" id="videoName_${data.videos_props[i][0]}" value="${data.videos_props[i][1]}">
+                                       <div class="input-group-prepend changeName-btn">
+                                            <span class="input-group-text saveNameChange" id="addon-wrapping_${data.videos_props[i][0]}">
+                                                <svg width="4" height="2" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M1.33789 4.65928L3.24337 6.65928L8.33789 1.65928"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                               </div>
+                    
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
                               <div class="card-footer">
@@ -513,12 +527,51 @@ function buildVideoPage(data) {
                                     title="צפייה בסרטון המוכן">                                         <path d="M7.99996 6C6.89329 6 5.99996 6.89333 5.99996 8C5.99996 9.10667 6.89329 10 7.99996 10C9.10663 10 9.99996 9.10667 9.99996 8C9.99996 6.89333 9.10663 6 7.99996 6Z"/>
                                          <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99996 3C4.66663 3 1.81996 5.07333 0.666626 8C1.81996 10.9267 4.66663 13 7.99996 13C11.3333 13 14.18 10.9267 15.3333 8C14.18 5.07333 11.3333 3 7.99996 3ZM4.66663 8C4.66663 9.84 6.15996 11.3333 7.99996 11.3333C9.83996 11.3333 11.3333 9.84 11.3333 8C11.3333 6.16 9.83996 4.66667 7.99996 4.66667C6.15996 4.66667 4.66663 6.16 4.66663 8Z"/>
                                     </svg>
-
+                                    <a href="#" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
                                     <svg id="moreOption_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}" viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
+                                    xmlns="http://www.w3.org/2000/svg" data-toggle="tooltip" data-placement="top"
                                     title="אפשרויות נוספות">
                                           <path d="M3.99996 6.66666C3.26663 6.66666 2.66663 7.26666 2.66663 7.99999C2.66663 8.73332 3.26663 9.33332 3.99996 9.33332C4.73329 9.33332 5.33329 8.73332 5.33329 7.99999C5.33329 7.26666 4.73329 6.66666 3.99996 6.66666ZM12 6.66666C11.2666 6.66666 10.6666 7.26666 10.6666 7.99999C10.6666 8.73332 11.2666 9.33332 12 9.33332C12.7333 9.33332 13.3333 8.73332 13.3333 7.99999C13.3333 7.26666 12.7333 6.66666 12 6.66666ZM7.99996 6.66666C7.26663 6.66666 6.66663 7.26666 6.66663 7.99999C6.66663 8.73332 7.26663 9.33332 7.99996 9.33332C8.73329 9.33332 9.33329 8.73332 9.33329 7.99999C9.33329 7.26666 8.73329 6.66666 7.99996 6.66666Z"/>
                                     </svg>
+                                                                        </a>
+
+                                       <div class="dropdown-menu">
+<!--                                          <a class="dropdown-item" href="#">-->
+<!--                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--                                            <g clip-path="url(#clip0)">-->
+<!--                                            <path d="M14 6.5H3.83L8.42 1.91L7 0.5L0 7.5L7 14.5L8.41 13.09L3.83 8.5H14V6.5Z"/>-->
+<!--                                            </g>-->
+<!--                                            </svg>-->
+<!--                                          פתיחה</a>-->
+                                          <a id="more_changeName" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
+                                      <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
+                                        <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
+                                    </svg>
+                                          שינוי שם </a>
+                                          <a data-vid="${data.videos_props[i][0]}" class="dropdown-item"  href="#">
+                                            <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
+                                            </svg>
+                                          שינוי תמונה</a>
+                                          <a class="dropdown-item" href="#">
+                                          <svg class="card-icons-svg" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M6 0.5L6 10.67L1.41 6.08L-3.0598e-07 7.5L7 14.5L14 7.5L12.59 6.09L8 10.67L8 0.5L6 0.5Z" />
+                                           </svg>
+                                          הורדה</a>
+                                          <a id="more_delete" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
+                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>   
+                                           </svg>
+                                          מחיקה</a>
+                                          <div class="dropdown-divider"></div>
+                                          <a class="dropdown-item" href="#">
+                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="10.553" y="0.711914" width="2.0464" height="14.3248" transform="rotate(45 10.553 0.711914)" />
+                                                <rect x="11.5762" y="10.8411" width="2.0464" height="14.3248" transform="rotate(135 11.5762 10.8411)" />
+                                          </svg>
+
+                                          סגירת חלון</a>
+                                    </div>
                                 </div>
                               </div>
                         </div>`;
@@ -527,7 +580,7 @@ function buildVideoPage(data) {
 
     const initial = `   
        <div class="row h-5 container-fluid mr-4 pt-2">
-        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + videos_leangth + ")"}</span></h1>
+        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + video_length + ")"}</span></h1>
     </div>
    <div id="videosPageContainer" class="container-fluid mr-4  pt-2" >
    ${alertMessage}
@@ -542,8 +595,28 @@ function buildVideoPage(data) {
     $('.card-icons-svg').on("click", openVideo_Handler)
     $('.disabled_svg').off("click", openVideo_Handler)
     $('.disabled_svg').on("click", disabledFunc)
-    $('.card').on("click", openVideo_Handler)
-
+    //$('.card').on("click", openVideo_Handler)
+    $('.card-item').on("click", openVideo_Handler)
+    $('.dropdown-item').on("click", openVideo_Handler)
+    $('.saveNameChange').on("click", openVideo_Handler)
+    $('.changeName-input').on('keydown keyup change', function (event) {
+        let video_id = event.currentTarget.id;
+        let id = video_id.slice(10);
+        if( $("#" +video_id).val().length <=1)
+        {
+            // disabled change video name when it's less then 2 charts;
+            $("#addon-wrapping_"+id).addClass(" disabled");
+            $("#addon-wrapping_"+id).on('click', disabledFunc);
+            $("#addon-wrapping_"+id).off('click', openVideo_Handler);
+        }
+        else
+        {
+            // able change video name when it's more then 2 charts;
+            $("#addon-wrapping_"+id).removeClass("disabled");
+            $("#addon-wrapping_"+id).off('click', disabledFunc);
+            $("#addon-wrapping_"+id).on('click', openVideo_Handler);
+        }
+    });
 
 
 }
@@ -590,32 +663,57 @@ function changeNavItem(event_kind) {
         }
     );
     roundItemsBorder();
-
-    /*
-    if (kind == "empty") {
-        $('#button_switch').addClass("secondaryBtn_disabled");
-        $('#button_switch').on('click', disabledFunc);
-        $("#button_switch").off('click', open_modal_handler);
-    } else {
-        $('#button_switch').removeClass("secondaryBtn_disabled");
-        $('#button_switch').on('click', open_modal_handler);
-        $("#button_switch").off('click', disabledFunc);
-    }*/
 }
 
 function openVideo_Handler(event) {
     let id = event.currentTarget.id
     let video_id = ""
+    let name = ""
     if (id != "newVideoBtn") {
-        video_id = $("#" + id).attr("data-vid")
-    }
-    $.ajax({
-        method: 'POST',
-        url: '/video_handler',
-        data: {
-            'event_kind': id, 'video_id': video_id
+        if($("#"+id).hasClass("saveNameChange"))
+        {
+            video_id = id.slice(15);
         }
-    }).done(moveToPage);
+        else
+        {
+            video_id = $(event.currentTarget).attr("data-vid")
+        }
+    }
+
+
+    if(id == "more_delete")
+    {
+        //delete video
+        $.ajax({
+            method: 'POST',
+            url: '/onLoad',
+            data: {
+                'event_kind': id, 'video_id': video_id
+            }
+        }).done(buildVideoPage);
+    }
+    else if(id == "more_changeName")
+    {
+        $("#h5_"+video_id).css("display", "none");
+        $("#changeNameArea_"+video_id).css("display", "block");
+    }
+    else
+    {
+        // new video  / open video / change name
+         if(id == ("addon-wrapping_"+video_id.toString()))
+        {
+            id= "saveNameChange";
+            name = $("#videoName_"+video_id).val();
+        }
+        $.ajax({
+            method: 'POST',
+            url: '/video_handler',
+            data: {
+                'event_kind': id, 'video_id': video_id, "video_name": name
+            }
+        }).done(moveToPage);
+    }
+
 }
 
 function moveToPage(data) {
@@ -632,4 +730,22 @@ function moveToPage(data) {
     {
 
     }
+    else if(data.event_kind=="saveNameChange")
+    {
+        let video_id = data.video_id
+        $("#h5_"+video_id).text(data.name)
+        $("#h5_"+video_id).css("display", "block");
+        $("#changeNameArea_"+video_id).css("display", "none");
+    }
 }
+
+
+
+// $('#modal').modal('show')
+// $('.modal-title').text("שינוי שם פרויקט");
+// let currentName = `
+// <div>
+//     <input type="text" maxlength="24" name="videoName" id="videoName" value="${$('#video_'+video_id + " h5").text()}" class="form-control">
+// </div>
+// `
+// $('.modal-body').html(currentName);

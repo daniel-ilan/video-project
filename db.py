@@ -394,3 +394,17 @@ def get_videos_by_project(project_id):
         project_id = int(project_id)
     query = f"SELECT [video_id],[video_name],[image],[video_status] FROM videos WHERE project_id={project_id};"
     return select_all_query(query)
+
+
+def delete_video(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"DELETE FROM videos WHERE video_id =({video_id});"
+    update_query(query)
+
+
+def get_video_name(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"SELECT [video_name] FROM videos WHERE video_id={video_id};"
+    return select_one_query(query)
