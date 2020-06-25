@@ -408,3 +408,18 @@ def get_video_name(video_id: int):
         video_id = int(video_id)
     query = f"SELECT [video_name] FROM videos WHERE video_id={video_id};"
     return select_one_query(query)
+
+
+def get_video_image(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"SELECT [image] FROM videos WHERE video_id={video_id};"
+    return select_one_query(query)
+
+
+def update_video_image(video_id: str, new_image: str):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    new_name = new_image.strip()
+    query = f"UPDATE videos SET image='{new_image}' WHERE video_id={video_id};"
+    update_query(query)

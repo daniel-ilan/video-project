@@ -920,7 +920,7 @@ select:focus {
 }
 
 
-/*          ----------            anmations          ----------          */
+/*          ----------            animations          ----------          */
 /*              ----    shake       ----         */
 .animated_shake {
     -webkit-animation-duration: 1s;

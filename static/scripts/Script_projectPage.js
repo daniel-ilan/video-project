@@ -514,7 +514,7 @@ function buildVideoPage(data) {
                     
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
-                              <div class="card-footer">
+                              <div class="card-footer animated_zoomIn flipInX">
                                 <div class="d-flex justify-content-center"> 
                                     <svg id="edit_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}"  viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
@@ -677,6 +677,7 @@ function openVideo_Handler(event) {
     let id = event.currentTarget.id
     let video_id = ""
     let name = ""
+
     if (id != "newVideoBtn") {
         if ($("#" + id).hasClass("saveNameChange")) {
             video_id = id.slice(15);
@@ -706,7 +707,7 @@ function openVideo_Handler(event) {
             }
         })
     } else if (id == "more_coverPic") {
-
+        //show change pic modal
         $('#modal').modal('show')
         let vid_name = $("#h5_" + video_id).text();
         $('.modal-title').text("שינוי תמונת וידיאו -" + vid_name);
@@ -727,13 +728,19 @@ function openVideo_Handler(event) {
             </div>`
         $('.modal-body').html(img_content);
         $("#modal_main_btn").html("החלפת תמונה");
+        $("#modal_main_btn").attr("data-vid", video_id);
+
         $("#modal_main_btn").on('click', disabledFunc);
         $("#modal_main_btn").off('click', openVideo_Handler);
         $("#modal_main_btn").removeClass("animated_shake jello");
         $("#modal_main_btn").addClass("disabled");
     }
-    if (id === "modal_main_btn") {
-        event_kind = "changeCoverPic";
+    else if(id=="moreOption_icon"){
+        //do noting - don't send to server
+    }
+    else if (id === "modal_main_btn") {
+        // send new img to server
+        let event_kind = "changeCoverPic";
         $('#modal').modal('hide')
 
         const file_data = $('#imageUpload_file').prop('files')[0];
@@ -742,18 +749,14 @@ function openVideo_Handler(event) {
         event.preventDefault();
         form_data_image.append('event_kind', event_kind);
         form_data_image.append('video_id', video_id);
-        form_data_image.append('form_data', JSON.stringify(form_data));
         $.ajax({
             processData: false,
             contentType: false,
             method: 'POST',
             url: '/video_handler',
             data: form_data_image
-        }).done(contentChangeHandler);
+        }).done(moveToPage);
     }
-
-
-
     else {
         // new video  / open video / change name
         if (id == ("addon-wrapping_" + video_id.toString())) {
@@ -785,6 +788,12 @@ function moveToPage(data) {
         $("#h5_" + video_id).text(data.name)
         $("#h5_" + video_id).css("display", "block");
         $("#changeNameArea_" + video_id).css("display", "none");
+    }
+    else if(data.event_kind == "changeCoverPic")
+    {
+        let video_id = data.video_id;
+        let new_src = "../" + data.video_src + data.video_id + "/" + data.image_name.replace(/\u200f/g, '')
+        $("#videoImg_"+video_id).attr("src",new_src)
     }
 }
 

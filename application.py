@@ -1030,8 +1030,23 @@ def video_handler():
             db.update_video_name(video_id, video_name)
             return jsonify(name = video_name, event_kind = event_kind, video_id=video_id)
 
-        if event_kind == "changeCoverPic":
-            print("xxxx")
+        elif event_kind == "changeCoverPic":
+            file = request.files['file']
+            video_id = request.form['video_id']
+
+            if file.filename == '':
+                return redirect(request.url)
+
+            if file and allowed_file(file.filename):
+                filename = "".join([char for char in db.get_video_image(video_id)[0].strip() if ord(char) < 128])
+                my_path =os.path.join(session.get("WORKING_PATH_IMG"),video_id)
+                os.remove(os.path.join(my_path,filename))
+                new_filename = "placeholderCardCover." + "_" + str(int(time.time())) + str(file.filename.rsplit('.', 1)[1].lower())  # Split the extension from the path and normalise it to lowercase.
+                location = os.path.join(my_path, new_filename)
+                file.save(location)
+                db.update_video_image(video_id,new_filename)
+                return jsonify(image_name=new_filename, event_kind=event_kind, video_id=video_id, video_src = session.get('WORKING_PATH_IMG'))
+
         else:
             if event_kind == "newVideoBtn":
                 # create new video
