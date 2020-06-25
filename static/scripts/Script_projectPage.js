@@ -51,6 +51,8 @@ function loadPageData(data) {
         buildVideoPage(data)
         changeNavItem(data.event_kind)
     }
+    $('#create_new_vid').on("click", openVideo_Handler)
+
 }
 
 function buildCollection(data) {
@@ -539,13 +541,6 @@ function buildVideoPage(data) {
                                                                         </a>
 
                                        <div class="dropdown-menu" flip="true">
-<!--                                          <a class="dropdown-item" href="#">-->
-<!--                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">-->
-<!--                                            <g clip-path="url(#clip0)">-->
-<!--                                            <path d="M14 6.5H3.83L8.42 1.91L7 0.5L0 7.5L7 14.5L8.41 13.09L3.83 8.5H14V6.5Z"/>-->
-<!--                                            </g>-->
-<!--                                            </svg>-->
-<!--                                          פתיחה</a>-->
                                           <a id="more_changeName" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
                                       <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
                                         <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
@@ -681,6 +676,10 @@ function openVideo_Handler(event) {
     let video_id = ""
     let name = ""
 
+    if (id== "create_new_vid")
+    {
+        id = "newVideoBtn"
+    }
     //get video id if it's exists
     if (id != "newVideoBtn" || id != "more_close") {
         if ($("#" + id).hasClass("saveNameChange")) {

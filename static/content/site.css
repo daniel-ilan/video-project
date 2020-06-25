@@ -310,7 +310,7 @@ svg {
 /*          ----------            edit Template Page          ----------          */
 .frame_container_class {
     display: inline-block;
-    margin: 0.5rem 0;
+    margin-top: 1rem;
     padding: 0 1rem;
 }
 
@@ -456,6 +456,10 @@ svg {
     background: white;
     /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
     position: relative;
+}
+
+#frames_Area_container{
+    padding:  0 1rem;
 }
 
 
