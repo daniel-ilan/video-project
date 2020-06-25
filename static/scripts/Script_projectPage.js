@@ -538,7 +538,7 @@ function buildVideoPage(data) {
                                     </svg>
                                                                         </a>
 
-                                       <div class="dropdown-menu">
+                                       <div class="dropdown-menu" flip="true">
 <!--                                          <a class="dropdown-item" href="#">-->
 <!--                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">-->
 <!--                                            <g clip-path="url(#clip0)">-->
@@ -556,8 +556,8 @@ function buildVideoPage(data) {
                                             <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
                                             </svg>
                                           שינוי תמונה</a>
-                                          <a class="dropdown-item" href="#">
-                                          <svg class="card-icons-svg" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <a id="more_download" class="dropdown-item ${classDisabled_show}" href="#">
+                                          <svg class="card-icons-svg ${classDisabled_show}"" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                               <path d="M6 0.5L6 10.67L1.41 6.08L-3.0598e-07 7.5L7 14.5L14 7.5L12.59 6.09L8 10.67L8 0.5L6 0.5Z" />
                                            </svg>
                                           הורדה</a>
@@ -567,7 +567,7 @@ function buildVideoPage(data) {
                                            </svg>
                                           מחיקה</a>
                                           <div class="dropdown-divider"></div>
-                                          <a class="dropdown-item" href="#">
+                                          <a id="more_close" class="dropdown-item" href="#">
                                           <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <rect x="10.553" y="0.711914" width="2.0464" height="14.3248" transform="rotate(45 10.553 0.711914)" />
                                                 <rect x="11.5762" y="10.8411" width="2.0464" height="14.3248" transform="rotate(135 11.5762 10.8411)" />
@@ -602,6 +602,7 @@ function buildVideoPage(data) {
     $('.card-item').on("click", openVideo_Handler)
     $('.dropdown-item').on("click", openVideo_Handler)
     $('.saveNameChange').on("click", openVideo_Handler)
+
     $('.changeName-input').on('keyup change', function (event) {
         let video_id = event.currentTarget.id;
         let id = video_id.slice(10);
@@ -618,7 +619,10 @@ function buildVideoPage(data) {
         }
     });
 
+    $(".card").hover(function () {
+        $(".dropdown-menu").dropdown('hide');
 
+    });
 }
 
 function changeNavItem(event_kind) {
@@ -666,7 +670,6 @@ function changeNavItem(event_kind) {
 }
 
 function openVideo_Handler(event) {
-
     // clear all edit name inputs
     document.querySelectorAll(".card-title").forEach(function (event) {
         let event_id = event.id.slice(3);
@@ -678,7 +681,8 @@ function openVideo_Handler(event) {
     let video_id = ""
     let name = ""
 
-    if (id != "newVideoBtn") {
+    //get video id if it's exists
+    if (id != "newVideoBtn" || id != "more_close") {
         if ($("#" + id).hasClass("saveNameChange")) {
             video_id = id.slice(15);
         } else {
@@ -723,7 +727,7 @@ function openVideo_Handler(event) {
                </div>
         <div>
                    <h5>תמונה נוכחית</h5>
-           <img id="exists_image" src="${ $("#videoImg_"+video_id).attr('src')}" class="mainAnimation coverImg" alt="your upload image" />
+           <img id="exists_image" src="${$("#videoImg_" + video_id).attr('src')}" class="mainAnimation coverImg" alt="your upload image" />
          </div>
             </div>`
         $('.modal-body').html(img_content);
@@ -734,11 +738,9 @@ function openVideo_Handler(event) {
         $("#modal_main_btn").off('click', openVideo_Handler);
         $("#modal_main_btn").removeClass("animated_shake jello");
         $("#modal_main_btn").addClass("disabled");
-    }
-    else if(id=="moreOption_icon"){
+    } else if (id == "moreOption_icon" || id == "more_close") {
         //do noting - don't send to server
-    }
-    else if (id === "modal_main_btn") {
+    } else if (id === "modal_main_btn") {
         // send new img to server
         let event_kind = "changeCoverPic";
         $('#modal').modal('hide')
@@ -755,13 +757,15 @@ function openVideo_Handler(event) {
             method: 'POST',
             url: '/video_handler',
             data: form_data_image
-        }).done(moveToPage);
-    }
-    else {
+        }).done(options_on_video_Handler);
+    } else {
+
         // new video  / open video / change name
-        if (id == ("addon-wrapping_" + video_id.toString())) {
-            id = "saveNameChange";
-            name = $("#videoName_" + video_id).val();
+        if (video_id != undefined) {
+            if (id == ("addon-wrapping_" + video_id.toString())) {
+                id = "saveNameChange";
+                name = $("#videoName_" + video_id).val();
+            }
         }
         $.ajax({
             method: 'POST',
@@ -769,12 +773,12 @@ function openVideo_Handler(event) {
             data: {
                 'event_kind': id, 'video_id': video_id, "video_name": name
             }
-        }).done(moveToPage);
+        }).done(options_on_video_Handler);
     }
 
 }
 
-function moveToPage(data) {
+function options_on_video_Handler(data) {
     if (data.event_kind == "newVideoBtn" || data.event_kind == "edit_icon") {
         window.location.href = "editContent";
     } else if (data.event_kind == "record_icon") {
@@ -788,12 +792,10 @@ function moveToPage(data) {
         $("#h5_" + video_id).text(data.name)
         $("#h5_" + video_id).css("display", "block");
         $("#changeNameArea_" + video_id).css("display", "none");
-    }
-    else if(data.event_kind == "changeCoverPic")
-    {
+    } else if (data.event_kind == "changeCoverPic") {
         let video_id = data.video_id;
         let new_src = "../" + data.video_src + data.video_id + "/" + data.image_name.replace(/\u200f/g, '')
-        $("#videoImg_"+video_id).attr("src",new_src)
+        $("#videoImg_" + video_id).attr("src", new_src)
     }
 }
 

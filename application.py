@@ -1041,7 +1041,7 @@ def video_handler():
                 filename = "".join([char for char in db.get_video_image(video_id)[0].strip() if ord(char) < 128])
                 my_path =os.path.join(session.get("WORKING_PATH_IMG"),video_id)
                 os.remove(os.path.join(my_path,filename))
-                new_filename = "placeholderCardCover." + "_" + str(int(time.time())) + str(file.filename.rsplit('.', 1)[1].lower())  # Split the extension from the path and normalise it to lowercase.
+                new_filename = "placeholderCardCover" + "_" + str(int(time.time())) + "."+str(file.filename.rsplit('.', 1)[1].lower())  # Split the extension from the path and normalise it to lowercase.
                 location = os.path.join(my_path, new_filename)
                 file.save(location)
                 db.update_video_image(video_id,new_filename)

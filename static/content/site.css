@@ -1832,10 +1832,12 @@ div.card-group{
 .disabled_svg{
     cursor: default;
     fill: rgba(130, 130, 130, 0.24 );
+    color: rgba(130, 130, 130, 0.24 ) !important;
 }
 
-.disabled_svg:hover{
+.disabled_svg:hover, #more_download:hover svg.disabled_svg{
     fill: rgba(130, 130, 130, 0.11) !important;
+    color: rgba(130, 130, 130, 0.24 ) !important;
 
 }
 .card-icons-svg:hover , .dropdown-item:hover .card-icons-svg{
@@ -1859,7 +1861,9 @@ div.card-group{
 
 
 .dropdown-menu{
-    z-index: 200 !important;
+    /*z-index: 2000 !important;*/
+    /*display:block;*/
+    /*margin-right: 160%;*/
     border: 1px solid #F2F2F2;
     box-sizing: border-box;
     box-shadow: 0px 4px 8px rgba(99, 99, 99, 0.2);
@@ -1928,6 +1932,6 @@ div.card-group{
 }
 
 .coverImg{
-    width: 16vw;
-    height: 24vh;
+    width: 14vw;
+    height: 26vh;
 }
