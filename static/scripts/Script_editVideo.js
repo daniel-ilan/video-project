@@ -150,7 +150,6 @@ function contentChangeHandler(data) {
     const frameText = data.frame_text;
     const spinner = $("#animSpinner");
     spinner.addClass("invisible");
-
     buildForm(data.anim_props, kind, data.color_palettes, frameText);
     changeActive(frame_id, ".frame_lottie");
     if (event_kind === "change_kind_click" || event_kind === "change_mini_lottie" || event_kind === "select_from_general") {
@@ -201,14 +200,14 @@ function buildFrames(data) {
     const addBtn = `<div class="no-drag">
             <button id="newFrameBtn" class="primaryBTN">+</button>
         </div>`;
-    numSlides.push(addBtn);
-
-    $('#frames_Area').html(numSlides);
+    // numSlides.push(addBtn);
+    $('#newFrameBtn_area').html(addBtn);
+    $('#frames_Area_container').html(numSlides);
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', change_animation_handler);
 
     // creates the option to drag the frames around
-    let framesArea = document.querySelector('#frames_Area');
+    let framesArea = document.querySelector('#frames_Area_container');
     UIkit.sortable(framesArea, {
         clsNoDrag: "no-drag",
         animation: 200,
@@ -219,6 +218,8 @@ function buildFrames(data) {
         clsDragState: ".dragged",
         clsBase: ".dragged"});
     UIkit.util.on(framesArea, 'moved', getDraggedInfo);
+    UIkit.util.on(framesArea, 'start', getDraggedWidth);
+
 
     // plays all animations to 50%
     document.querySelectorAll(".tinyLottiePlayer").forEach(function seekToMiddle(player) {
@@ -231,6 +232,11 @@ function buildFrames(data) {
     });
 }
 
+function getDraggedWidth(eve) {
+    let width_cont = $('#frames_Area_container').width();
+    $('#frames_Area_container').width(width_cont);
+}
+
 function getDraggedInfo(eve){
     let currentMove = eve.detail[1].dataset.order;
     let indexes = [];
@@ -238,9 +244,6 @@ function getDraggedInfo(eve){
     $(this).find('.frame_container_class').each(function() {
         indexes.push($(this).attr("data-order"));
     });
-    console.log(indexes);
-    console.log(currentMove);
-
     $(this).find('.frame_container_class').each(function(i) {
         let frameId = this.firstElementChild.id.split("_")[1];
         $(this).attr("data-order", i + 1);
@@ -248,8 +251,7 @@ function getDraggedInfo(eve){
         $(this).find('p').text(`${i + 1}`);
         db_order.push([frameId, i])
     });
-
-    console.log(db_order);
+    $('#frames_Area_container').width("auto");
     $.ajax({
         method: 'POST',
         url: '/frame_order',

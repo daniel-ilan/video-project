@@ -12,7 +12,7 @@ from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
-
+import shutil
 import db
 
 
@@ -159,7 +159,7 @@ def tests():
     else:
         frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
         return render_template(
-            'index.html',
+            'filming.html',
             frames=frames_props,
             title='אודות',
             year=datetime.now().year
@@ -167,14 +167,12 @@ def tests():
 
 
 
-@application.route('/home')
-def home():
-
+@application.route('/filming')
+def filming():
     frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
-
     """Renders the home page."""
     return render_template(
-        'index.html',
+        'filming.html',
         frames=frames_props,
         title='אודות',
         year=datetime.now().year
@@ -300,7 +298,7 @@ def homePage():
 def editContent():
     return render_template(
         'editContent.html',
-        title='שם הסרטון',
+        title= db.get_video_name(session.get('CURRENT_VIDEO'))[0],
         # var=anim_properties
     )
 
@@ -343,11 +341,14 @@ def frame_change():
     general_frame = []
     frame_text = ""
 
-
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
         if (event_kind == "onLoad"):
+            # if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == True:
+            # im here now
+            #     create_new_collection(session.get('CURRENT_PROJECT'))
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(frames_props[1][0][1]))
             current_frame = frames_props[1][0]
             kind = current_frame[3]
@@ -877,9 +878,12 @@ def onLoad():
             return jsonify(collections_props=collections_props,animations_props=animations_props,
                            collection_id=collection_id,collection_length=collection_length,
                            selected_collection_id=collection_id , event_kind=event_kind, colors=colors)
-        elif event_kind == "link_videos":
+        elif event_kind == "link_videos" or event_kind == "more_delete":
+            if event_kind == "more_delete":
+                video_id= request.form["video_id"]
+                db.delete_video(video_id)
+                shutil.rmtree(session.get('WORKING_PATH_IMG') + str(video_id))
             videos_props = convert_row_to_list_include_childrens(db.get_videos_by_project(session.get('CURRENT_PROJECT')))
-
             # check if it's needed to add Alert about the brand
             palette_id = convert_row_to_list( db.get_palette_id_by_project(session.get('CURRENT_PROJECT')))[0]
             collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
@@ -1020,26 +1024,62 @@ def frame_order():
         return ""
 
 
-@application.route('/createNewVideo', methods=['POST', 'GET'])
-def createNewVideo():
-    event_kind = request.form['event_kind']
-    project_id =session.get('CURRENT_PROJECT')
-    db.create_new_video(project_id)
+@application.route('/video_handler', methods=['POST', 'GET'])
+def video_handler():
+    if request.method == 'POST':
+        event_kind = request.form['event_kind']
+        if event_kind == "saveNameChange":
+            video_id = request.form['video_id']
+            video_name = request.form['video_name']
+            db.update_video_name(video_id, video_name)
+            return jsonify(name = video_name, event_kind = event_kind, video_id=video_id)
 
-    # 3 lines below this needs to be in a function called get_frames_path
-    project_owner = db.get_project_owner(str(project_id))[0]
-    video_id = db.get_last_video_id(project_id)[0]
-    frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+        elif event_kind == "changeCoverPic":
+            file = request.files['file']
+            video_id = request.form['video_id']
 
-    frame_name = copy_animations("empty new project", frame_path)
-    new_id = db.get_last_video_id(str(project_id))[0]
-    db.create_new_frame(new_id, frame_name[0], 0)
-    session['CURRENT_VIDEO'] = new_id
-    user_id = session.get('CURRENT_USER')
-    current_project = session.get('CURRENT_PROJECT')
-    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{new_id}/frames/'
+            if file.filename == '':
+                return redirect(request.url)
 
-    return jsonify(event_kind = event_kind)
+            if file and allowed_file(file.filename):
+                filename = "".join([char for char in db.get_video_image(video_id)[0].strip() if ord(char) < 128])
+                my_path =os.path.join(session.get("WORKING_PATH_IMG"),video_id)
+                os.remove(os.path.join(my_path,filename))
+                new_filename = "placeholderCardCover" + "_" + str(int(time.time())) + "."+str(file.filename.rsplit('.', 1)[1].lower())  # Split the extension from the path and normalise it to lowercase.
+                location = os.path.join(my_path, new_filename)
+                file.save(location)
+                db.update_video_image(video_id,new_filename)
+                return jsonify(image_name=new_filename, event_kind=event_kind, video_id=video_id, video_src = session.get('WORKING_PATH_IMG'))
+
+        else:
+            if event_kind == "newVideoBtn":
+                # create new video
+                project_id = session.get('CURRENT_PROJECT')
+                db.create_new_video(project_id)
+
+                # 3 lines below this needs to be in a function called get_frames_path
+                project_owner = db.get_project_owner(str(project_id))[0]
+                video_id = db.get_last_video_id(project_id)[0]
+                frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+
+                frame_name = copy_animations("empty new project", frame_path)
+                new_id = db.get_last_video_id(str(project_id))[0]
+                db.create_new_frame(new_id, frame_name[0], 0)
+            else:
+                video_id = request.form['video_id']
+
+            session['CURRENT_VIDEO'] = video_id
+            user_id = session.get('CURRENT_USER')
+            current_project = session.get('CURRENT_PROJECT')
+            session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
+
+            return jsonify(event_kind = event_kind)
+
+
+def create_new_collection(project_id: int):
+    db.get_project_theme(project_id)
+    db.update_change_on_collectionYN(project_id,False)
+
 
 if __name__ == '__main__':
     application.run()

@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     if (editForm.val() === "" && boolX === false) {
         boolX = true;
-       // loadPage("pageLoad");
+        // loadPage("pageLoad");
         loadPage("link_videos");
 
     }
@@ -47,11 +47,12 @@ function loadPageData(data) {
         changeNavItem(data.event_kind)
         buildCollection(data)
         buildPalette(data.colors)
-    }
-    else if(data.event_kind == "link_videos") {
+    } else if (data.event_kind == "link_videos") {
         buildVideoPage(data)
         changeNavItem(data.event_kind)
     }
+    $('#create_new_vid').on("click", openVideo_Handler)
+
 }
 
 function buildCollection(data) {
@@ -166,18 +167,28 @@ function change_palette_handler(event) {
 }
 
 function disabledFunc(event) {
-    if (event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled")) {
-        if (event.currentTarget.id == "selectCollection" && event.currentTarget.classList.contains("disabled")) {
-            $("#selectCollection").off('click', disabledFunc);
-            $("#selectCollection").on('click', change_collection_handler);
-
-        }
+    if (event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled") || event.currentTarget.classList.contains("disabled_svg")) {
+        // if (event.currentTarget.id == "selectCollection" && event.currentTarget.classList.contains("disabled")) {
+        //     $("#selectCollection").off('click', disabledFunc);
+        //     $("#selectCollection").on('click', change_collection_handler);
+        // }
+        // else if (event.currentTarget.classList.contains("disabled_svg")) {
+        //     $("#" + event.currentTarget.id).off('click', openVideo_Handler);
+        // }
 
         event.preventDefault();
-        $("#" + event.currentTarget.id).addClass("animated_shake jello");
-        setTimeout(function () {
-            $("#" + event.currentTarget.id).removeClass("animated_shake jello");
-        }, 3000);
+        if (event.currentTarget.classList.contains("disabled_svg")) {
+            let my_id = "#" + event.currentTarget.id
+            $(my_id).addClass("animated_shake jello");
+            setTimeout(function () {
+                $(my_id).removeClass("animated_shake jello");
+            }, 3000);
+        } else {
+            $("#" + event.currentTarget.id).addClass("animated_shake jello");
+            setTimeout(function () {
+                $("#" + event.currentTarget.id).removeClass("animated_shake jello");
+            }, 3000);
+        }
     }
 }
 
@@ -259,6 +270,8 @@ function modael_data(data) {
         $("#modal_main_btn").off('click', change_palette_handler);
         $("#modal_main_btn").removeClass("animated_shake jello");
         $("#modal_main_btn").addClass("disabled");
+        $("#modal_main_btn").html(" בחירה");
+
 
         let divGrids = `<p>ניתן לעבור עם העכבר על הפלטה לצפייה בפרטיה  </p>`;
         for (let i = 0; i < data.colors.length; i++) {
@@ -304,10 +317,11 @@ function modael_data(data) {
                     //add Selected class
                     $("#gridLinePalette_" + id).addClass("paletteGrid_modal_Selected");
                     id_Clicked = id;
-                    //male btn sabled
+                    //male btn abled
                     $("#modal_main_btn").off('click', disabledFunc);
                     $("#modal_main_btn").on('click', change_palette_handler);
                     $("#modal_main_btn").removeClass("disabled");
+
 
                 } else {
                     //remove Selected & Hover class
@@ -441,10 +455,10 @@ function buildBrandPage() {
 }
 
 function buildVideoPage(data) {
-    const videos_leangth = data.videos_props.length;
+    const video_length = data.videos_props.length;
     let alertMessage = "";
     let videos_cards = []
-    videos_cards.push(`<div id="newVideoBtn" class="video_sizes animated_zoomIn zoomIn secondaryBtn btn align-self-center mr-2 justify-content-center">
+    videos_cards.push(`<div id="newVideoBtn" class="video_sizes animated_zoomIn zoomIn secondaryBtn btn mr-2 justify-content-center">
                                 <div class="plus_icon_more">+</di>
                                 <div style="font-size: 1vw;margin-top: 80%">
                                     הוספת 
@@ -453,8 +467,7 @@ function buildVideoPage(data) {
                                 </di>
                                 
                         </div>`)
-    if(data.showAlert == true)
-    {
+    if (data.showAlert == true) {
         alertMessage = `<div>
                             <div class="d-flex flex-row alert" >
                                 <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -466,41 +479,106 @@ function buildVideoPage(data) {
                         </div>  `
     }
 
-    for (let i = 0; i < videos_leangth; i++) {
+    for (let i = 0; i < video_length; i++) {
         let className = ""
-        if (data.videos_props[i][3] == "בהכנה")
-        {
-            className= "status_working"
-        }
-        else if (data.videos_props[i][3] == "בצילום")
-        {
-            className= "status_recording"
-        }
-        else if (data.videos_props[i][3] == "הסתיים")
-        {
-            className= "status_done"
+        let classDisabled_rec = ""
+        let classDisabled_show = ""
+        if (data.videos_props[i][3] == "בהכנה") {
+            className = "status_working";
+            classDisabled_rec = "disabled_svg"
+            classDisabled_show = "disabled_svg"
+
+        } else if (data.videos_props[i][3] == "בצילום") {
+            className = "status_recording"
+            classDisabled_show = "disabled_svg"
+        } else if (data.videos_props[i][3] == "הסתיים") {
+            className = "status_done"
         }
         let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
                             <div class="img_wrapper">
-                                  <img class="card-img-top" src="${"../"+data.video_src + data.videos_props[i][0] +"/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
+                                  <img id="videoImg_${data.videos_props[i][0]}" class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
                             </div>
                             <div class="card-body">
-                            <div class="flex-wrap">
-                                <h5 class="card-title p-2">${data.videos_props[i][1]}</h5>
-                                <svg class="more_actions_card" style=" float: left; margin-top: -2rem;" width="9" height="6" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.31084 0.815816C8.21522 0.728061 8.06836 0.728061 7.97275 0.815816L4.5 4.00313L1.02725 0.815816C0.931641 0.728061 0.784777 0.728061 0.689164 0.815816L0.330955 1.14458C0.279366 1.19193 0.25 1.25874 0.25 1.32877C0.25 1.39879 0.279366 1.4656 0.330955 1.51295L4.33095 5.18418C4.42657 5.27194 4.57343 5.27194 4.66905 5.18418L8.66905 1.51295C8.72063 1.4656 8.75 1.39879 8.75 1.32877C8.75 1.25874 8.72063 1.19193 8.66905 1.14458L8.31084 0.815816Z" fill="#828282" stroke="#828282" stroke-width="0.5" stroke-linejoin="round"/>
-                                </svg>
-                            
-                            </div>
+                                <div>
+                                <h5 id="h5_${data.videos_props[i][0]}" class="card-title p-2">${data.videos_props[i][1]}</h5>     
+                                <div id="changeNameArea_${data.videos_props[i][0]}" style="display: none">
+                                    <div class="input-group flex-nowrap changeNameArea_div">
+                                       <input type="text" class="form-control changeName-input" name="videoName" id="videoName_${data.videos_props[i][0]}" value="${data.videos_props[i][1]}">
+                                       <div class="input-group-prepend changeName-btn">
+                                            <span class="input-group-text saveNameChange" id="addon-wrapping_${data.videos_props[i][0]}">
+                                                <svg width="4" height="2" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M1.33789 4.65928L3.24337 6.65928L8.33789 1.65928"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                               </div>
+                    
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
+                              <div class="card-footer animated_zoomIn flipInX">
+                                <div class="d-flex justify-content-center"> 
+                                    <svg id="edit_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}"  viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
+                                    title="עריכת הסרטון">
+                                        <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
+                                    </svg>
+                                    <svg id="record_icon" class="card-icons-svg ${classDisabled_rec}"  data-vid="${data.videos_props[i][0]}" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
+                                    title="צילום הסרטון">                                        <path d="M11.3333 7V4.66667C11.3333 4.3 11.0333 4 10.6667 4H2.66667C2.3 4 2 4.3 2 4.66667V11.3333C2 11.7 2.3 12 2.66667 12H10.6667C11.0333 12 11.3333 11.7 11.3333 11.3333V9L14 11.6667V4.33333L11.3333 7Z"/>
+                                    </svg>
+                                    <svg id="watch_icon" class="card-icons-svg ${classDisabled_show}" data-vid="${data.videos_props[i][0]}" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
+                                    title="צפייה בסרטון המוכן">                                         <path d="M7.99996 6C6.89329 6 5.99996 6.89333 5.99996 8C5.99996 9.10667 6.89329 10 7.99996 10C9.10663 10 9.99996 9.10667 9.99996 8C9.99996 6.89333 9.10663 6 7.99996 6Z"/>
+                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99996 3C4.66663 3 1.81996 5.07333 0.666626 8C1.81996 10.9267 4.66663 13 7.99996 13C11.3333 13 14.18 10.9267 15.3333 8C14.18 5.07333 11.3333 3 7.99996 3ZM4.66663 8C4.66663 9.84 6.15996 11.3333 7.99996 11.3333C9.83996 11.3333 11.3333 9.84 11.3333 8C11.3333 6.16 9.83996 4.66667 7.99996 4.66667C6.15996 4.66667 4.66663 6.16 4.66663 8Z"/>
+                                    </svg>
+                                    <a href="#" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
+                                    <svg id="moreOption_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" data-toggle="tooltip" data-placement="top"
+                                    title="אפשרויות נוספות">
+                                          <path d="M3.99996 6.66666C3.26663 6.66666 2.66663 7.26666 2.66663 7.99999C2.66663 8.73332 3.26663 9.33332 3.99996 9.33332C4.73329 9.33332 5.33329 8.73332 5.33329 7.99999C5.33329 7.26666 4.73329 6.66666 3.99996 6.66666ZM12 6.66666C11.2666 6.66666 10.6666 7.26666 10.6666 7.99999C10.6666 8.73332 11.2666 9.33332 12 9.33332C12.7333 9.33332 13.3333 8.73332 13.3333 7.99999C13.3333 7.26666 12.7333 6.66666 12 6.66666ZM7.99996 6.66666C7.26663 6.66666 6.66663 7.26666 6.66663 7.99999C6.66663 8.73332 7.26663 9.33332 7.99996 9.33332C8.73329 9.33332 9.33329 8.73332 9.33329 7.99999C9.33329 7.26666 8.73329 6.66666 7.99996 6.66666Z"/>
+                                    </svg>
+                                                                        </a>
+
+                                       <div class="dropdown-menu" flip="true">
+                                          <a id="more_changeName" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
+                                      <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
+                                        <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
+                                    </svg>
+                                          שינוי שם </a>
+                                          <a id="more_coverPic" data-vid="${data.videos_props[i][0]}" class="dropdown-item"  href="#">
+                                            <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
+                                            </svg>
+                                          שינוי תמונה</a>
+                                          <a id="more_download" class="dropdown-item ${classDisabled_show}" href="#">
+                                          <svg class="card-icons-svg ${classDisabled_show}"" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M6 0.5L6 10.67L1.41 6.08L-3.0598e-07 7.5L7 14.5L14 7.5L12.59 6.09L8 10.67L8 0.5L6 0.5Z" />
+                                           </svg>
+                                          הורדה</a>
+                                          <a id="more_delete" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
+                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>   
+                                           </svg>
+                                          מחיקה</a>
+                                          <div class="dropdown-divider"></div>
+                                          <a id="more_close" class="dropdown-item" href="#">
+                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="10.553" y="0.711914" width="2.0464" height="14.3248" transform="rotate(45 10.553 0.711914)" />
+                                                <rect x="11.5762" y="10.8411" width="2.0464" height="14.3248" transform="rotate(135 11.5762 10.8411)" />
+                                          </svg>
+
+                                          סגירת חלון</a>
+                                    </div>
+                                </div>
+                              </div>
                         </div>`;
         videos_cards.push(myCard);
     }
 
     const initial = `   
        <div class="row h-5 container-fluid mr-4 pt-2">
-        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + videos_leangth + ")"}</span></h1>
+        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + video_length + ")"}</span></h1>
     </div>
    <div id="videosPageContainer" class="container-fluid mr-4  pt-2" >
    ${alertMessage}
@@ -510,7 +588,36 @@ function buildVideoPage(data) {
     </div>`;
     $('#containerForData').html(initial);
     $('.card-group').html(videos_cards);
-    $('#newVideoBtn').on("click",createNewVideo)
+    $('#newVideoBtn').on("click", openVideo_Handler)
+    $('[data-toggle="tooltip"]').tooltip();
+    $('.card-icons-svg').on("click", openVideo_Handler)
+    $('.disabled_svg').off("click", openVideo_Handler)
+    $('.disabled_svg').on("click", disabledFunc)
+    //$('.card').on("click", openVideo_Handler)
+    $('.card-item').on("click", openVideo_Handler)
+    $('.dropdown-item').on("click", openVideo_Handler)
+    $('.saveNameChange').on("click", openVideo_Handler)
+
+    $('.changeName-input').on('keyup change', function (event) {
+        let video_id = event.currentTarget.id;
+        let id = video_id.slice(10);
+        if ($("#" + video_id).val().length <= 1) {
+            // disabled change video name when it's less then 2 charts;
+            $("#addon-wrapping_" + id).addClass(" disabled");
+            $("#addon-wrapping_" + id).on('click', disabledFunc);
+            $("#addon-wrapping_" + id).off('click', openVideo_Handler);
+        } else {
+            // able change video name when it's more then 2 charts;
+            $("#addon-wrapping_" + id).removeClass("disabled");
+            $("#addon-wrapping_" + id).off('click', disabledFunc);
+            $("#addon-wrapping_" + id).on('click', openVideo_Handler);
+        }
+    });
+
+    $(".card").hover(function () {
+        $(".dropdown-menu").dropdown('hide');
+
+    });
 }
 
 function changeNavItem(event_kind) {
@@ -521,8 +628,7 @@ function changeNavItem(event_kind) {
     let id = ""
     if (event_kind == "pageLoad") {
         id = "link_brand"
-    }
-    else  {
+    } else {
         id = event_kind;
     }
     $('.sidebar a').each(
@@ -556,35 +662,153 @@ function changeNavItem(event_kind) {
         }
     );
     roundItemsBorder();
-
-    /*
-    if (kind == "empty") {
-        $('#button_switch').addClass("secondaryBtn_disabled");
-        $('#button_switch').on('click', disabledFunc);
-        $("#button_switch").off('click', open_modal_handler);
-    } else {
-        $('#button_switch').removeClass("secondaryBtn_disabled");
-        $('#button_switch').on('click', open_modal_handler);
-        $("#button_switch").off('click', disabledFunc);
-    }*/
 }
 
-function createNewVideo(event) {
-    const event_kind = event.currentTarget.id;
-    $.ajax({
-        method: 'POST',
-        url: '/createNewVideo',
-        data: {
-            'event_kind': event_kind
-        }
-    }).done(moveToPage);
-}
+function openVideo_Handler(event) {
+    // clear all edit name inputs
+    document.querySelectorAll(".card-title").forEach(function (event) {
+        let event_id = event.id.slice(3);
+        $("#h5_" + event_id).css("display", "block");
+        $("#changeNameArea_" + event_id).css("display", "none");
+    });
 
-function moveToPage(data)
-{
-    if (data.event_kind== "newVideoBtn")
+    let id = event.currentTarget.id
+    let video_id = ""
+    let name = ""
+
+    if (id== "create_new_vid")
     {
-        window.location.href = "editContent";
-
+        id = "newVideoBtn"
     }
+    //get video id if it's exists
+    if (id != "newVideoBtn" || id != "more_close") {
+        if ($("#" + id).hasClass("saveNameChange")) {
+            video_id = id.slice(15);
+        } else {
+            video_id = $(event.currentTarget).attr("data-vid")
+        }
+    }
+
+    if (id == "more_delete") {
+        //delete video
+        $.ajax({
+            method: 'POST',
+            url: '/onLoad',
+            data: {
+                'event_kind': id, 'video_id': video_id
+            }
+        }).done(buildVideoPage);
+    } else if (id == "more_changeName") {
+        //change name - show name input
+        $("#h5_" + video_id).css("display", "none");
+        $("#changeNameArea_" + video_id).css("display", "block");
+        $("#videoName_" + video_id).text($("#h5_" + video_id).text());
+        $("#videoName_" + video_id).focusout(function () {
+            if ($("#h5_" + video_id).text() == $("#videoName_" + video_id).val()) {
+                $("#h5_" + video_id).css("display", "block");
+                $("#changeNameArea_" + video_id).css("display", "none");
+            }
+        })
+    } else if (id == "more_coverPic") {
+        //show change pic modal
+        $('#modal').modal('show')
+        let vid_name = $("#h5_" + video_id).text();
+        $('.modal-title').text("שינוי תמונת וידיאו -" + vid_name);
+        let img_content = `<div id="editImage" enctype="multipart/form-data">
+        <div class="imageUpload_file_div d-flex justify-content-between"">
+         <div>
+                     <input type="file" id="imageUpload_file" name="imageUpload_file" style="display:none;"  onchange="loadFile(event)" value="+">
+            <input type="button" id="imageUpload_file_btn" value="החלפת תמונה" class="btn secondaryBtn justify-content-center"  onclick="document.getElementById('imageUpload_file').click();" />
+            <h5 id="p_preview_imageUpload" style="display:none;">תצוגה מקדימה לתמונה:</h5>
+                <div class="coverImg">
+                                <img id="preview_imageUpload2" src="#" class="mainAnimation" style="display:none; width: 100%; height: 100%" alt="your upload image" />
+                </div>
+               </div>
+        <div>
+                   <h5>תמונה נוכחית</h5>
+           <img id="exists_image" src="${$("#videoImg_" + video_id).attr('src')}" class="mainAnimation coverImg" alt="your upload image" />
+         </div>
+            </div>`
+        $('.modal-body').html(img_content);
+        $("#modal_main_btn").html("החלפת תמונה");
+        $("#modal_main_btn").attr("data-vid", video_id);
+
+        $("#modal_main_btn").on('click', disabledFunc);
+        $("#modal_main_btn").off('click', openVideo_Handler);
+        $("#modal_main_btn").removeClass("animated_shake jello");
+        $("#modal_main_btn").addClass("disabled");
+    } else if (id == "moreOption_icon" || id == "more_close") {
+        //do noting - don't send to server
+    } else if (id === "modal_main_btn") {
+        // send new img to server
+        let event_kind = "changeCoverPic";
+        $('#modal').modal('hide')
+
+        const file_data = $('#imageUpload_file').prop('files')[0];
+        const form_data_image = new FormData();
+        form_data_image.append('file', file_data);
+        event.preventDefault();
+        form_data_image.append('event_kind', event_kind);
+        form_data_image.append('video_id', video_id);
+        $.ajax({
+            processData: false,
+            contentType: false,
+            method: 'POST',
+            url: '/video_handler',
+            data: form_data_image
+        }).done(options_on_video_Handler);
+    } else {
+
+        // new video  / open video / change name
+        if (video_id != undefined) {
+            if (id == ("addon-wrapping_" + video_id.toString())) {
+                id = "saveNameChange";
+                name = $("#videoName_" + video_id).val();
+            }
+        }
+        $.ajax({
+            method: 'POST',
+            url: '/video_handler',
+            data: {
+                'event_kind': id, 'video_id': video_id, "video_name": name
+            }
+        }).done(options_on_video_Handler);
+    }
+
+}
+
+function options_on_video_Handler(data) {
+    if (data.event_kind == "newVideoBtn" || data.event_kind == "edit_icon") {
+        window.location.href = "editContent";
+    } else if (data.event_kind == "record_icon") {
+
+        window.location.href = "filming";
+
+    } else if (data.event_kind == "watch_icon") {
+
+    } else if (data.event_kind == "saveNameChange") {
+        let video_id = data.video_id
+        $("#h5_" + video_id).text(data.name)
+        $("#h5_" + video_id).css("display", "block");
+        $("#changeNameArea_" + video_id).css("display", "none");
+    } else if (data.event_kind == "changeCoverPic") {
+        let video_id = data.video_id;
+        let new_src = "../" + data.video_src + data.video_id + "/" + data.image_name.replace(/\u200f/g, '')
+        $("#videoImg_" + video_id).attr("src", new_src)
+    }
+}
+
+function loadFile(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+        document.getElementById('p_preview_imageUpload').style.display = "block";
+        var output = document.getElementById('preview_imageUpload2');
+        output.style.display = "block";
+        output.src = reader.result;
+
+    };
+    reader.readAsDataURL(event.target.files[0]);
+    $("#modal_main_btn").off('click', disabledFunc);
+    $("#modal_main_btn").on('click', openVideo_Handler);
+    $("#modal_main_btn").removeClass("disabled");
 }
