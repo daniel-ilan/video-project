@@ -346,6 +346,7 @@ def frame_change():
         event_kind = request.form["event_kind"]
         if (event_kind == "onLoad"):
             # if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == True:
+            # im here
             #     create_new_collection(session.get('CURRENT_PROJECT'))
             frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(frames_props[1][0][1]))
