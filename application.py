@@ -345,6 +345,9 @@ def frame_change():
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
         if (event_kind == "onLoad"):
+            # if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == True:
+            #     create_new_collection(session.get('CURRENT_PROJECT'))
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(frames_props[1][0][1]))
             current_frame = frames_props[1][0]
             kind = current_frame[3]
@@ -1071,6 +1074,10 @@ def video_handler():
 
             return jsonify(event_kind = event_kind)
 
+
+def create_new_collection(project_id: int):
+    db.get_project_theme(project_id)
+    db.update_change_on_collectionYN(project_id,False)
 
 
 if __name__ == '__main__':
