@@ -310,7 +310,7 @@ svg {
 /*          ----------            edit Template Page          ----------          */
 .frame_container_class {
     display: inline-block;
-    margin: 0.5rem 0;
+    margin-top: 1rem;
     padding: 0 1rem;
 }
 
@@ -456,6 +456,10 @@ svg {
     background: white;
     /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
     position: relative;
+}
+
+#frames_Area_container{
+    padding:  0 1rem;
 }
 
 
@@ -687,14 +691,14 @@ svg {
 /*          ----------            -webkit-scrollbar          ----------          */
 
 #content::-webkit-scrollbar, #frames_Area::-webkit-scrollbar, #kindAnimationsArea::-webkit-scrollbar,
-#brandPageContainer::-webkit-scrollbar, #collection_animation_area::-webkit-scrollbar {
+#brandPageContainer::-webkit-scrollbar, #collection_animation_area::-webkit-scrollbar, div.card-group::-webkit-scrollbar {
     width: 8px;
     padding: 1.25rem 1.25rem;
     height: 4%;
 }
 
 #content::-webkit-scrollbar-track, #frames_Area::-webkit-scrollbar-track, #kindAnimationsArea::-webkit-scrollbar-track,
-#brandPageContainer::-webkit-scrollbar-track,  #collection_animation_area::-webkit-scrollbar-track {
+#brandPageContainer::-webkit-scrollbar-track,  #collection_animation_area::-webkit-scrollbar-track, div.card-group::-webkit-scrollbar-track  {
     background-color: #f7f8f9;
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
@@ -702,7 +706,7 @@ svg {
 }
 
 #content::-webkit-scrollbar-thumb, #frames_Area::-webkit-scrollbar-thumb, #kindAnimationsArea::-webkit-scrollbar-thumb,
-#brandPageContainer::-webkit-scrollbar-thumb,#collection_animation_area::-webkit-scrollbar-thumb {
+#brandPageContainer::-webkit-scrollbar-thumb,#collection_animation_area::-webkit-scrollbar-thumb, div.card-group::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: #dbdbdb;
     border: 2px solid #d3d3d3;
@@ -920,7 +924,7 @@ select:focus {
 }
 
 
-/*          ----------            anmations          ----------          */
+/*          ----------            animations          ----------          */
 /*              ----    shake       ----         */
 .animated_shake {
     -webkit-animation-duration: 1s;
@@ -1619,18 +1623,22 @@ hr.solid {
     color: #6515DD;
 }
 
+/*          ---         card            ---             */
 .video_sizes{
-    width: 10vw;
-    height: 30vh;
-    margin-left: 2rem !important;
+    min-height:  30vh;
+    max-height:  30vh;
+    min-width: 10vw;
+    max-width: 10vw;
+    margin-left: 2.5rem !important;
+    margin-bottom: 2rem !important;
     padding: 1rem;
 }
 
 .card{
     background: #FFFFFF;
     box-sizing: border-box;
-    box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.02), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356);
-    border-radius: 1rem !important;
+    /*box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.02), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356);*/
+    box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.03), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0190142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.019);    border-radius: 1rem !important;
     border: 2px solid #F9FAFB;
     -webkit-transition: border 0.2s ease-out;
     -moz-transition: border 0.2s ease-out;
@@ -1641,13 +1649,14 @@ hr.solid {
 }
 
 .card:hover{
-    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    box-shadow: 0px 4.67px 12px rgba(2, 85, 99, 0.24), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0270142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0190356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.03699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
     border: 2px solid #00B6DE;
     -webkit-transition: border 0.2s ease-out;
     -moz-transition: border 0.2s ease-out;
     -o-transition: border 0.2s ease-out;
     transition: border 0.2s ease-out;
     border-right: 2px #00B6DE solid !important;
+    cursor: pointer;
 }
 
 .card-body{
@@ -1667,11 +1676,16 @@ h5.card-title{
     -moz-transition: color 0.2s ease-out;
     -o-transition: color 0.2s ease-out;
     transition: color 0.2s ease-out;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 160px;
+    height: 2.2em;
+    white-space: nowrap;
 }
 
 
 .card:hover h5.card-title{
-    color: #00B6DE;
+    color: #005363;
     -webkit-transition: color 0.2s ease-out;
     -moz-transition: color 0.2s ease-out;
     -o-transition: color 0.2s ease-out;
@@ -1689,6 +1703,12 @@ h5.card-title{
     max-width:100%;
     max-height:100%;
     margin: auto;
+    border-radius: 1rem !important;
+
+    -webkit-transition: max-height 0.2s ease-out;
+    -moz-transition: max-height 0.2s ease-out;
+    -o-transition: max-height 0.2s ease-out;
+    transition: max-height 0.2s ease-out;
 }
 
 .img_wrapper {
@@ -1697,6 +1717,11 @@ h5.card-title{
     width: 8vw;
     height: 16vh;
     display: flex;
+
+    -webkit-transition: height 0.2s ease-out;
+    -moz-transition: height 0.2s ease-out;
+    -o-transition: height 0.2s ease-out;
+    transition: height 0.2s ease-out;
 }
 
 .status_working{
@@ -1755,9 +1780,30 @@ h5.card-title{
     transition: background-color 0.2s ease-out;
 }
 
-.more_actions_card{
-    cursor: pointer;
+.card:hover .card-footer {
+    display: block;
 }
+
+.card:hover .img_wrapper {
+    height: 12vh;
+    opacity: 0.6;
+
+    -webkit-transition: height 0.3s ease-out;
+    -moz-transition: height 0.3s ease-out;
+    -o-transition: height 0.3s ease-out;
+    transition: height 0.3s ease-out;
+}
+
+.card:hover .card-img-top {
+    height:120%;
+    width:220%;
+
+    -webkit-transition: max-height 0.2s ease-out;
+    -moz-transition: max-height 0.2s ease-out;
+    -o-transition: max-height 0.2s ease-out;
+    transition: max-height 0.2s ease-out;
+}
+
 
 .plus_icon_more{
     font-size: 6vw;
@@ -1765,5 +1811,131 @@ h5.card-title{
 
 #newVideoBtn  div{
     line-height: 3vh;
+}
 
+div.card-group{
+    width: 82vw;
+    overflow: auto;
+    height: 88vh;
+    overflow-x: hidden;
+}
+
+.card-icons-svg{
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    margin: 0 0.5rem;
+
+    fill: #828282;
+    -webkit-transition: fill 0.2s ease-out;
+    -moz-transition: fill 0.2s ease-out;
+    -o-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+}
+
+.disabled_svg{
+    cursor: default;
+    fill: rgba(130, 130, 130, 0.24 );
+    color: rgba(130, 130, 130, 0.24 ) !important;
+}
+
+.disabled_svg:hover, #more_download:hover svg.disabled_svg{
+    fill: rgba(130, 130, 130, 0.11) !important;
+    color: rgba(130, 130, 130, 0.24 ) !important;
+
+}
+.card-icons-svg:hover , .dropdown-item:hover .card-icons-svg{
+    fill: black;
+    -webkit-transition: fill 0.2s ease-out;
+    -moz-transition: fill 0.2s ease-out;
+    -o-transition: fill 0.2s ease-out;
+    transition: fill 0.2s ease-out;
+}
+
+.card-footer{
+    margin-top: 1rem;
+    padding:  0.75rem 0.5rem;
+    display: none;
+    background-color: transparent;
+    border-top-color: rgba(72, 95, 110, 0.12);
+}
+
+
+/*          ---         card dropdown-menu            ---             */
+
+
+.dropdown-menu{
+    /*z-index: 2000 !important;*/
+    /*display:block;*/
+    /*margin-right: 160%;*/
+    border: 1px solid #F2F2F2;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 8px rgba(99, 99, 99, 0.2);
+    border-radius: 6px;
+}
+
+.dropdown-item{
+    margin:  0.25rem 0;
+    padding: 0.5rem;
+    font-size: 14px;
+    color: #4b4b4b;
+}
+
+.dropdown-item:hover{
+    color: black;
+    font-weight: 500;
+    background: linear-gradient(0deg, rgba(0, 182, 222, 0.02), rgba(0, 182, 222, 0.02)), #FFFFFF;
+}
+
+#videoName{
+    font-size: 0.73vw;
+    text-align: right;
+    font-weight: 500;
+    color: #2F1359;
+}
+
+.card-body div.changeName-btn{
+    width: 20%;
+}
+
+.card-body div.changeName-btn .input-group-text{
+    padding:  0.25rem 0.25rem;
+}
+
+.changeName-input{
+    padding: 0 0.75rem !important;
+    border-radius: 0px 0.25rem 0.25rem 0px !important;
+
+}
+
+.changeNameArea_div{
+    margin-bottom:  1rem;
+
+}
+
+.changeName-btn svg{
+    stroke: #6515DD;
+}
+
+
+.saveNameChange .disabled  > svg{
+    stroke: white !important;
+}
+
+.changeName-btn span{
+    border-radius: 0.25rem 0px 0px  0.25rem !important;
+}
+
+.changeName-btn span:hover{
+    background-color:  #00B6DE;
+    border-color: rgba(0, 189, 230, 0.69);
+}
+
+.changeName-btn span:hover svg{
+    stroke: #e9ecef;
+}
+
+.coverImg{
+    width: 14vw;
+    height: 26vh;
 }
