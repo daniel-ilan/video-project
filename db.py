@@ -218,17 +218,10 @@ def get_last_video_id(project_id: str):
     return select_one_query(query)
 
 
-def update_video_name(video_id: str, new_name: str):
-    video_id = int(video_id)
-    new_name = new_name.strip()
-    query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
-    update_query(query)
-
-
-def update_video_status(video_id: str, new_status: str):
+def update_video_status(video_id: str, new_status: str, last_rec=""):
     video_id = int(video_id)
     new_status = new_status.strip()
-    query = f"UPDATE videos SET video_status='{new_status}' WHERE video_id={video_id};"
+    query = f"UPDATE videos SET video_status='{new_status}',last_rec='{last_rec}' WHERE video_id={video_id};"
     update_query(query)
 
 
@@ -394,3 +387,6 @@ def get_videos_by_project(project_id):
         project_id = int(project_id)
     query = f"SELECT [video_id],[video_name],[image],[video_status] FROM videos WHERE project_id={project_id};"
     return select_all_query(query)
+
+
+

@@ -7,21 +7,26 @@ import os
 import time
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Flask, redirect, session
+from flask import render_template, request, jsonify, Flask, redirect, session, make_response
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
-
+from flask_mail import Mail, Message
 import db
-
 
 
 application = Flask(__name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.secret_key = os.urandom(24)
-
-
+application.config['MAIL_SERVER']='smtp.gmail.com'
+application.config['MAIL_PORT'] = 465
+application.config['MAIL_USERNAME'] = 'one.shot.video.center@gmail.com'
+application.config['MAIL_PASSWORD'] = '89FuegY#5gd@'
+application.config['MAIL_USE_TLS'] = False
+application.config['MAIL_USE_SSL'] = True
+application.config['MAIL_DEFAULT_SENDER'] = 'one.shot.video.center@gmail.com'
+mail = Mail(application)
 
 def correct_text(sentence):
     """
@@ -144,37 +149,64 @@ def get_anim_props(path, image_path=""):
     return anim_props
 
 
-colorsArray = []
-
-
 @application.route('/upload', methods=['POST', 'GET'])
 def tests():
+    """
+    todo: get the user's email to send to and pass it to send_email() func. show it on the client side as well.
+    """
     if request.method == 'POST':
+        import video_editing, time
         files = request.files.getlist("files[]")
+        current_project = session.get('CURRENT_PROJECT')
+        user_id = session.get('CURRENT_USER')
+        video_id = db.get_last_video_id(current_project)[0]
+        path_to_filmed = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/filmed/'
+        video = {}
+        animations = []
         for file in files:
-            name = file.filename
-            file.save(os.path.join(application.config['UPLOAD_FOLDER'], name))
+            encoded_filename = file.filename.replace("%22", '"')
+            attrs = json.loads(encoded_filename)
+            name = attrs["name"]
+            start_time = attrs["start_time"]
+            if start_time == 'main':
+                file.save(os.path.join(path_to_filmed, name))
+                video.update({'name': name})
+            else:
+                file.save(os.path.join(path_to_filmed, name))
+                animations.append({'name': name, 'start_time': start_time})
+        while not os.path.exists(path_to_filmed + name):    # wait until the new file actually saves
+            time.sleep(1)
+        if os.path.isfile(path_to_filmed + name):
+            video_file_name = f'{user_id}_{time.time()}'
+            video_editing.make_video(animations, video, path_to_filmed, video_file_name)
+            send_email()
+            db.update_video_status(str(video_id), 'צולם', last_rec=video_file_name)
 
-        return redirect(request.url)
+        return make_response('ready', 200)
     else:
         frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
         return render_template(
-            'index.html',
+            'filming.html',
             frames=frames_props,
             title='אודות',
             year=datetime.now().year
         )
 
 
+def send_email():
+    client = 'one.shot.video.center@gmail.com'
+    msg = Message('Hello', recipients=[client])
+    msg.body = "אולי נשתחרר מהשטויות האלה כבר! ותוריד את הסרטון דרך המחשב במכון??"
+    mail.send(msg)
 
-@application.route('/home')
+
+@application.route('/filming')
 def home():
-
-    frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
+    frames_props = get_frames_from_db(70)
 
     """Renders the home page."""
     return render_template(
-        'index.html',
+        'filming.html',
         frames=frames_props,
         title='אודות',
         year=datetime.now().year
@@ -295,9 +327,20 @@ def homePage():
     )
 
 
-
+@application.route("/")
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
+    current_project = 19
+    user_id = db.get_user_id('rubider@hotmail.com')[0]
+    session['CURRENT_USER'] = user_id
+    session['CURRENT_PROJECT'] = current_project
+
+    session['COLLECTION_PATH'] = "static/content/animations/"
+    session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{current_project}/videos/'
+    session['CURRENT_VIDEO'] = 70
+    session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{70}/frames/'
+    application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'editContent.html',
         title='שם הסרטון',
@@ -557,7 +600,6 @@ def save_image(data, an):
     file = data['file']
     if file.filename == '':
         return redirect(request.url)
-
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
@@ -687,13 +729,17 @@ def change_list_text(an, text: list, color, alignment=1):
     correct_color = list(colors.to_rgba(color, float) + (1,))
     text_layers = [layer for layer in layers if layer.name.startswith(".listText")]         # only layers with text
     num_layers = len(text_layers)
-    bullet_deleted = False
-    layers_to_delete = []
+    bullet_deleted = 0
     while num_layers < len(text):
-        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)      # adds the new bullet to text_layers
+        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)   # adds the new bullet to text_layers
         num_layers += 1
 
     n = len(layers)+5
+    layers_to_delete = [layer for layer in layers if layer.name[-1].isdigit() and int(layer.name[-1]) > len(text)]
+    for layer in layers_to_delete:
+        an.remove_layer(layer)
+        bullet_deleted += 1
+
     for text_item in text:
         for i in range(n):
             try:
@@ -716,20 +762,23 @@ def change_list_text(an, text: list, color, alignment=1):
                 elif redundant_layer.isdigit():
                     if int(redundant_layer) > len(text):
                         bullet_deleted = True
-                        del layers[i]   # do here !layer.remove! in the next few days
-    for layer in layers:
-        for name in layers_to_delete:
-            if name == layer.name:
-                del []
-    if bullet_deleted is True:
+                        an.remove_layer(layer)
+                        # del layers[i]   # do here !layer.remove! in the next few days
+    # for layer in layers:
+    #     for name in layers_to_delete:
+    #         if name == layer.name:
+    #             del []
+
+    if bullet_deleted > 0:
+        num_bullets_deleted = int(bullet_deleted / 3)
         properties = {1: "anchor_point", 2: "position", 6: "scale", 10: "color", 11: "opacity"}
         layer_to_change = [layer for layer in layers if layer.name != ".hiddenText"]
         for layer in layer_to_change:
             type_transform = layer.find(True, propname='animated').property_index
             for i in range(-1, -3, -1):
-                getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time -= 60
-                layer.out_point -= 60
-        an.out_point -= 60
+                getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time -= 60 * num_bullets_deleted
+                layer.out_point -= 60 * num_bullets_deleted
+        an.out_point -= 60 * num_bullets_deleted
     return an
 
 
@@ -848,7 +897,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@application.route("/")
+
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
 
@@ -1023,7 +1072,7 @@ def frame_order():
 @application.route('/createNewVideo', methods=['POST', 'GET'])
 def createNewVideo():
     event_kind = request.form['event_kind']
-    project_id =session.get('CURRENT_PROJECT')
+    project_id = session.get('CURRENT_PROJECT')
     db.create_new_video(project_id)
 
     # 3 lines below this needs to be in a function called get_frames_path
@@ -1039,7 +1088,7 @@ def createNewVideo():
     current_project = session.get('CURRENT_PROJECT')
     session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{new_id}/frames/'
 
-    return jsonify(event_kind = event_kind)
+    return jsonify(event_kind=event_kind)
 
 if __name__ == '__main__':
     application.run()
