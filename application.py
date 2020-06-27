@@ -309,7 +309,7 @@ def get_all_animation_by_kind():
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
-            selected_frames = db.get_all_animation_by_kind(kind)
+            selected_frames = db.get_all_animation_by_kind(kind,session.get('CURRENT_PROJECT'))
             for frame in selected_frames:
                 # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
                 animations_array.append([frame[0], frame[1], frame[2], False])
@@ -427,8 +427,7 @@ def frame_change():
         lit_anim = get_animations_by_kind(kind)
 
         if event_kind == "select_from_general":
-            general_frame = db.get_genral_anim_props_by_id(
-                new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
+            general_frame = db.get_genral_anim_props_by_id(new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
 
         elif event_kind == "onLoad" or event_kind == "new_frame":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[2]))

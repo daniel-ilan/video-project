@@ -281,9 +281,14 @@ def get_animations_by_project_and_kind(project_id: str, kind: str):
     return select_all_query(new_query)
 
 
-def get_all_animation_by_kind(kind: str):
-    query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind='{kind}';"
-    return select_all_query(query)
+def get_all_animation_by_kind(kind: str, project_id: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    theme_id = get_project_collections_id(project_id)
+    theme_query = f"SELECT [theme_id] FROM themes WHERE generalYN=true OR theme_id= {theme_id};"
+    query_animation_id = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id IN( {theme_query})"
+    new_query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind ='{kind}' AND animation_id IN({query_animation_id} );"
+    return select_all_query(new_query)
 
 
 def get_animations_url_by_id(id: str):
