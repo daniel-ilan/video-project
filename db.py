@@ -513,13 +513,40 @@ def create_new_anim(animation_name,animation_kind,animation_url, theme_id):
     query = f"INSERT INTO animations ([animation_name],[animation_kind],[animation_url]) VALUES('{animation_name}','{animation_kind}','{animation_url}');"
     update_query(query)
 
-
     # get the animation id
     query = f"SELECT TOP 1 animation_id FROM animations WHERE animation_name='{animation_name}' AND  animation_url='{animation_url}'ORDER BY animation_id DESC;"
     animation_id = int(select_one_query(query)[0])
 
     # create connection in a_t_relation
+    create_new_a_t_relation(animation_id, theme_id)
+
+
+def create_new_a_t_relation(animation_id: int, theme_id: int):
+    # create connection in a_t_relation
     if isinstance(theme_id, str):
         theme_id = int(theme_id)
+    if isinstance(animation_id, str):
+        animation_id = int(animation_id)
     query = f"INSERT INTO a_t_relation ([theme_id],[animation_id]) VALUES({theme_id},{animation_id});"
+    update_query(query)
+
+
+def check_theme_generalYN(id):
+    if isinstance(id, str):
+        id = int(id)
+    query = f"SELECT [generalYN] FROM themes WHERE theme_id={id};"
+    return select_one_query(query)
+
+
+def delete_theme(theme_id: int):
+    if isinstance(theme_id, str):
+        theme_id = int(theme_id)
+    query = f"DELETE FROM themes WHERE theme_id =({theme_id});"
+    update_query(query)
+
+
+def delete_animation(animation_id: int):
+    if isinstance(animation_id, str):
+        animation_id = int(animation_id)
+    query = f"DELETE FROM animations WHERE animation_id =({animation_id});"
     update_query(query)

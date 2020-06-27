@@ -1110,6 +1110,8 @@ def create_new_collection(project_id: int):
     new_theme = db.create_new_theme(project_id)
     original_animations = db.get_animations_by_theme(last_theme)
     counter = 0
+    # check if the last collection is from general or not, if it's delete it
+    check = db.check_theme_generalYN(last_theme)[0]
 
     # get current colors palette by the currect template: [type,hex color]
     data = convert_row_to_list_include_childrens(db.get_colors_by_palette(db.get_palette_id_by_project(project_id)[0]))
@@ -1131,9 +1133,21 @@ def create_new_collection(project_id: int):
             update_anim_props(props[0], data,anim_props , "create brand")
             counter += 1
 
+            if not check:
+                db.delete_animation(anim[2])
+                path = session.get('COLLECTION_PATH') + anim[1]
+                os.remove(path)
+        else:
+            # add empty to the collection without a copy
+            db.create_new_a_t_relation(10,new_theme)
+
+
+
     # restart
     db.update_change_on_collectionYN(project_id, False)
     db.update_initial_theme(project_id, 0)
+    if not check:
+        db.delete_theme(last_theme)
 
 
 def check_change_on_collectionYN():
