@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html len="he">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +8,7 @@
     <link href="//vjs.zencdn.net/7.8.2/video-js.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//unpkg.com/videojs-record/dist/css/videojs.record.min.css">
     <link rel="stylesheet" href="static/content/style_video.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
 </head>
 
 <body>
@@ -21,22 +20,22 @@
                         <div class="col border border-dark p-0">
                             <video id="video" class="video-js vjs-default-skin"></video>
                             <div id="animationsContainer"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col d-flex flex-column" id="controlsContainer">
+                            <div class="align-self-end d-inline-flex">
+                                <p id="displayNumSlides">שקף מתוך </p>
                             </div>
-                            </div>
-                            <div class="row">
-                                <div class="col d-flex flex-column" id="controlsContainer">
-                                    <div class="align-self-end d-inline-flex">
-                                        <p id="displayNumSlides">שקף מתוך </p>
-                                    </div>
-                                    <div class="align-self-center col d-flex justify-content-between">
-                                        <button type="button" id="fullScreen" class="btn btn-dark rounded-pill mr-auto">מסך מלא
-                                            <i class="material-icons icon-btn">fullscreen</i>
-                                        </button>
-                                        <div id="myControlBar">
-                                        </div>
-                                    </div>
+                            <div class="align-self-center col d-flex justify-content-between">
+                                <button type="button" id="fullScreen" class="btn btn-dark rounded-pill mr-auto">מסך מלא
+                                    <i class="iconify icon-btn" data-icon="mdi:fullscreen" data-inline="false"></i>
+                                </button>
+                                <div id="myControlBar" class="d-flex">
                                 </div>
                             </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col dark_bg">
@@ -61,34 +60,47 @@
         </div>
     </div>
     <div id="canvasRecordContainer"></div>
-
+    <div dir="rtl" class="modal fade" id="uploadModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-right">
+                <div class="align-items-center d-flex justify-content-around pt-3" id="statusBar">
+                    <h2 class="modal-title">מעלה את הסרטון</h2>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only" >Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-body overflow-hidden" dir="rtl" id="uploadBody">
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-        crossorigin="anonymous"></script>
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+    </script>
     <script src="static/scripts/lottie.js"></script>
     <script src="https://www.webrtc-experiment.com/screenshot.js"></script>
     <script src="https://www.webrtc-experiment.com/EBML.js"></script>
     <script src="static\node_modules\video.js\dist\video.min.js"></script>
     <script src="static\node_modules/recordrtc/RecordRTC.js"></script>
     <script src="static\node_modules/webrtc-adapter/out/adapter.js"></script>
-  
+
     <script src="static\node_modules\videojs-record\dist\videojs.record.js"></script>
     <script src="static\node_modules\videojs-record\dist\plugins\videojs.record.ts-ebml.js"></script>
-  
 
-<!-- 
+
+    <!-- 
     <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
 
     <script src="https://unpkg.com/video.js/dist/video.min.js"></script>
     <script src="//unpkg.com/videojs-record/dist/videojs.record.min.js"></script> -->
     <script type="text/javascript">
-        var myFrames = {{ frames | tojson}};
+        var myFrames = {{frames | tojson}};
     </script>
     <script src="static/scripts/script_video.js"></script>
 

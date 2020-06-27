@@ -290,7 +290,7 @@ function modael_data(data) {
                 colorPalette += colorPaletteZ;
                 colorDesc_all += colorDesc;
             }
-            let divGrid = `<div id="gridLinePalette_${data.colors[i][0][0]}" class="row paletteGrid_modal mb-4">  
+            let divGrid = `<div id="gridLinePalette_${data.colors[i][0][0]}" class="row paletteGrid_modal mb-4">
                             <div id="paletteArea_${data.colors[i][0][0]}" class="col-4">
                             <div class="d-flex flex-row "> ${colorPalette}</div>
                                     
@@ -350,7 +350,7 @@ function modael_data(data) {
 }
 
 function buildBrandPage() {
-    const data = `   
+    const data = `
        <div class="row h-5 container-fluid mr-4 pt-2">
         <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">מותג</h1>
     </div>
@@ -500,7 +500,7 @@ function buildVideoPage(data) {
                             </div>
                             <div class="card-body">
                                 <div>
-                                <h5 id="h5_${data.videos_props[i][0]}" class="card-title p-2">${data.videos_props[i][1]}</h5>     
+                                <h5 id="h5_${data.videos_props[i][0]}" class="card-title p-2">${data.videos_props[i][1]}</h5>
                                 <div id="changeNameArea_${data.videos_props[i][0]}" style="display: none">
                                     <div class="input-group flex-nowrap changeNameArea_div">
                                        <input type="text" class="form-control changeName-input" name="videoName" id="videoName_${data.videos_props[i][0]}" value="${data.videos_props[i][1]}">
@@ -513,11 +513,11 @@ function buildVideoPage(data) {
                                         </div>
                                     </div>
                                </div>
-                    
+
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
                               <div class="card-footer animated_zoomIn flipInX">
-                                <div class="d-flex justify-content-center"> 
+                                <div class="d-flex justify-content-center">
                                     <svg id="edit_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}"  viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
                                     title="עריכת הסרטון">
@@ -558,7 +558,7 @@ function buildVideoPage(data) {
                                           הורדה</a>
                                           <a id="more_delete" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
                                           <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>   
+                                                <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>
                                            </svg>
                                           מחיקה</a>
                                           <div class="dropdown-divider"></div>
@@ -576,7 +576,7 @@ function buildVideoPage(data) {
         videos_cards.push(myCard);
     }
 
-    const initial = `   
+    const initial = `
        <div class="row h-5 container-fluid mr-4 pt-2">
         <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + video_length + ")"}</span></h1>
     </div>

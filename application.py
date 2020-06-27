@@ -7,18 +7,27 @@ import os
 import time
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Flask, redirect, session
+from flask import render_template, request, jsonify, Flask, redirect, session, make_response
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
+from flask_mail import Mail, Message
 import shutil
 import db
+
 
 application = Flask(__name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.secret_key = os.urandom(24)
-
+application.config['MAIL_SERVER']='smtp.gmail.com'
+application.config['MAIL_PORT'] = 465
+application.config['MAIL_USERNAME'] = 'one.shot.video.center@gmail.com'
+application.config['MAIL_PASSWORD'] = '89FuegY#5gd@'
+application.config['MAIL_USE_TLS'] = False
+application.config['MAIL_USE_SSL'] = True
+application.config['MAIL_DEFAULT_SENDER'] = 'one.shot.video.center@gmail.com'
+mail = Mail(application)
 
 def correct_text(sentence):
     """
@@ -126,6 +135,7 @@ def get_anim_props(path, image_path=""):
         #         color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
         #         anim_props['listItem'].update(color_dict)
 
+
         elif layer.name == ".empty":
             empty_dict = {'empty': 'empty'}
             anim_props.update(empty_dict)
@@ -140,18 +150,40 @@ def get_anim_props(path, image_path=""):
     return anim_props
 
 
-colorsArray = []
-
-
 @application.route('/upload', methods=['POST', 'GET'])
 def tests():
+    """
+    todo: get the user's email to send to and pass it to send_email() func. show it on the client side as well.
+    """
     if request.method == 'POST':
+        import video_editing, time
         files = request.files.getlist("files[]")
+        current_project = session.get('CURRENT_PROJECT')
+        user_id = session.get('CURRENT_USER')
+        video_id = db.get_last_video_id(current_project)[0]
+        path_to_filmed = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/filmed/'
+        video = {}
+        animations = []
         for file in files:
-            name = file.filename
-            file.save(os.path.join(application.config['UPLOAD_FOLDER'], name))
+            encoded_filename = file.filename.replace("%22", '"')
+            attrs = json.loads(encoded_filename)
+            name = attrs["name"]
+            start_time = attrs["start_time"]
+            if start_time == 'main':
+                file.save(os.path.join(path_to_filmed, name))
+                video.update({'name': name})
+            else:
+                file.save(os.path.join(path_to_filmed, name))
+                animations.append({'name': name, 'start_time': start_time})
+        while not os.path.exists(path_to_filmed + name):    # wait until the new file actually saves
+            time.sleep(1)
+        if os.path.isfile(path_to_filmed + name):
+            video_file_name = f'{user_id}_{time.time()}'
+            video_editing.make_video(animations, video, path_to_filmed, video_file_name)
+            send_email()
+            db.update_video_status(str(video_id), 'צולם', last_rec=video_file_name)
 
-        return redirect(request.url)
+        return make_response('ready', 200)
     else:
         frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
         return render_template(
@@ -162,9 +194,17 @@ def tests():
         )
 
 
+def send_email():
+    client = 'one.shot.video.center@gmail.com'
+    msg = Message('Hello', recipients=[client])
+    msg.body = "אולי נשתחרר מהשטויות האלה כבר! ותוריד את הסרטון דרך המחשב במכון??"
+    mail.send(msg)
+
+
 @application.route('/filming')
-def filming():
-    frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
+def home():
+    frames_props = get_frames_from_db(70)
+
     """Renders the home page."""
     return render_template(
         'filming.html',
@@ -288,8 +328,20 @@ def homePage():
     )
 
 
+
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
+    # current_project = 19
+    # user_id = db.get_user_id('rubider@hotmail.com')[0]
+    # session['CURRENT_USER'] = user_id
+    # session['CURRENT_PROJECT'] = current_project
+    #
+    # session['COLLECTION_PATH'] = "static/content/animations/"
+    # session['UPLOAD_FOLDER'] = "static/content/animations/images"
+    # session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{current_project}/videos/'
+    # session['CURRENT_VIDEO'] = 70
+    # session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{70}/frames/'
+    # application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'editContent.html',
         title=db.get_video_name(session.get('CURRENT_VIDEO'))[0],
@@ -334,6 +386,7 @@ def frame_change():
     path = frames_props[0]
     general_frame = []
     frame_text = ""
+
 
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -453,6 +506,7 @@ def frame_change():
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
+
     if kind_of_update_event == "submitChange":
         path = session.get('WORKING_PATH') + file_name
         name_for_new_name = frame_prop[4]
@@ -632,6 +686,7 @@ def add_frame():
     db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
+
 def copy_animations(kind, new_path, old_path=''):
     old_path = session.get('COLLECTION_PATH')
     kind_event = ""
@@ -703,16 +758,19 @@ def change_list_text(an, text: list, color, alignment=1):
     """
     layers = an.layers
     correct_color = list(colors.to_rgba(color, float) + (1,))
-    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]  # only layers with text
+    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]         # only layers with text
     num_layers = len(text_layers)
-    bullet_deleted = False
-    layers_to_delete = []
+    bullet_deleted = 0
     while num_layers < len(text):
-        an, text_layers = create_new_list_bullet(an, layers, text_layers,
-                                                 alignment=1)  # adds the new bullet to text_layers
+        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)   # adds the new bullet to text_layers
         num_layers += 1
 
-    n = len(layers) + 5
+    n = len(layers)+5
+    layers_to_delete = [layer for layer in layers if layer.name[-1].isdigit() and int(layer.name[-1]) > len(text)]
+    for layer in layers_to_delete:
+        an.remove_layer(layer)
+        bullet_deleted += 1
+
     for text_item in text:
         for i in range(n):
             try:
@@ -735,20 +793,23 @@ def change_list_text(an, text: list, color, alignment=1):
                 elif redundant_layer.isdigit():
                     if int(redundant_layer) > len(text):
                         bullet_deleted = True
-                        del layers[i]  # do here !layer.remove! in the next few days
-    for layer in layers:
-        for name in layers_to_delete:
-            if name == layer.name:
-                del []
-    if bullet_deleted is True:
+                        an.remove_layer(layer)
+                        # del layers[i]   # do here !layer.remove! in the next few days
+    # for layer in layers:
+    #     for name in layers_to_delete:
+    #         if name == layer.name:
+    #             del []
+
+    if bullet_deleted > 0:
+        num_bullets_deleted = int(bullet_deleted / 3)
         properties = {1: "anchor_point", 2: "position", 6: "scale", 10: "color", 11: "opacity"}
         layer_to_change = [layer for layer in layers if layer.name != ".hiddenText"]
         for layer in layer_to_change:
             type_transform = layer.find(True, propname='animated').property_index
             for i in range(-1, -3, -1):
-                getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time -= 60
-                layer.out_point -= 60
-        an.out_point -= 60
+                getattr(layer.transform, f"{properties[type_transform]}").keyframes[i].time -= 60 * num_bullets_deleted
+                layer.out_point -= 60 * num_bullets_deleted
+        an.out_point -= 60 * num_bullets_deleted
     return an
 
 
@@ -778,6 +839,7 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
                 frames_to_change = layer.find(True, propname='animated').keyframes
 
                 a = layer.clone()
+
 
                 # changes the new name to the last name +1 in the end
                 a.name = a.name.replace("1", str(num_layers + 1))
@@ -822,6 +884,7 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
 
 
 def change_color(an, all_colors, opacity=1):
+
     layers = an.layers
     for layer in layers:
         for name, color in all_colors.items():
@@ -830,6 +893,7 @@ def change_color(an, all_colors, opacity=1):
                 if name in layer.name:
                     layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
                     layer.find('Fill 1').opacity.value = float(opacity)
+
 
     # Old code need to delete
     # for layer in layers:
@@ -843,8 +907,10 @@ def change_color(an, all_colors, opacity=1):
 
 
 def change_list_color(an, color, outline_color, name, opacity):
+
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
+
 
     layers = an.layers
     for layer in layers:
@@ -865,6 +931,7 @@ def allowed_file(filename):
 @application.route("/")
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
+
     current_project = 19
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
@@ -879,7 +946,6 @@ def projectPage():
         'projectPage.html',
         title='פרויקט'
     )
-
 
 @application.route('/onLoad', methods=['POST', 'GET'])
 def onLoad():
@@ -925,6 +991,7 @@ def collectionChange():
     event_kind = ""
     selected_collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
     collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
+
 
     collections_props = convert_row_to_list_include_childrens(db.get_all_collections())
     check_if_collection_isInclude = False

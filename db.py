@@ -224,10 +224,10 @@ def update_video_name(video_id: str, new_name: str):
     update_query(query)
 
 
-def update_video_status(video_id: str, new_status: str):
+def update_video_status(video_id: str, new_status: str, last_rec=""):
     video_id = int(video_id)
     new_status = new_status.strip()
-    query = f"UPDATE videos SET video_status='{new_status}' WHERE video_id={video_id};"
+    query = f"UPDATE videos SET video_status='{new_status}',last_rec='{last_rec}' WHERE video_id={video_id};"
     update_query(query)
 
 
