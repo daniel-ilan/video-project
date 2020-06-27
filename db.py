@@ -27,7 +27,6 @@ def update_query(query: str):
     conn.commit()
     cursor.close()
 
-
 def select_one_query(query: str):
     conn, cursor = create_conn()
     cursor.execute(query)
@@ -218,6 +217,13 @@ def get_last_video_id(project_id: str):
     return select_one_query(query)
 
 
+def update_video_name(video_id: str, new_name: str):
+    video_id = int(video_id)
+    new_name = new_name.strip()
+    query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
+    update_query(query)
+
+
 def update_video_status(video_id: str, new_status: str, last_rec=""):
     video_id = int(video_id)
     new_status = new_status.strip()
@@ -275,9 +281,14 @@ def get_animations_by_project_and_kind(project_id: str, kind: str):
     return select_all_query(new_query)
 
 
-def get_all_animation_by_kind(kind: str):
-    query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind='{kind}';"
-    return select_all_query(query)
+def get_all_animation_by_kind(kind: str, project_id: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    theme_id = get_project_collections_id(project_id)
+    theme_query = f"SELECT [theme_id] FROM themes WHERE generalYN=true OR theme_id= {theme_id};"
+    query_animation_id = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id IN( {theme_query})"
+    new_query = f"SELECT [animation_name],[animation_url],[animation_id] FROM animations WHERE animation_kind ='{kind}' AND animation_id IN({query_animation_id} );"
+    return select_all_query(new_query)
 
 
 def get_animations_url_by_id(id: str):
@@ -332,8 +343,10 @@ def get_collections_by_id(id):
 
 
 def update_project_collection(new_theme: str, project_id: str):
-    new_theme = int(new_theme)
-    project_id = int(project_id)
+    if isinstance(new_theme, str):
+        new_theme = int(new_theme)
+    if isinstance(project_id, str):
+        project_id = int(project_id)
     query = f"UPDATE projects SET theme_id='{new_theme}' WHERE project_id={project_id};"
     update_query(query)
 
@@ -389,4 +402,156 @@ def get_videos_by_project(project_id):
     return select_all_query(query)
 
 
+def delete_video(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"DELETE FROM videos WHERE video_id =({video_id});"
+    update_query(query)
 
+
+def get_video_name(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"SELECT [video_name] FROM videos WHERE video_id={video_id};"
+    return select_one_query(query)
+
+
+def get_video_image(video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"SELECT [image] FROM videos WHERE video_id={video_id};"
+    return select_one_query(query)
+
+
+def update_video_image(video_id: str, new_image: str):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    new_name = new_image.strip()
+    query = f"UPDATE videos SET image='{new_image}' WHERE video_id={video_id};"
+    update_query(query)
+
+
+def check_change_on_collectionYN(project_id):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [change_in_collection] FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
+def update_change_on_collectionYN(project_id:int, new_state: bool):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    if isinstance(new_state, str):
+        new_state = bool(new_state)
+    query = f"UPDATE projects SET change_in_collection={new_state}   WHERE project_id={project_id};"
+    update_query(query)
+
+
+def get_project_theme(project_id: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [theme_id] FROM projects WHERE project_id={project_id};"
+    return int(select_one_query(query)[0])
+
+
+def update_initial_theme(project_id:int, initial_theme: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    if isinstance(initial_theme, str):
+        initial_theme = int(initial_theme)
+    query = f"UPDATE projects SET initial_theme={initial_theme} WHERE project_id={project_id};"
+    update_query(query)
+
+
+def get_project_initial_theme(project_id: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [initial_theme] FROM projects WHERE project_id={project_id};"
+    return bool(select_one_query(query)[0])
+
+
+def get_project_name(project_id: int):
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    query = f"SELECT [project_name] FROM projects WHERE project_id={project_id};"
+    return select_one_query(query)
+
+
+def create_new_theme(project_id: str):
+    # create new theme
+    if isinstance(project_id, str):
+        project_id = int(project_id)
+    project_name = get_project_name(project_id)[0]
+    query = f"INSERT INTO themes ([theme_name]) VALUES('{project_id}');"
+    update_query(query)
+
+    # update new theme name
+    new_id = get_last_theme_id(project_id)[0]
+    if isinstance(new_id, str):
+        new_id = int(new_id)
+    query = f"UPDATE themes SET theme_name='{project_name}' WHERE theme_id={new_id};"
+    update_query(query)
+
+    # update project theme
+    update_project_collection(new_id,project_id)
+
+    return new_id
+
+
+def get_last_theme_id(name: str):
+    if isinstance(name, int):
+        name = str(name)
+    query = f"SELECT TOP 1 theme_id FROM themes WHERE theme_name='{name}' ORDER BY theme_id DESC;"
+    return select_one_query(query)
+
+
+def get_animations_by_theme(theme_id):
+    if isinstance(theme_id, str):
+        theme_id = int(theme_id)
+    query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={theme_id};"
+    new_query = f"SELECT [animation_kind],[animation_url],[animation_id] FROM animations WHERE animation_id IN({query});"
+    return select_all_query(new_query)
+
+
+def create_new_anim(animation_name,animation_kind,animation_url, theme_id):
+    # create new anim
+    query = f"INSERT INTO animations ([animation_name],[animation_kind],[animation_url]) VALUES('{animation_name}','{animation_kind}','{animation_url}');"
+    update_query(query)
+
+    # get the animation id
+    query = f"SELECT TOP 1 animation_id FROM animations WHERE animation_name='{animation_name}' AND  animation_url='{animation_url}'ORDER BY animation_id DESC;"
+    animation_id = int(select_one_query(query)[0])
+
+    # create connection in a_t_relation
+    create_new_a_t_relation(animation_id, theme_id)
+
+
+def create_new_a_t_relation(animation_id: int, theme_id: int):
+    # create connection in a_t_relation
+    if isinstance(theme_id, str):
+        theme_id = int(theme_id)
+    if isinstance(animation_id, str):
+        animation_id = int(animation_id)
+    query = f"INSERT INTO a_t_relation ([theme_id],[animation_id]) VALUES({theme_id},{animation_id});"
+    update_query(query)
+
+
+def check_theme_generalYN(id):
+    if isinstance(id, str):
+        id = int(id)
+    query = f"SELECT [generalYN] FROM themes WHERE theme_id={id};"
+    return select_one_query(query)
+
+
+def delete_theme(theme_id: int):
+    if isinstance(theme_id, str):
+        theme_id = int(theme_id)
+    query = f"DELETE FROM themes WHERE theme_id =({theme_id});"
+    update_query(query)
+
+
+def delete_animation(animation_id: int):
+    if isinstance(animation_id, str):
+        animation_id = int(animation_id)
+    query = f"DELETE FROM animations WHERE animation_id =({animation_id});"
+    update_query(query)
