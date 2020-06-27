@@ -15,12 +15,9 @@ from werkzeug.utils import secure_filename
 import shutil
 import db
 
-
-
 application = Flask(__name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.secret_key = os.urandom(24)
-
 
 
 def correct_text(sentence):
@@ -129,7 +126,6 @@ def get_anim_props(path, image_path=""):
         #         color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
         #         anim_props['listItem'].update(color_dict)
 
-
         elif layer.name == ".empty":
             empty_dict = {'empty': 'empty'}
             anim_props.update(empty_dict)
@@ -164,7 +160,6 @@ def tests():
             title='אודות',
             year=datetime.now().year
         )
-
 
 
 @application.route('/filming')
@@ -235,7 +230,7 @@ def newProject():
 
             frame_name = copy_animations("empty new project", frame_path)
             id = db.get_last_video_id(str(project_id))[0]
-            db.create_new_frame(id, frame_name,0)
+            db.create_new_frame(id, frame_name, 0)
 
         else:
             # new user
@@ -293,12 +288,11 @@ def homePage():
     )
 
 
-
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     return render_template(
         'editContent.html',
-        title= db.get_video_name(session.get('CURRENT_VIDEO'))[0],
+        title=db.get_video_name(session.get('CURRENT_VIDEO'))[0],
         # var=anim_properties
     )
 
@@ -315,7 +309,7 @@ def get_all_animation_by_kind():
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
-            selected_frames = db.get_all_animation_by_kind(kind)
+            selected_frames = db.get_all_animation_by_kind(kind,session.get('CURRENT_PROJECT'))
             for frame in selected_frames:
                 # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
                 animations_array.append([frame[0], frame[1], frame[2], False])
@@ -345,9 +339,8 @@ def frame_change():
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
         if (event_kind == "onLoad"):
-            # if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == True:
-            # im here now
-            #     create_new_collection(session.get('CURRENT_PROJECT'))
+            if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == True:
+                create_new_collection(session.get('CURRENT_PROJECT'))
             frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(frames_props[1][0][1]))
             current_frame = frames_props[1][0]
@@ -451,17 +444,20 @@ def frame_change():
                     check_if_in_collection = True
         if check_if_in_collection == False:
             # it it's false then add the anim props to the page
-            lit_anim.append([general_frame[0], session.get('COLLECTION_PATH') + general_frame[1], general_frame[2], True])
-
+            lit_anim.append(
+                [general_frame[0], session.get('COLLECTION_PATH') + general_frame[1], general_frame[2], True])
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
-                       animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array, frame_text=frame_text)
+                       animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
+                       frame_text=frame_text)
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
-
     if kind_of_update_event == "submitChange":
         path = session.get('WORKING_PATH') + file_name
+        name_for_new_name = frame_prop[4]
+    elif kind_of_update_event == "create brand":
+        path = session.get('COLLECTION_PATH') + file_name
         name_for_new_name = frame_prop[4]
     else:
         path = session.get('COLLECTION_PATH') + file_name
@@ -477,7 +473,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     image = False
     notes = ""
 
-    if kind_of_update_event == "submitChange":
+    if kind_of_update_event == "submitChange" or kind_of_update_event=='create brand':
         for item in data:
             if item[0] == "primary":
                 color.update({"primary": item[1]})
@@ -535,20 +531,29 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     if len(list_text['listContent']) > 0:
         an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"])
 
-
-    # create new name & file
-    new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
-    new_path = session.get('WORKING_PATH') + new_name
-    exporters.export_lottie(an, new_path)
-
-    if kind_of_update_event == "submitChange":
+    if kind_of_update_event == "create brand":
         os.remove(path)
+        # create new name & file
+        new_path = session.get('COLLECTION_PATH') + name_for_new_name
+        exporters.export_lottie(an, new_path)
+
         # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], notes)
+        db.create_new_anim(frame_prop[0],frame_prop[3], name_for_new_name,frame_prop[5])
     else:
-        os.remove(session.get('WORKING_PATH') + frame_prop[3])
-        # update frame props on db
-        db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], notes)
+        # create new name & file
+        new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
+        new_path = session.get('WORKING_PATH') + new_name
+        exporters.export_lottie(an, new_path)
+
+        if kind_of_update_event == "submitChange":
+            os.remove(path)
+            # update frame props on db
+            db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], notes)
+
+        else:
+            os.remove(session.get('WORKING_PATH') + frame_prop[3])
+            # update frame props on db
+            db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], notes)
     return get_anim_props(new_path)
 
 
@@ -627,14 +632,23 @@ def add_frame():
     db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
-
 def copy_animations(kind, new_path, old_path=''):
     old_path = session.get('COLLECTION_PATH')
+    kind_event = ""
     if kind == 'empty new project':
         empty_anim = db.get_animations_by_kind('empty')
         old_path = old_path + empty_anim[0][0]  # url
         anim_id = empty_anim[0][2]
         kind = "empty"
+    elif kind == 'create new brand':
+        empty_anim = db.get_animations_by_kind('empty')
+        new_path_temp = old_path
+        old_path = old_path + new_path[1][1]  # url
+        anim_id = new_path[1][2]
+        kind_event = 'create new brand'
+        kind = new_path[1][0]
+        theme_id = new_path[0]
+        new_path = new_path_temp
     else:
         get_anims = get_animations_by_kind(kind)
         old_path = get_anims[0][1]  # url
@@ -645,7 +659,10 @@ def copy_animations(kind, new_path, old_path=''):
         # Reading from json file
         json_object = json.load(in_file)
 
-    new_name = kind + '_' + str(int(time.time())) + ".json"
+    if kind_event == 'create new brand':
+        new_name = kind + '_' + str(theme_id) + "_" + str(int(time.time())) + ".json"
+    else:
+        new_name = kind + '_' + str(int(time.time())) + ".json"
 
     with open(new_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
@@ -686,15 +703,16 @@ def change_list_text(an, text: list, color, alignment=1):
     """
     layers = an.layers
     correct_color = list(colors.to_rgba(color, float) + (1,))
-    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]         # only layers with text
+    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]  # only layers with text
     num_layers = len(text_layers)
     bullet_deleted = False
     layers_to_delete = []
     while num_layers < len(text):
-        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)      # adds the new bullet to text_layers
+        an, text_layers = create_new_list_bullet(an, layers, text_layers,
+                                                 alignment=1)  # adds the new bullet to text_layers
         num_layers += 1
 
-    n = len(layers)+5
+    n = len(layers) + 5
     for text_item in text:
         for i in range(n):
             try:
@@ -717,7 +735,7 @@ def change_list_text(an, text: list, color, alignment=1):
                 elif redundant_layer.isdigit():
                     if int(redundant_layer) > len(text):
                         bullet_deleted = True
-                        del layers[i]   # do here !layer.remove! in the next few days
+                        del layers[i]  # do here !layer.remove! in the next few days
     for layer in layers:
         for name in layers_to_delete:
             if name == layer.name:
@@ -760,7 +778,6 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
                 frames_to_change = layer.find(True, propname='animated').keyframes
 
                 a = layer.clone()
-
 
                 # changes the new name to the last name +1 in the end
                 a.name = a.name.replace("1", str(num_layers + 1))
@@ -805,7 +822,6 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
 
 
 def change_color(an, all_colors, opacity=1):
-
     layers = an.layers
     for layer in layers:
         for name, color in all_colors.items():
@@ -814,7 +830,6 @@ def change_color(an, all_colors, opacity=1):
                 if name in layer.name:
                     layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
                     layer.find('Fill 1').opacity.value = float(opacity)
-
 
     # Old code need to delete
     # for layer in layers:
@@ -828,10 +843,8 @@ def change_color(an, all_colors, opacity=1):
 
 
 def change_list_color(an, color, outline_color, name, opacity):
-
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
-
 
     layers = an.layers
     for layer in layers:
@@ -852,7 +865,6 @@ def allowed_file(filename):
 @application.route("/")
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
-
     current_project = 19
     user_id = db.get_user_id('rubider@hotmail.com')[0]
     session['CURRENT_USER'] = user_id
@@ -865,33 +877,36 @@ def projectPage():
     application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
         'projectPage.html',
-        title ='פרויקט'
+        title='פרויקט'
     )
+
 
 @application.route('/onLoad', methods=['POST', 'GET'])
 def onLoad():
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
         if event_kind == 'pageLoad' or event_kind == "link_brand":
-            collections_props,animations_props, collection_id, collection_length = collectionChange()
+            collections_props, animations_props, collection_id, collection_length = collectionChange()
             colors = getPalette()
-            return jsonify(collections_props=collections_props,animations_props=animations_props,
-                           collection_id=collection_id,collection_length=collection_length,
-                           selected_collection_id=collection_id , event_kind=event_kind, colors=colors)
+            return jsonify(collections_props=collections_props, animations_props=animations_props,
+                           collection_id=collection_id, collection_length=collection_length,
+                           selected_collection_id=collection_id, event_kind=event_kind, colors=colors)
         elif event_kind == "link_videos" or event_kind == "more_delete":
             if event_kind == "more_delete":
-                video_id= request.form["video_id"]
+                video_id = request.form["video_id"]
                 db.delete_video(video_id)
                 shutil.rmtree(session.get('WORKING_PATH_IMG') + str(video_id))
-            videos_props = convert_row_to_list_include_childrens(db.get_videos_by_project(session.get('CURRENT_PROJECT')))
+            videos_props = convert_row_to_list_include_childrens(
+                db.get_videos_by_project(session.get('CURRENT_PROJECT')))
             # check if it's needed to add Alert about the brand
-            palette_id = convert_row_to_list( db.get_palette_id_by_project(session.get('CURRENT_PROJECT')))[0]
+            palette_id = convert_row_to_list(db.get_palette_id_by_project(session.get('CURRENT_PROJECT')))[0]
             collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
             changePaletteYN = False
-            if palette_id == 1 and collection_id== 1:
+            if palette_id == 1 and collection_id == 1:
                 changePaletteYN = True
 
-            return jsonify(event_kind=event_kind, videos_props=videos_props, showAlert=changePaletteYN, video_src = session.get('WORKING_PATH_IMG'))
+            return jsonify(event_kind=event_kind, videos_props=videos_props, showAlert=changePaletteYN,
+                           video_src=session.get('WORKING_PATH_IMG'))
 
 
 def convert_row_to_list_include_childrens(data):
@@ -907,10 +922,9 @@ def convert_row_to_list_include_childrens(data):
 
 @application.route('/collectionChange', methods=['POST', 'GET'])
 def collectionChange():
-    event_kind=""
+    event_kind = ""
     selected_collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
     collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
-
 
     collections_props = convert_row_to_list_include_childrens(db.get_all_collections())
     check_if_collection_isInclude = False
@@ -923,24 +937,31 @@ def collectionChange():
 
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
-        if event_kind =='switch_event':
+        if event_kind == 'switch_event':
             selected_collection_id = request.form["col_id"]
-        elif event_kind == 'ChooseCollection':
-            selected_collection_id = request.form["col_id"]
-            db.update_project_collection(selected_collection_id,session.get('CURRENT_PROJECT'))
-            collection_id = selected_collection_id
+            # save last collection and change change_on_collectionYN to TRUE
 
+        elif event_kind == 'ChooseCollection':
+            # save last collection and change change_on_collectionYN to TRUE
+            check_change_on_collectionYN()
+            # change to the new collection in db
+            selected_collection_id = request.form["col_id"]
+            db.update_project_collection(selected_collection_id, session.get('CURRENT_PROJECT'))
+            collection_id = selected_collection_id
 
     animations_props = [session.get('COLLECTION_PATH'),
                         convert_row_to_list_include_childrens(db.get_collection(selected_collection_id))]
     collection_length = len(convert_row_to_list_include_childrens(db.get_collection(collection_id)))
 
     if event_kind == 'pageLoad' or event_kind == 'link_brand':
-        return collections_props,animations_props, collection_id, collection_length,
-    elif event_kind =='switch_event':
-        return jsonify(collections_props=collections_props, animations_props=animations_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
-    elif event_kind =='ChooseCollection':
-        return jsonify(collections_props=collections_props,collection_id=collection_id, selected_collection_id=selected_collection_id, collection_length=collection_length)
+        return collections_props, animations_props, collection_id, collection_length,
+    elif event_kind == 'switch_event':
+        return jsonify(collections_props=collections_props, animations_props=animations_props,
+                       collection_id=collection_id, selected_collection_id=selected_collection_id,
+                       collection_length=collection_length)
+    elif event_kind == 'ChooseCollection':
+        return jsonify(collections_props=collections_props, collection_id=collection_id,
+                       selected_collection_id=selected_collection_id, collection_length=collection_length)
 
     return ""
 
@@ -954,14 +975,14 @@ def getPalette():
 
 @application.route('/get_all_palettes', methods=['POST', 'GET'])
 def get_all_palettes():
-    colors =[]
+    colors = []
 
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
         palettes_id = convert_row_to_list_include_childrens(db.get_all_palettes_id())
         for palette in palettes_id:
             colors.append([palette, convert_row_to_list_include_childrens(db.get_colors_by_palette(palette[0]))])
-    return jsonify(colors = colors,event_kind=event_kind )
+    return jsonify(colors=colors, event_kind=event_kind)
 
 
 @application.route('/PaletteHandler', methods=['POST', 'GET'])
@@ -969,7 +990,7 @@ def PaletteHandler():
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
         colors = []
-        if event_kind =='ChoosePaletteFromCollection':
+        if event_kind == 'ChoosePaletteFromCollection':
             # switch to palette from general
             new_palette_id = request.form["pal_id"]
             proj_id = session.get('CURRENT_PROJECT')
@@ -980,21 +1001,21 @@ def PaletteHandler():
             if db.check_palette_generalYN(initial_palette)[0] == False:
                 db.update_project_palette("1", proj_id)
                 db.delete_palette(initial_palette)
-            db.update_project_palette(new_palette_id,proj_id)
+            db.update_project_palette(new_palette_id, proj_id)
 
         if event_kind == 'ChangeColor':
             colorId = int(request.form["colorId"])
-            colorValue =request.form["pal_id"]
+            colorValue = request.form["pal_id"]
             proj_palette = db.get_palette_id_by_project(session.get('CURRENT_PROJECT'))[0]
             check = db.check_palette_generalYN(proj_palette)[0]
 
             # check if the current palette is from general or not, if it's create new one. if not - change the color
             if check:
                 proj_id = session.get('CURRENT_PROJECT')
-                initial_colors = getPalette();
+                initial_colors = getPalette()
 
                 # create new palette
-                db.create_palette(proj_id,proj_id)
+                db.create_palette(proj_id, proj_id)
                 new_palette_id = db.get_last_palette_id(proj_id)[0]
 
                 # insert colors to new palette
@@ -1002,15 +1023,17 @@ def PaletteHandler():
                     color_v = color[0]
                     if color[2] == colorId:
                         color_v = colorValue
-                    db.create_color(color_v,color[1],new_palette_id)
+                    db.create_color(color_v, color[1], new_palette_id)
 
-                db.update_project_palette(new_palette_id,proj_id)
+                db.update_project_palette(new_palette_id, proj_id)
             else:
                 # already custom palette, the change is only on the individual color
-                db.update_color_hex(colorId,colorValue)
+                db.update_color_hex(colorId, colorValue)
 
         colors = getPalette()
-        return jsonify(colors = colors, event_kind = event_kind)
+        check_change_on_collectionYN()
+
+        return jsonify(colors=colors, event_kind=event_kind)
 
 
 @application.route('/frame_order', methods=['POST', 'GET'])
@@ -1029,10 +1052,11 @@ def video_handler():
     if request.method == 'POST':
         event_kind = request.form['event_kind']
         if event_kind == "saveNameChange":
+            create_new_collection(session.get('CURRENT_PROJECT'))
             video_id = request.form['video_id']
             video_name = request.form['video_name']
             db.update_video_name(video_id, video_name)
-            return jsonify(name = video_name, event_kind = event_kind, video_id=video_id)
+            return jsonify(name=video_name, event_kind=event_kind, video_id=video_id)
 
         elif event_kind == "changeCoverPic":
             file = request.files['file']
@@ -1043,13 +1067,16 @@ def video_handler():
 
             if file and allowed_file(file.filename):
                 filename = "".join([char for char in db.get_video_image(video_id)[0].strip() if ord(char) < 128])
-                my_path =os.path.join(session.get("WORKING_PATH_IMG"),video_id)
-                os.remove(os.path.join(my_path,filename))
-                new_filename = "placeholderCardCover" + "_" + str(int(time.time())) + "."+str(file.filename.rsplit('.', 1)[1].lower())  # Split the extension from the path and normalise it to lowercase.
+                my_path = os.path.join(session.get("WORKING_PATH_IMG"), video_id)
+                os.remove(os.path.join(my_path, filename))
+                new_filename = "placeholderCardCover" + "_" + str(int(time.time())) + "." + str(
+                    file.filename.rsplit('.', 1)[
+                        1].lower())  # Split the extension from the path and normalise it to lowercase.
                 location = os.path.join(my_path, new_filename)
                 file.save(location)
-                db.update_video_image(video_id,new_filename)
-                return jsonify(image_name=new_filename, event_kind=event_kind, video_id=video_id, video_src = session.get('WORKING_PATH_IMG'))
+                db.update_video_image(video_id, new_filename)
+                return jsonify(image_name=new_filename, event_kind=event_kind, video_id=video_id,
+                               video_src=session.get('WORKING_PATH_IMG'))
 
         else:
             if event_kind == "newVideoBtn":
@@ -1073,16 +1100,65 @@ def video_handler():
             current_project = session.get('CURRENT_PROJECT')
             session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
 
-            return jsonify(event_kind = event_kind)
+            return jsonify(event_kind=event_kind)
 
 
 def create_new_collection(project_id: int):
-    db.get_project_theme(project_id)
-    db.update_change_on_collectionYN(project_id,False)
+
+    last_theme = db.get_project_theme(project_id)
+    new_theme = db.create_new_theme(project_id)
+    original_animations = db.get_animations_by_theme(last_theme)
+    counter = 0
+    # check if the last collection is from general or not, if it's delete it
+    check = db.check_theme_generalYN(last_theme)[0]
+
+    # get current colors palette by the currect template: [type,hex color]
+    data = convert_row_to_list_include_childrens(db.get_colors_by_palette(db.get_palette_id_by_project(project_id)[0]))
+    for row in data:
+        x =row[0]
+        row[0] = row[1]
+        row[1] = x
+        row.remove(row[2])
+
+    for anim in original_animations:
+        if anim[0] != "empty":
+            props = copy_animations("create new brand", [(str(new_theme) + "_" + str(counter)), anim])
+            # get animation data
+            anim_props = convert_row_to_list(db.get_genral_anim_props_by_id(props[1]))
+            anim_props.append(anim[0])
+            anim_props.append(props[0])
+            anim_props.append(new_theme)
+
+            update_anim_props(props[0], data,anim_props , "create brand")
+            counter += 1
+
+            if not check:
+                db.delete_animation(anim[2])
+                path = session.get('COLLECTION_PATH') + anim[1]
+                os.remove(path)
+        else:
+            # add empty to the collection without a copy
+            db.create_new_a_t_relation(10,new_theme)
+
+
+
+    # restart
+    db.update_change_on_collectionYN(project_id, False)
+    db.update_initial_theme(project_id, 0)
+    if not check:
+        db.delete_theme(last_theme)
+
+
+def check_change_on_collectionYN():
+    # check if the change is the brand is new, if it's - save the project_initial_theme and update change_on_collectionYN
+    if db.check_change_on_collectionYN(session.get('CURRENT_PROJECT'))[0] == False:
+        project_id = session.get('CURRENT_PROJECT')
+        current_theme = db.get_project_theme(project_id)
+
+        if db.get_project_initial_theme(project_id) == 0:
+            db.update_initial_theme(project_id, current_theme)
+        db.update_change_on_collectionYN(project_id, True)
 
 
 if __name__ == '__main__':
     application.run()
-
-
-
