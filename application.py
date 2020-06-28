@@ -4,23 +4,23 @@ Routes and views for the flask application.
 
 import json
 import os
+import shutil
 import time
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Flask, redirect, session, make_response
+from flask import render_template, request, jsonify, Flask, redirect, session, make_response, url_for
+from flask_mail import Mail, Message
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
 from matplotlib import colors
 from werkzeug.utils import secure_filename
-from flask_mail import Mail, Message
-import shutil
-import db
 
+import db
 
 application = Flask(__name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 application.secret_key = os.urandom(24)
-application.config['MAIL_SERVER']='smtp.gmail.com'
+application.config['MAIL_SERVER'] = 'smtp.gmail.com'
 application.config['MAIL_PORT'] = 465
 application.config['MAIL_USERNAME'] = 'one.shot.video.center@gmail.com'
 application.config['MAIL_PASSWORD'] = '89FuegY#5gd@'
@@ -28,6 +28,7 @@ application.config['MAIL_USE_TLS'] = False
 application.config['MAIL_USE_SSL'] = True
 application.config['MAIL_DEFAULT_SENDER'] = 'one.shot.video.center@gmail.com'
 mail = Mail(application)
+
 
 def correct_text(sentence):
     """
@@ -135,7 +136,6 @@ def get_anim_props(path, image_path=""):
         #         color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
         #         anim_props['listItem'].update(color_dict)
 
-
         elif layer.name == ".empty":
             empty_dict = {'empty': 'empty'}
             anim_props.update(empty_dict)
@@ -175,7 +175,7 @@ def tests():
             else:
                 file.save(os.path.join(path_to_filmed, name))
                 animations.append({'name': name, 'start_time': start_time})
-        while not os.path.exists(path_to_filmed + name):    # wait until the new file actually saves
+        while not os.path.exists(path_to_filmed + name):  # wait until the new file actually saves
             time.sleep(1)
         if os.path.isfile(path_to_filmed + name):
             video_file_name = f'{user_id}_{time.time()}'
@@ -288,10 +288,32 @@ def newProject():
         username="xxxx"
     )
 
+@application.route("/")
+@application.route('/login', methods=['POST', 'GET'])
+def login():
+    # projectPage
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user, match = db.check_log_in(str(email), str(password))
+        if user is True:
+            if match is False:
+                alertM = "סיסמא שגויה"
+            else:
+                user_id = db.get_user_id(email)[0]
+                session['CURRENT_USER'] = user_id
+                return jsonify({"success": True})
+        else:
+            alertM = "שם משתמש או סימא שגויים"
+        return jsonify({"success": "false", "alert": f"{alertM}"})
+    return render_template(
+        'login.html',
+        title='login page',
+    )
+
 
 @application.route('/homePage', methods=['POST', 'GET'])
 def homePage():
-    global paletteName
     paletteName = ""
     colors_data = ["#000000"]
     if request.method == 'POST':
@@ -328,7 +350,6 @@ def homePage():
     )
 
 
-
 @application.route('/editContent', methods=['POST', 'GET'])
 def editContent():
     # current_project = 19
@@ -361,7 +382,7 @@ def get_all_animation_by_kind():
             frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
-            selected_frames = db.get_all_animation_by_kind(kind,session.get('CURRENT_PROJECT'))
+            selected_frames = db.get_all_animation_by_kind(kind, session.get('CURRENT_PROJECT'))
             for frame in selected_frames:
                 # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind]
                 animations_array.append([frame[0], frame[1], frame[2], False])
@@ -386,7 +407,6 @@ def frame_change():
     path = frames_props[0]
     general_frame = []
     frame_text = ""
-
 
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -470,7 +490,9 @@ def frame_change():
 
             new_anim_id = request.form["selected_kind"][request.form["selected_kind"].find('_') + 1:]
             data_to_db = [frame_id, kind, new_anim_id, str(db.get_frame_by_id(frame_id)[3])]
-            anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
+            anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0],
+                                           anim_props_original,
+                                           data_to_db,
                                            "change_mini_lottie")
 
         color_palettes = db.get_colors_by_palette("1")
@@ -480,12 +502,17 @@ def frame_change():
         lit_anim = get_animations_by_kind(kind)
 
         if event_kind == "select_from_general":
-            general_frame = db.get_genral_anim_props_by_id(new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
+            general_frame = db.get_genral_anim_props_by_id(
+                new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
 
         elif event_kind == "onLoad" or event_kind == "new_frame":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[2]))
 
-        elif event_kind == "delete_frame" or event_kind == "frame_click" or event_kind == "change_kind_click" or event_kind == "submitChange" or event_kind == "change_mini_lottie":
+        elif event_kind == "delete_frame" \
+                or event_kind == "frame_click" \
+                or event_kind == "change_kind_click" \
+                or event_kind == "submitChange" \
+                or event_kind == "change_mini_lottie":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[5]))
 
         check_if_in_collection = False
@@ -498,7 +525,8 @@ def frame_change():
         if check_if_in_collection == False:
             # it it's false then add the anim props to the page
             lit_anim.append(
-                [general_frame[0], session.get('COLLECTION_PATH') + general_frame[1], general_frame[2], True])
+                [general_frame[0], session.get('COLLECTION_PATH') +
+                 general_frame[1], general_frame[2], True])
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
@@ -506,7 +534,6 @@ def frame_change():
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
-
     if kind_of_update_event == "submitChange":
         path = session.get('WORKING_PATH') + file_name
         name_for_new_name = frame_prop[4]
@@ -527,7 +554,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     image = False
     notes = ""
 
-    if kind_of_update_event == "submitChange" or kind_of_update_event=='create brand':
+    if kind_of_update_event == "submitChange" or kind_of_update_event == 'create brand':
         for item in data:
             if item[0] == "primary":
                 color.update({"primary": item[1]})
@@ -592,7 +619,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
         exporters.export_lottie(an, new_path)
 
         # update frame props on db
-        db.create_new_anim(frame_prop[0],frame_prop[3], name_for_new_name,frame_prop[5])
+        db.create_new_anim(frame_prop[0], frame_prop[3], name_for_new_name, frame_prop[5])
     else:
         # create new name & file
         new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
@@ -686,7 +713,6 @@ def add_frame():
     db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
-
 def copy_animations(kind, new_path, old_path=''):
     old_path = session.get('COLLECTION_PATH')
     kind_event = ""
@@ -758,14 +784,15 @@ def change_list_text(an, text: list, color, alignment=1):
     """
     layers = an.layers
     correct_color = list(colors.to_rgba(color, float) + (1,))
-    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]         # only layers with text
+    text_layers = [layer for layer in layers if layer.name.startswith(".listText")]  # only layers with text
     num_layers = len(text_layers)
     bullet_deleted = 0
     while num_layers < len(text):
-        an, text_layers = create_new_list_bullet(an, layers, text_layers, alignment=1)   # adds the new bullet to text_layers
+        an, text_layers = create_new_list_bullet(an, layers, text_layers,
+                                                 alignment=1)  # adds the new bullet to text_layers
         num_layers += 1
 
-    n = len(layers)+5
+    n = len(layers) + 5
     layers_to_delete = [layer for layer in layers if layer.name[-1].isdigit() and int(layer.name[-1]) > len(text)]
     for layer in layers_to_delete:
         an.remove_layer(layer)
@@ -840,7 +867,6 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
 
                 a = layer.clone()
 
-
                 # changes the new name to the last name +1 in the end
                 a.name = a.name.replace("1", str(num_layers + 1))
                 if a.name.startswith(".listText"):
@@ -884,7 +910,6 @@ def create_new_list_bullet(an, layers, text_layers, alignment=1):
 
 
 def change_color(an, all_colors, opacity=1):
-
     layers = an.layers
     for layer in layers:
         for name, color in all_colors.items():
@@ -893,7 +918,6 @@ def change_color(an, all_colors, opacity=1):
                 if name in layer.name:
                     layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
                     layer.find('Fill 1').opacity.value = float(opacity)
-
 
     # Old code need to delete
     # for layer in layers:
@@ -907,10 +931,8 @@ def change_color(an, all_colors, opacity=1):
 
 
 def change_list_color(an, color, outline_color, name, opacity):
-
     correct_color = colors.to_rgba(color, float)
     correct_outline_color = colors.to_rgba(outline_color, float)
-
 
     layers = an.layers
     for layer in layers:
@@ -928,13 +950,12 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@application.route("/")
+
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
-
     current_project = 19
-    user_id = db.get_user_id('rubider@hotmail.com')[0]
-    session['CURRENT_USER'] = user_id
+
+    user_id = session.get('CURRENT_USER')
     session['CURRENT_PROJECT'] = current_project
 
     session['COLLECTION_PATH'] = "static/content/animations/"
@@ -946,6 +967,7 @@ def projectPage():
         'projectPage.html',
         title='פרויקט'
     )
+
 
 @application.route('/onLoad', methods=['POST', 'GET'])
 def onLoad():
@@ -991,7 +1013,6 @@ def collectionChange():
     event_kind = ""
     selected_collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
     collection_id = db.get_project_collections_id(session.get('CURRENT_PROJECT'))
-
 
     collections_props = convert_row_to_list_include_childrens(db.get_all_collections())
     check_if_collection_isInclude = False
@@ -1171,7 +1192,6 @@ def video_handler():
 
 
 def create_new_collection(project_id: int):
-
     last_theme = db.get_project_theme(project_id)
     new_theme = db.create_new_theme(project_id)
     original_animations = db.get_animations_by_theme(last_theme)
@@ -1182,7 +1202,7 @@ def create_new_collection(project_id: int):
     # get current colors palette by the currect template: [type,hex color]
     data = convert_row_to_list_include_childrens(db.get_colors_by_palette(db.get_palette_id_by_project(project_id)[0]))
     for row in data:
-        x =row[0]
+        x = row[0]
         row[0] = row[1]
         row[1] = x
         row.remove(row[2])
@@ -1196,7 +1216,7 @@ def create_new_collection(project_id: int):
             anim_props.append(props[0])
             anim_props.append(new_theme)
 
-            update_anim_props(props[0], data,anim_props , "create brand")
+            update_anim_props(props[0], data, anim_props, "create brand")
             counter += 1
 
             if not check:
@@ -1205,9 +1225,7 @@ def create_new_collection(project_id: int):
                 os.remove(path)
         else:
             # add empty to the collection without a copy
-            db.create_new_a_t_relation(10,new_theme)
-
-
+            db.create_new_a_t_relation(10, new_theme)
 
     # restart
     db.update_change_on_collectionYN(project_id, False)
