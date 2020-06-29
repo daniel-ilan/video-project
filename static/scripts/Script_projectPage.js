@@ -494,7 +494,9 @@ function buildVideoPage(data) {
         } else if (data.videos_props[i][3] == "הסתיים") {
             className = "status_done"
         }
-        let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
+        // let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
+
+        let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card zoomIn_card  video_sizes">
                             <div class="img_wrapper">
                                   <img id="videoImg_${data.videos_props[i][0]}" class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
                             </div>
@@ -516,7 +518,9 @@ function buildVideoPage(data) {
 
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
-                              <div class="card-footer animated_zoomIn flipInX">
+<!--                                                          <div class="card-footer animated_zoomIn flipInX">-->
+
+                              <div class="card-footer">
                                 <div class="d-flex justify-content-center">
                                     <svg id="edit_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}"  viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
@@ -540,7 +544,7 @@ function buildVideoPage(data) {
                                     </svg>
                                                                         </a>
 
-                                       <div class="dropdown-menu" flip="true">
+                                       <div class="dropdown-menu" data-flip="true" >
                                           <a id="more_changeName" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
                                       <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
                                         <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
