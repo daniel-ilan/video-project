@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+h1 {
+    font-size: 2.5rem;
+    color: #2F1359;
+    font-weight: 500;
+}
+
+label {
+    color: #2F1359;
+}
+
+body {
+    height: 100vh;
+    background-color: #F9FAFB;
+    font-family: 'Rubik', sans-serif;
+}
+
+.login-form-wrapper {
+    box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.03), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0190142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.019);
+    border-radius: 1rem;
+    border: 2px solid #F9FAFB;
+    transition: border 0.2s ease-out;
+    border-right: 2px white solid;
+    background: white;
+}
+
+.form-header-container {
+    align-self: center;
+    height: 25%;
+    margin: 5% 0 0 0;
+}
+
+#submitMessagePlaceholder{
+    margin-top: 5%;
+}
+
+#myTab{
+    border-bottom: 1px solid #6515DD;
+    background-color: #6515DD;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    height: 10%;
+    align-items: center;
+}
+
+.custom-nav-item{
+    padding: 0;
+}
+
+.nav-link{
+    color: #b2b2b2;
+    background-color: #6515DD;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+}
+
+.nav-link:hover{
+    color: white;
+}
+.nav-link.active{
+    color: white;
+    border-bottom: 3px solid white;
+    background-color: #6515DD;
+}
+
+.form-text-register{
+    margin: 8% 0 0 0;
+}
+
+.primaryBTN {
+    background-color: #6515DD;
+    border: solid 0.125rem #6515DD;
+    color: white;
+    padding: 0.5rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 19px;
+    align-items: center;
+    text-align: center;
+    height: 2.5rem;
+    transition: background-color 0.2s ease-out;
+}
+
+.primaryBTN:hover:enabled {
+    background-color: #00B6DE;
+    border: solid 0.125rem #00A7CC;
+    color: white;
+
+    -webkit-transition: background-color 0.2s ease-out;
+    -moz-transition: background-color 0.2s ease-out;
+    -o-transition: background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.form-control {
+    border-color: #6515dd66;
+    border-radius: 15px;
+}
+
+.form-control:focus {
+    border-color: #6515dd66;
+    box-shadow: 0 0 0 0.2rem #6515dd17;
+}
+
+.disabled {
+    background: #BDBDBD;
+    color: white;
+    border-color: #BDBDBD;
+}
+
+.disabled:hover {
+    color: white;
+    box-shadow: none;
+    cursor: default;
+    border-color: #BDBDBD;
+}
+
+.password-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    color: darkgray;
+    padding: 5px;
+}
+
+.password-icon:hover {
+    background-color: #bdbdbd8c;
+    color: #6515DD;
+}
+
+.hidden {
+    display: none;
+}
+
+.invalid {
+    border-color: red;
+}
+
+.valid {
+    border-color: green;
+}
+
+.valid-icon {
+    color: green;
+}
