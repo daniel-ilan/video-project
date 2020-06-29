@@ -6,7 +6,7 @@ h1 {
     font-weight: 500;
 }
 
-label{
+label {
     color: #2F1359;
 }
 
@@ -25,10 +25,47 @@ body {
     background: white;
 }
 
-.form-header-container{
+.form-header-container {
     align-self: center;
-    /* height: 25%; */
-    margin: 5% 0 12.5% 0;
+    height: 25%;
+    margin: 5% 0 0 0;
+}
+
+#submitMessagePlaceholder{
+    margin-top: 5%;
+}
+
+#myTab{
+    border-bottom: 1px solid #6515DD;
+    background-color: #6515DD;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    height: 10%;
+    align-items: center;
+}
+
+.custom-nav-item{
+    padding: 0;
+}
+
+.nav-link{
+    color: #b2b2b2;
+    background-color: #6515DD;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+}
+
+.nav-link:hover{
+    color: white;
+}
+.nav-link.active{
+    color: white;
+    border-bottom: 3px solid white;
+    background-color: #6515DD;
+}
+
+.form-text-register{
+    margin: 8% 0 0 0;
 }
 
 .primaryBTN {
@@ -43,7 +80,6 @@ body {
     align-items: center;
     text-align: center;
     height: 2.5rem;
-    width: fit-content;
     transition: background-color 0.2s ease-out;
 }
 
@@ -58,13 +94,13 @@ body {
     transition: background-color 0.2s ease-out;
 }
 
-.form-control{
-    border-color:#6515dd66;
+.form-control {
+    border-color: #6515dd66;
     border-radius: 15px;
 }
 
-.form-control:focus{
-    border-color:#6515dd66;
+.form-control:focus {
+    border-color: #6515dd66;
     box-shadow: 0 0 0 0.2rem #6515dd17;
 }
 
@@ -81,7 +117,7 @@ body {
     border-color: #BDBDBD;
 }
 
-.password-icon{
+.password-icon {
     width: 1.8rem;
     height: 1.8rem;
     border-radius: 50%;
@@ -89,23 +125,23 @@ body {
     padding: 5px;
 }
 
-.password-icon:hover{
+.password-icon:hover {
     background-color: #bdbdbd8c;
     color: #6515DD;
 }
 
-.hidden{
+.hidden {
     display: none;
 }
 
-.invalid{
+.invalid {
     border-color: red;
 }
 
-.valid{
+.valid {
     border-color: green;
 }
 
-.valid-icon{
+.valid-icon {
     color: green;
 }
