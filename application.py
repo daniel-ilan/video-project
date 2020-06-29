@@ -402,12 +402,14 @@ def frame_change():
 
         elif event_kind == "delete_frame":
             current_frame = delete_frame(frame_id)
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(current_frame[3]))
             kind = current_frame[4]
             frame_text = current_frame[6]
 
         elif event_kind == "new_frame":
             add_frame()
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             last_frame = len(frames_props[1]) - 1
             anim_props = get_anim_props(path + str(frames_props[1][last_frame][1]))
             current_frame = frames_props[1][last_frame]
@@ -490,7 +492,7 @@ def frame_change():
 
         check_if_in_collection = False
         if (event_kind != "new_frame" or event_kind != "change_kind_click"):
-            # the check isn't relevnt cause it's start only with collection animations
+            # the check isn't relevant cause it's start only with collection animations
             for x in range(len(lit_anim)):
                 if lit_anim[x][2] == general_frame[2]:
                     # check if the animations is in the collection, if it is then make check_if_in_collection True
