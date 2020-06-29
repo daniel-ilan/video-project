@@ -493,7 +493,7 @@ def frame_change():
             # the check isn't relevnt cause it's start only with collection animations
             for x in range(len(lit_anim)):
                 if lit_anim[x][2] == general_frame[2]:
-                    # check if the anmations is in the collection, if it is then make check_if_in_collection True
+                    # check if the animations is in the collection, if it is then make check_if_in_collection True
                     check_if_in_collection = True
         if check_if_in_collection == False:
             # it it's false then add the anim props to the page
@@ -665,7 +665,7 @@ def get_animations_by_kind(kind):
     """
     myArray = []
     animations = db.get_animations_by_project_and_kind('19', kind)
-
+    #  0 - animation_name ; 1 - path ; 2 -animation_id
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
     return myArray
@@ -1119,7 +1119,6 @@ def video_handler():
     if request.method == 'POST':
         event_kind = request.form['event_kind']
         if event_kind == "saveNameChange":
-            create_new_collection(session.get('CURRENT_PROJECT'))
             video_id = request.form['video_id']
             video_name = request.form['video_name']
             db.update_video_name(video_id, video_name)
@@ -1173,11 +1172,12 @@ def video_handler():
 def create_new_collection(project_id: int):
 
     last_theme = db.get_project_theme(project_id)
+    initial_theme = db.get_project_initial_theme(project_id)
     new_theme = db.create_new_theme(project_id)
     original_animations = db.get_animations_by_theme(last_theme)
     counter = 0
     # check if the last collection is from general or not, if it's delete it
-    check = db.check_theme_generalYN(last_theme)[0]
+    check = db.check_theme_generalYN(initial_theme)[0]
 
     # get current colors palette by the currect template: [type,hex color]
     data = convert_row_to_list_include_childrens(db.get_colors_by_palette(db.get_palette_id_by_project(project_id)[0]))
@@ -1198,21 +1198,14 @@ def create_new_collection(project_id: int):
 
             update_anim_props(props[0], data,anim_props , "create brand")
             counter += 1
-
-            if not check:
-                db.delete_animation(anim[2])
-                path = session.get('COLLECTION_PATH') + anim[1]
-                os.remove(path)
         else:
             # add empty to the collection without a copy
-            db.create_new_a_t_relation(10,new_theme)
-
-
+            db.create_new_a_t_relation(1,new_theme)
 
     # restart
     db.update_change_on_collectionYN(project_id, False)
     db.update_initial_theme(project_id, 0)
-    if not check:
+    if check == False:
         db.delete_theme(last_theme)
 
 
