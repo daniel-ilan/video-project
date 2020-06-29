@@ -494,7 +494,7 @@ function buildVideoPage(data) {
         } else if (data.videos_props[i][3] == "הסתיים") {
             className = "status_done"
         }
-        let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card animated_zoomIn zoomIn video_sizes">
+        let myCard = `  <div id="video_${data.videos_props[i][0]}" class="card zoomIn_card  video_sizes">
                             <div class="img_wrapper">
                                   <img id="videoImg_${data.videos_props[i][0]}" class="card-img-top" src="${"../" + data.video_src + data.videos_props[i][0] + "/" + data.videos_props[i][2].replace(/\u200f/g, '')}" alt="Card image cap">
                             </div>
@@ -516,8 +516,8 @@ function buildVideoPage(data) {
 
                                   <small class="text-muted status ${className}">${data.videos_props[i][3]}</small>
                             </div>
-                              <div class="card-footer animated_zoomIn flipInX">
-                                <div class="d-flex justify-content-center">
+                              <div class="card-footer">
+                                <div class="d-flex d-flex justify-content-around">
                                     <svg id="edit_icon" class="card-icons-svg" data-vid="${data.videos_props[i][0]}"  viewBox="0 0 16 16" fill="none"
                                     xmlns="http://www.w3.org/2000/svg"  data-toggle="tooltip" data-placement="bottom"
                                     title="עריכת הסרטון">
@@ -539,36 +539,35 @@ function buildVideoPage(data) {
                                           <path d="M3.99996 6.66666C3.26663 6.66666 2.66663 7.26666 2.66663 7.99999C2.66663 8.73332 3.26663 9.33332 3.99996 9.33332C4.73329 9.33332 5.33329 8.73332 5.33329 7.99999C5.33329 7.26666 4.73329 6.66666 3.99996 6.66666ZM12 6.66666C11.2666 6.66666 10.6666 7.26666 10.6666 7.99999C10.6666 8.73332 11.2666 9.33332 12 9.33332C12.7333 9.33332 13.3333 8.73332 13.3333 7.99999C13.3333 7.26666 12.7333 6.66666 12 6.66666ZM7.99996 6.66666C7.26663 6.66666 6.66663 7.26666 6.66663 7.99999C6.66663 8.73332 7.26663 9.33332 7.99996 9.33332C8.73329 9.33332 9.33329 8.73332 9.33329 7.99999C9.33329 7.26666 8.73329 6.66666 7.99996 6.66666Z"/>
                                     </svg>
                                                                         </a>
-
-                                       <div class="dropdown-menu" flip="true">
+                                       <div class="dropdown-menu" data-flip="true" >
                                           <a id="more_changeName" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
-                                      <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
-                                        <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
-                                    </svg>
-                                          שינוי שם </a>
+                                                <svg class="card-icons-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  >
+                                                    <path d="M2 11.5V14H4.5L11.8733 6.62666L9.37333 4.12666L2 11.5ZM13.8067 4.69332C14.0667 4.43332 14.0667 4.01332 13.8067 3.75332L12.2467 2.19332C11.9867 1.93332 11.5667 1.93332 11.3067 2.19332L10.0867 3.41332L12.5867 5.91332L13.8067 4.69332V4.69332Z"/>
+                                                </svg>
+                                              שינוי שם </a>
                                           <a id="more_coverPic" data-vid="${data.videos_props[i][0]}" class="dropdown-item"  href="#">
-                                            <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
-                                            </svg>
-                                          שינוי תמונה</a>
+                                                <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15.5 13.8333V2.16667C15.5 1.25 14.75 0.5 13.8333 0.5H2.16667C1.25 0.5 0.5 1.25 0.5 2.16667V13.8333C0.5 14.75 1.25 15.5 2.16667 15.5H13.8333C14.75 15.5 15.5 14.75 15.5 13.8333ZM5.08333 9.25L7.16667 11.7583L10.0833 8L13.8333 13H2.16667L5.08333 9.25Z"/>
+                                                </svg>
+                                              שינוי תמונה</a>
                                           <a id="more_download" class="dropdown-item ${classDisabled_show}" href="#">
-                                          <svg class="card-icons-svg ${classDisabled_show}"" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                              <path d="M6 0.5L6 10.67L1.41 6.08L-3.0598e-07 7.5L7 14.5L14 7.5L12.59 6.09L8 10.67L8 0.5L6 0.5Z" />
-                                           </svg>
-                                          הורדה</a>
+                                              <svg class="card-icons-svg ${classDisabled_show}"" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                  <path d="M6 0.5L6 10.67L1.41 6.08L-3.0598e-07 7.5L7 14.5L14 7.5L12.59 6.09L8 10.67L8 0.5L6 0.5Z" />
+                                               </svg>
+                                              הורדה</a>
                                           <a id="more_delete" data-vid="${data.videos_props[i][0]}" class="dropdown-item" href="#">
-                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>
-                                           </svg>
-                                          מחיקה</a>
+                                              <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M0.722222 11.5556C0.722222 12.35 1.37222 13 2.16667 13H7.94445C8.73889 13 9.38889 12.35 9.38889 11.5556V2.88889H0.722222V11.5556ZM10.1111 0.722222H7.58333L6.86111 0H3.25L2.52778 0.722222H0V2.16667H10.1111V0.722222Z"/>
+                                               </svg>
+                                              מחיקה</a>
                                           <div class="dropdown-divider"></div>
                                           <a id="more_close" class="dropdown-item" href="#">
-                                          <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <rect x="10.553" y="0.711914" width="2.0464" height="14.3248" transform="rotate(45 10.553 0.711914)" />
-                                                <rect x="11.5762" y="10.8411" width="2.0464" height="14.3248" transform="rotate(135 11.5762 10.8411)" />
-                                          </svg>
-
-                                          סגירת חלון</a>
+                                              <svg class="card-icons-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="10.553" y="0.711914" width="2.0464" height="14.3248" transform="rotate(45 10.553 0.711914)" />
+                                                    <rect x="11.5762" y="10.8411" width="2.0464" height="14.3248" transform="rotate(135 11.5762 10.8411)" />
+                                              </svg>
+    
+                                              סגירת חלון</a>
                                     </div>
                                 </div>
                               </div>

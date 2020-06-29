@@ -467,7 +467,7 @@ def get_project_initial_theme(project_id: int):
     if isinstance(project_id, str):
         project_id = int(project_id)
     query = f"SELECT [initial_theme] FROM projects WHERE project_id={project_id};"
-    return bool(select_one_query(query)[0])
+    return int(select_one_query(query)[0])
 
 
 def get_project_name(project_id: int):

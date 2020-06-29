@@ -154,6 +154,8 @@ function contentChangeHandler(data) {
     changeActive(frame_id, ".frame_lottie");
     if (event_kind === "change_kind_click" || event_kind === "change_mini_lottie" || event_kind === "select_from_general") {
         $(".active_frame_lottie").attr("data-anim", data.current_frame[5]);
+        document.querySelector(".active_frame_lottie lottie-player").load(data.anim_props.path);
+
     }
 
     changeNavItem(kind);

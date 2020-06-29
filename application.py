@@ -297,7 +297,7 @@ def login():
         filled_password = request.form['password']
         filled_name = request.form.get('name')
         registered_user, registered_password = db.check_log_in(str(filled_email), str(filled_password))
-        if filled_name: 
+        if filled_name:
             # param: filled_name only comes from registration form
             if registered_user:
                 # user is registered
@@ -453,12 +453,14 @@ def frame_change():
 
         elif event_kind == "delete_frame":
             current_frame = delete_frame(frame_id)
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             anim_props = get_anim_props(path + str(current_frame[3]))
             kind = current_frame[4]
             frame_text = current_frame[6]
 
         elif event_kind == "new_frame":
             add_frame()
+            frames_props = get_frames_from_db(session.get('CURRENT_VIDEO'))
             last_frame = len(frames_props[1]) - 1
             anim_props = get_anim_props(path + str(frames_props[1][last_frame][1]))
             current_frame = frames_props[1][last_frame]
@@ -484,7 +486,6 @@ def frame_change():
             # remove old file from dit
             remove_path = session.get('WORKING_PATH') + str(db.get_frame_by_id(frame_id)[3])
             os.remove(remove_path)
-
             # change data in db
             db.update_frame_props(current_frame[0], new_lottie[0], selected_kind, new_lottie[1])
 
@@ -521,9 +522,7 @@ def frame_change():
 
             new_anim_id = request.form["selected_kind"][request.form["selected_kind"].find('_') + 1:]
             data_to_db = [frame_id, kind, new_anim_id, str(db.get_frame_by_id(frame_id)[3])]
-            anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0],
-                                           anim_props_original,
-                                           data_to_db,
+            anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
                                            "change_mini_lottie")
 
         color_palettes = db.get_colors_by_palette("1")
@@ -533,31 +532,25 @@ def frame_change():
         lit_anim = get_animations_by_kind(kind)
 
         if event_kind == "select_from_general":
-            general_frame = db.get_genral_anim_props_by_id(
-                new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
+            general_frame = db.get_genral_anim_props_by_id(new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
 
         elif event_kind == "onLoad" or event_kind == "new_frame":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[2]))
 
-        elif event_kind == "delete_frame" \
-                or event_kind == "frame_click" \
-                or event_kind == "change_kind_click" \
-                or event_kind == "submitChange" \
-                or event_kind == "change_mini_lottie":
+        elif event_kind == "delete_frame" or event_kind == "frame_click" or event_kind == "change_kind_click" or event_kind == "submitChange" or event_kind == "change_mini_lottie":
             general_frame = db.get_genral_anim_props_by_id(str(current_frame[5]))
 
         check_if_in_collection = False
         if (event_kind != "new_frame" or event_kind != "change_kind_click"):
-            # the check isn't relevnt cause it's start only with collection animations
+            # the check isn't relevant cause it's start only with collection animations
             for x in range(len(lit_anim)):
                 if lit_anim[x][2] == general_frame[2]:
-                    # check if the anmations is in the collection, if it is then make check_if_in_collection True
+                    # check if the animations is in the collection, if it is then make check_if_in_collection True
                     check_if_in_collection = True
         if check_if_in_collection == False:
             # it it's false then add the anim props to the page
             lit_anim.append(
-                [general_frame[0], session.get('COLLECTION_PATH') +
-                 general_frame[1], general_frame[2], True])
+                [general_frame[0], session.get('COLLECTION_PATH') + general_frame[1], general_frame[2], True])
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
@@ -723,7 +716,7 @@ def get_animations_by_kind(kind):
     """
     myArray = []
     animations = db.get_animations_by_project_and_kind('19', kind)
-
+    #  0 - animation_name ; 1 - path ; 2 -animation_id
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
     return myArray
@@ -1170,7 +1163,6 @@ def video_handler():
     if request.method == 'POST':
         event_kind = request.form['event_kind']
         if event_kind == "saveNameChange":
-            create_new_collection(session.get('CURRENT_PROJECT'))
             video_id = request.form['video_id']
             video_name = request.form['video_name']
             db.update_video_name(video_id, video_name)
@@ -1223,11 +1215,12 @@ def video_handler():
 
 def create_new_collection(project_id: int):
     last_theme = db.get_project_theme(project_id)
+    initial_theme = db.get_project_initial_theme(project_id)
     new_theme = db.create_new_theme(project_id)
     original_animations = db.get_animations_by_theme(last_theme)
     counter = 0
     # check if the last collection is from general or not, if it's delete it
-    check = db.check_theme_generalYN(last_theme)[0]
+    check = db.check_theme_generalYN(initial_theme)[0]
 
     # get current colors palette by the currect template: [type,hex color]
     data = convert_row_to_list_include_childrens(db.get_colors_by_palette(db.get_palette_id_by_project(project_id)[0]))
@@ -1248,20 +1241,15 @@ def create_new_collection(project_id: int):
 
             update_anim_props(props[0], data, anim_props, "create brand")
             counter += 1
-
-            if not check:
-                db.delete_animation(anim[2])
-                path = session.get('COLLECTION_PATH') + anim[1]
-                os.remove(path)
         else:
             # add empty to the collection without a copy
-            db.create_new_a_t_relation(10, new_theme)
+            db.create_new_a_t_relation(1,new_theme)
 
     # restart
     db.update_change_on_collectionYN(project_id, False)
     db.update_initial_theme(project_id, 0)
-    if not check:
-        db.delete_theme(last_theme)
+    if check == False:
+        db.delete_theme(initial_theme)
 
 
 def check_change_on_collectionYN():
