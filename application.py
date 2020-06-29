@@ -435,7 +435,6 @@ def frame_change():
             # remove old file from dit
             remove_path = session.get('WORKING_PATH') + str(db.get_frame_by_id(frame_id)[3])
             os.remove(remove_path)
-
             # change data in db
             db.update_frame_props(current_frame[0], new_lottie[0], selected_kind, new_lottie[1])
 
