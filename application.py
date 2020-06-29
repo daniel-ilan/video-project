@@ -293,19 +293,50 @@ def newProject():
 def login():
     # projectPage
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user, match = db.check_log_in(str(email), str(password))
-        if user is True:
-            if match is False:
-                alertM = "סיסמא שגויה"
+        filled_email = request.form['email']
+        filled_password = request.form['password']
+        filled_name = request.form.get('name')
+        registered_user, registered_password = db.check_log_in(str(filled_email), str(filled_password))
+        if filled_name: 
+            # param: filled_name only comes from registration form
+            if registered_user:
+                # user is registered
+                if registered_password:
+                    # checks if the user accidentally filled the registration form but entered a correct email
+                    # and password we simply log him in
+                    user_id = db.get_user_id(filled_email)[0]
+                    session['CURRENT_USER'] = user_id
+                    return jsonify({"success": True})
+                else:
+                    # correct email but wrong password
+                    alertM = 'כתובת המייל קיימת במערכת עם ססמא אחרת'
+                    return jsonify({"success": False, "alert": f"{alertM}"})
             else:
-                user_id = db.get_user_id(email)[0]
+                # email is valid - creates new user
+                db.create_new_user(filled_name, filled_email, filled_password)
+                user_id = db.get_user_id(filled_email)[0]
+                db.create_new_project(user_id, "firstProject")
                 session['CURRENT_USER'] = user_id
                 return jsonify({"success": True})
+
         else:
-            alertM = "שם משתמש או סימא שגויים"
-        return jsonify({"success": "false", "alert": f"{alertM}"})
+            # filled_name is not in form = user filled the login form
+            if registered_user:
+                # email is found
+                if not registered_password:
+                    # password is not found
+                    alertM = "סיסמא שגויה"
+                    reason = "password"
+                else:
+                    # password and email is found = login
+                    user_id = db.get_user_id(filled_email)[0]
+                    session['CURRENT_USER'] = user_id
+                    return jsonify({"success": True})
+            else:
+                # email is not found
+                alertM = "משתמש לא קיים במערכת"
+                reason = "email"
+            return jsonify({"success": False, "alert": f"{alertM}", "reason": f"{reason}"})
     return render_template(
         'login.html',
         title='login page',
@@ -953,14 +984,13 @@ def allowed_file(filename):
 
 @application.route('/projectPage', methods=['POST', 'GET'])
 def projectPage():
-    current_project = 19
 
     user_id = session.get('CURRENT_USER')
-    session['CURRENT_PROJECT'] = current_project
+    session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))
 
     session['COLLECTION_PATH'] = "static/content/animations/"
     session['UPLOAD_FOLDER'] = "static/content/animations/images"
-    session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{current_project}/videos/'
+    session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{session.get("CURRENT_PROJECT")}/videos/'
 
     application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(

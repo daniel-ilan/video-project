@@ -78,10 +78,10 @@ def check_log_in(email: str, password: str):
     password = password.strip()
     exist_user = False
     match = False
-    query = f"SELECT COUNT (*) FROM users WHERE email= '{email}';"
+    query = f"SELECT * FROM users WHERE email='{email}';"
     if get_row(query) == 1:
         exist_user = True
-        query = f"SELECT * FROM users WHERE email= '{email}' AND password='{password}';"
+        query = f"SELECT * FROM users WHERE email='{email}' AND password='{password}';"
         if get_row(query) == 1:
             match = True
     return (exist_user, match)
