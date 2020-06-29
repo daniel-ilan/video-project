@@ -1206,7 +1206,7 @@ def create_new_collection(project_id: int):
     db.update_change_on_collectionYN(project_id, False)
     db.update_initial_theme(project_id, 0)
     if check == False:
-        db.delete_theme(last_theme)
+        db.delete_theme(initial_theme)
 
 
 def check_change_on_collectionYN():
