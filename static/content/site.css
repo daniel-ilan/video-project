@@ -161,7 +161,6 @@ svg {
     fill: none;
     margin-top: 5%;
     stroke: #282828;
-
 }
 
 .svgFill {
@@ -181,7 +180,7 @@ svg {
 
 .svgFillHover {
     fill: #00B6DE;
-    stroke: #282828;
+    /*stroke: #282828;*/
     -webkit-transition: fill 0.2s ease-out;
     -moz-transition: fill 0.2s ease-out;
     -o-transition: fill 0.2s ease-out;
