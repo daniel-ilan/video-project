@@ -18,7 +18,7 @@ def make_video(animations, video, path, video_file_name):
         to_clip = path + animation['name']
         start_time = animation['start_time']
         clip = VideoFileClip(to_clip)
-        masked_clip = clip.fx(vfx.mask_color, color=[0, 0, 0], thr=25, s=20)
+        masked_clip = clip.fx(vfx.mask_color, color=[0, 0, 0], thr=35, s=40)
         clips.append(masked_clip.set_start(start_time))
 
     video = CompositeVideoClip(clips)
