@@ -979,7 +979,7 @@ def allowed_file(filename):
 def projectPage():
 
     user_id = session.get('CURRENT_USER')
-    session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))
+    session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))[0]
 
     session['COLLECTION_PATH'] = "static/content/animations/"
     session['UPLOAD_FOLDER'] = "static/content/animations/images"

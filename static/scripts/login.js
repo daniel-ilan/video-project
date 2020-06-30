@@ -101,22 +101,22 @@ function getloginForm(){
   document.querySelector("#login").innerHTML = 
   `
   <div class="form-header-container">
-  <h1 id="header">משתמש קיים</h1>
+  <h1 id="header">ברוכים השבים</h1>
 
   <p id="submitMessagePlaceholder"></p>
 </div>
-<form class="col-10" id="userForm">
-  <div class="form-group email-group">
+<form class="col-10 pt-3" id="userForm">
+  <div class="form-group email-group pb-2">
       <label for="emailInput">כתובת מייל</label>
       <span class="iconify valid-icon-email hidden" data-icon="mdi:check"
       data-inline="true"></span>
       <input type="email" class="form-control" name="email" id="emailInput"
-          aria-describedby="emailHelp" placeholder="הכנס מייל" required>
+          aria-describedby="emailHelp" placeholder="לדוגמא, oneshot@gmail.com" required>
       <small id="emailHelp" class="form-text text-danger hidden">חובה למלא שדה זה בכתובת
           מייל תקינה</small>
   </div>
-  <div class="form-group password-group">
-      <label for="password">ססמא</label>
+  <div class="form-group password-group pb-4">
+      <label for="password">סיסמה</label>
 
       <span id="passwordVisability"><span class="iconify password-icon" 
           data-icon="mdi:eye-off-outline" data-inline="false"></span></span>
@@ -125,21 +125,23 @@ function getloginForm(){
           <span class="iconify valid-icon-password hidden" data-icon="mdi:check"
           data-inline="true"></span>
       <input type="password" name="password" class="form-control" id="password"
-          placeholder="ססמא" required>
+          placeholder="סיסמה" required>
       <small id="passwordHelp" class="form-text text-danger hidden">חובה למלא שדה
           זה</small>
   </div>
-  <button class="btn primaryBTN disabled btn-block" id="submitBtn" disabled>להתחבר
-      עכשיו</button>
-</form>
-<div class="align-self-center">
-  <p class="form-text-register">פעם ראשונה כאן?
-      <a data-toggle="tab" href="#register" role="tab" aria-controls="register">צור משתמש
+  <button class="btn primaryBTN disabled btn-block" id="submitBtn" disabled>התחברות
+      </button>
+      <div class="align-self-center new_account_herf_div">
+  <p class="form-text-register ">אין לך חשבון?
+      <a id="register_from_login" data-toggle="tab" href="#register" role="tab" aria-controls="register">להצטרפות
       </a>
   </p>
 </div>
+</form>
+
   `
 
+  $('#register_from_login').on("click", getregisterForm);
   const showPassword = document.querySelector("#passwordVisability");
   const hidePassword = document.querySelector("#passwordHidden");
   emailInput = document.querySelector("#emailInput");
@@ -171,37 +173,38 @@ function getloginForm(){
 }
 
 function getregisterForm(){
+  $('#register-tab').tab('show') // Select third tab
   document.querySelector("#login").innerHTML = '';
   document.querySelector("#register").innerHTML = 
   `
   <div class="form-header-container">
-  <h1 id="registerHeader">משתמש חדש</h1>
+  <h1 id="registerHeader">הרשמה</h1>
 
   <p id="submitMessagePlaceholder"></p>
 </div>
 <form class="col-10" id="userForm">
-  <div class="form-group name-group">
+  <div class="form-group name-group pb-2">
       <label for="nameInput">שם</label>
       <span class="iconify valid-icon-name hidden" data-icon="mdi:check"
       data-inline="true"></span>
       <input type="text" class="form-control" name="name" id="nameInput"
-          aria-describedby="nameHelp" placeholder="הכנס מייל" required>
+          aria-describedby="nameHelp" placeholder="לדוגמא, ישראל ישראלי" required>
       <small id="nameHelp" class="form-text text-danger hidden">חובה למלא שדה
           זה</small>
   </div>
-  <div class="form-group email-group">
+  <div class="form-group email-group pb-2">
       <label for="emailInput">כתובת מייל</label>
       <span class="iconify valid-icon-email hidden" data-icon="mdi:check"
       data-inline="true"></span>
       <input type="email" class="form-control" name="email" id="emailInput"
-          aria-describedby="emailHelp" placeholder="הכנס מייל" required>
+          aria-describedby="emailHelp" placeholder="לדוגמא, oneshot@gmail.com" required>
 
       <small id="emailHelp" class="form-text text-danger hidden">חובה למלא שדה זה
           בכתובת
           מייל תקינה</small>
   </div>
-  <div class="form-group password-group">
-      <label for="password">ססמא</label>      
+  <div class="form-group password-group pb-4">
+      <label for="password">סיסמה</label>
 
       <span id="passwordVisability"><span class="iconify password-icon" 
           data-icon="mdi:eye-off-outline" data-inline="false"></span></span>
@@ -210,13 +213,13 @@ function getregisterForm(){
           <span class="iconify valid-icon-password hidden" data-icon="mdi:check"
           data-inline="true"></span>
       <input type="password" name="password" class="form-control" id="password"
-          placeholder="ססמא" required>
+          placeholder="סיסמה" required>
 
       <small id="passwordHelp" class="form-text text-danger hidden">חובה למלא שדה
           זה</small>
   </div>
-  <button class="btn primaryBTN disabled btn-block" id="submitBtn" disabled>צור
-      משתמש</button>
+  <button class="btn primaryBTN disabled btn-block" id="submitBtn" disabled>התחלת עבודה
+      </button>
 </form>
   `
   const showPassword = document.querySelector("#passwordVisability");
