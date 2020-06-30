@@ -221,7 +221,7 @@ def update_video_name(video_id: str, new_name: str):
     video_id = int(video_id)
     new_name = new_name.strip()
     query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
-    print('e')
+    print('ed')
     update_query(query)
 
 
