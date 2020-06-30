@@ -13,7 +13,7 @@ label {
 body {
     background-color: #F9FAFB;
     font-family: 'Rubik', sans-serif;
-    margin-top: 25vh;
+    margin-top: 16vh;
 }
 
 .login-form-wrapper {
@@ -40,8 +40,7 @@ body {
 }
 
 #myTab{
-    border-bottom: 1px solid #6515DD;
-    background-color: #6515DD;
+    background-color: #F3EFFF;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
     /*height: 10%;*/
@@ -51,25 +50,44 @@ body {
 
 .custom-nav-item{
     padding: 0;
-
+    border-bottom: 3px solid #F3EFFF;
 }
 
 .nav-link{
-    color: #b2b2b2;
-    background-color: #6515DD;
-    border-top-right-radius: 1rem;
-    border-top-left-radius: 1rem;
+    color: gray;
+    /*color: #6515DD ;*/
+
+    /*background-color: rgba(101, 21, 221, 0.66);*/
+    /*border-top-right-radius: 1rem;*/
+    /*border-top-left-radius: 1rem;*/
 }
 
 .nav-link:hover{
-    color: white;
+    color: #6515DD;
 }
 .nav-link.active{
     color: white;
-    border-bottom: 3px solid white;
-    background-color: #6515DD;
+    /*background-color: #6515DD;*/
     font-weight: 500;
 }
+
+.custom-nav-item-active{
+    background-color: #6515DD;
+    border-bottom: 3px solid #461b7a;
+}
+
+.custom-nav-item:hover{
+    background-color: #E8DFFF !important;
+}
+
+.round_rignt{
+    border-top-right-radius: 1rem;
+}
+
+.round_left{
+    border-top-left-radius: 1rem;
+}
+
 
 .form-text-register{
     margin: 6% 0 0 0;

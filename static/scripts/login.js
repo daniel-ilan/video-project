@@ -17,7 +17,7 @@ $(document).ready(function() {
 
 
 
-function validate(input, help, icon) {
+function  validate(input, help, icon) {
   //invalid
   if (!input.checkValidity()) {
     input.classList.add("invalid");
@@ -170,6 +170,16 @@ function getloginForm(){
     const validIcon = document.querySelector(".valid-icon-password");
     validate(this, help, validIcon);
   });
+
+  passwordInput.addEventListener("keyup", function() {
+    const help = document.querySelector("#passwordHelp");
+    const validIcon = document.querySelector(".valid-icon-password");
+    validate(this, help, validIcon);
+  });
+
+  $("#login-tab").parents('li').addClass("custom-nav-item-active round_rignt")
+  $("#register-tab").parents('li').removeClass("custom-nav-item-active round_left")
+
 }
 
 function getregisterForm(){
@@ -259,4 +269,14 @@ function getregisterForm(){
     const validIcon = document.querySelector(".valid-icon-password");
     validate(this, help, validIcon);
   });
+
+  passwordInput.addEventListener("keyup", function() {
+    const help = document.querySelector("#passwordHelp");
+    const validIcon = document.querySelector(".valid-icon-password");
+    validate(this, help, validIcon);
+  });
+
+  $("#login-tab").parents('li').removeClass("custom-nav-item-active round_rignt");
+  $("#register-tab").parents('li').addClass("custom-nav-item-active round_left");
+
 }
