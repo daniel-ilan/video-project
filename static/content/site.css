@@ -1826,8 +1826,8 @@ h5.card-title{
 }
 
 .card:hover .card-img-top {
-    height:120%;
-    width:220%;
+    height: 80%;
+    width:100%;
 
     -webkit-transition: max-height 0.2s ease-out;
     -moz-transition: max-height 0.2s ease-out;

@@ -14,6 +14,7 @@ let controlBar;
 let playButton;
 let fullscreenBtn;
 let stopAnim;
+let clicksToPlay = 0;
 
 document.addEventListener("DOMContentLoaded", function(event) {
   getStartingControls();
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   fullscreenBtn.addEventListener("click", handleFullScreenButton, false);
 
   document.querySelector("#displayNumSlides").innerHTML =
-    "שקף " + animNum + " מתוך " + myFrames[1].length;
+    "שקף " + (animNum + 1) + " מתוך " + myFrames[1].length;
   if ("mediaDevices" in navigator && "getUserMedia" in navigator.mediaDevices) {
     console.log("Let's get this party started");
     loadRecorder();
@@ -48,7 +49,9 @@ function loadNextAnim(num) {
     autoplay: false,
     path: animPath,
     name: "large" + num,
-    rendererSettings: { id: "canvasElem" }
+    rendererSettings: {
+      id: "canvasElem"
+    }
   };
   animItem = lottie.loadAnimation(animData);
   openHiddenCanvas(animPath, num);
@@ -64,9 +67,12 @@ function openHiddenCanvas(animPath, num) {
     autoplay: false,
     path: animPath,
     name: "large" + num,
-    rendererSettings: { id: "canvasRecord" }
+    rendererSettings: {
+      id: "canvasRecord"
+    }
   };
   recordedAnimItem = lottie.loadAnimation(animData);
+
   // recordedAnimItem.addEventListener("DOMLoaded", function() {
   //   const recAnim = document.querySelector("#canvasRecord");
   // });
@@ -82,8 +88,7 @@ function createSmallSlide(num) {
   //check if there are more frames to play
   if (num >= myFrames[1].length) {
     //pass --> means no more "next slides"
-  }
-  else{
+  } else {
     const framesArea = document.querySelector("#framesArea");
     const source = myFrames[0] + myFrames[1][num][1];
     framesArea.innerHTML = `<div class="frame-container">
@@ -105,7 +110,7 @@ function createSmallSlide(num) {
         className: "animated_slideInRight"
       }
     };
-  
+
     smallAnimItem = lottie.loadAnimation(smallAnimData);
     smallAnimItem.addEventListener("DOMLoaded", function() {
       smallAnimItem.goToAndStop(
@@ -114,7 +119,6 @@ function createSmallSlide(num) {
       );
     });
   }
-  
 }
 
 function createMainSlide() {
@@ -132,22 +136,29 @@ function createMainSlide() {
  * @fires loadNextAnim 
  */
 function completed() {
+  createSmallSlide(animNum + 1);
+
   if (animNum + 1 < myFrames[1].length) {
-    stopCanvasRecording();
+    if (!isFrameEmpty) {
+      stopCanvasRecording();
+    }
+    
     stopAnim.disabled = false;
     animItem.destroy();
     recordedAnimItem.destroy();
-
 
     animNum++;
     // if (smallAnimItem != null){
     //     smallAnimItem.destroy();
     // }
     loadNextAnim(animNum);
-    document.querySelector("#displayNumSlides").innerHTML = "שקף " + animNum + " מתוך " + myFrames[1].length;
+    document.querySelector("#displayNumSlides").innerHTML =
+      "שקף " + (animNum + 1) + " מתוך " + myFrames[1].length;
   } else {
+    stopCanvasRecording();
     stopAnim.removeEventListener("click", clickerClicked);
     stopAnim.disabled = true;
+    smallAnimItem.destroy();
   }
 }
 
@@ -160,55 +171,89 @@ function completed() {
 let clicks = 0;
 let curFrame;
 let lastFrame;
+let framseToPlay = 0;
+
 function clickerClicked() {
   /**
-     * todo: change playSegments to play the frames according to each animation (list is not working I am
-     *  thinking of doing a while loop with a different variable for each animation so:
-     *  while (var < animationsClicks){play until next click - still all the timing between clicks needs to be equal}
-     *
-     */
+   * todo: change playSegments to play the frames according to each animation (list is not working I am
+   *  thinking of doing a while loop with a different variable for each animation so:
+   *  while (var < animationsClicks){play until next click - still all the timing between clicks needs to be equal}
+   *
+   */
+  const frameKind = myFrames[1][animNum][1].split("_")[0];
+  totalClicks = myFrames[1][animNum][6];
+  if (frameKind === "empty") {
+    isFrameEmpty = true;
+  } else {
+    isFrameEmpty = false;
+  }
 
-  if (clicks === 0) {
-    stopAnim.disabled = true;
-    // when the animation enters the screen
-    // start recordeing
-    recordAnimation(animNum);
-    // gets the last frame of the animation to a global variable
-    lastFrame = animItem.totalFrames;
-    //visible animation
-    animItem.playSegments(
-      [animItem.firstFrame + animItem.currentFrame, lastFrame / 2],
-      true
-    );
-    //invisible animation: this one is being recorded
-    recordedAnimItem.playSegments(
-      [animItem.firstFrame + animItem.currentFrame, lastFrame / 2],
-      true
-    );
+  if (clicks < totalClicks - 1) {
     const enableNextClick = function() {
       stopAnim.disabled = false;
       animItem.removeEventListener("complete", enableNextClick);
     };
-    animItem.addEventListener("complete", enableNextClick);
-    curFrame = animItem.currentFrame;
-    // checks if frame is empty - determins in @function recordAnimation 
-    if (isFrameEmpty == false) {
-          //gets the name of the current animation + the time in the main recorded timeline and appends to recordedAnimations
-      const recordingTime = player.record().getDuration();
-      recordedAnimations.push({
-        time: recordingTime,
-        canvasName: animItem.name + ".webm"
-      });
-    }
 
-    clicks++;
-    createSmallSlide(animNum + 1);
-  } else if (clicks === 1) {
+    if (!isFrameEmpty) {
+      if (clicks === 0) {
+        recordAnimation(animNum);
+        lastFrame = animItem.totalFrames;
+        framseToPlay = lastFrame / totalClicks;
+        //gets the name of the current animation + the time in the main recorded timeline and appends to recordedAnimations
+        const recordingTime = player.record().getDuration();
+        recordedAnimations.push({
+          time: recordingTime,
+          canvasName: animItem.name + ".webm"
+        });
+      }
+      animItem.playSegments(
+        [
+          animItem.firstFrame + animItem.currentFrame,
+          framseToPlay * (clicksToPlay + 1)
+        ],
+        true
+      );
+      recordedAnimItem.playSegments(
+        [
+          animItem.firstFrame + animItem.currentFrame,
+          framseToPlay * (clicksToPlay + 1)
+        ],
+        true
+      );
+      stopAnim.disabled = true;
+
+      animItem.addEventListener("complete", enableNextClick);
+      curFrame = animItem.currentFrame;
+      clicks++;
+      clicksToPlay++;
+    } 
+  } else if (clicks >= totalClicks - 1 && !isFrameEmpty) {
+    // when the animation enters the screen
+    // start recordeing
+    // gets the last frame of the animation to global variable
+    //visible animation
+    //invisible animation: this one is being recorded
+    // checks if frame is empty - determins in @function recordAnimation
     stopAnim.disabled = true;
-    animItem.playSegments([lastFrame / 2, lastFrame], true);
-    recordedAnimItem.playSegments([lastFrame / 2, lastFrame], true);
-    clicks--;
+    animItem.playSegments(
+      [animItem.firstFrame + animItem.currentFrame, lastFrame],
+      true
+    );
+    recordedAnimItem.playSegments(
+      [animItem.firstFrame + animItem.currentFrame, lastFrame],
+      true
+    );
+    clicks = 0;
+    clicksToPlay = 0;
+    framseToPlay = 0;
     animItem.addEventListener("complete", completed, false);
+  }
+  else if (isFrameEmpty) {
+    stopAnim.disabled = true;
+    clicks = 0;
+    clicksToPlay = 0;
+    framseToPlay = 0;
+    completed();
   }
 }
 
@@ -221,13 +266,12 @@ function clickerClicked() {
  */
 function recordAnimation(num) {
   //line below gets the kind of the current animation by spliting the string '_'
-  const frameKind = myFrames[1][animNum][1].split('_')[0]
-  if(frameKind === 'empty'){
+  const frameKind = myFrames[1][animNum][1].split("_")[0];
+  if (frameKind === "empty") {
     //pass
     isFrameEmpty = true;
-    console.log("Frame is empty - not recording")
-  }
-  else{
+    console.log("Frame is empty - not recording");
+  } else {
     isFrameEmpty = false;
     const theCanvasElementToRecord = document.querySelector("#canvasRecord");
     recorder = new RecordRTC(theCanvasElementToRecord, {
@@ -241,15 +285,12 @@ function recordAnimation(num) {
     });
     recorder.startRecording();
   }
-
-
 }
 
 /**
  * need to build the controls in html according to classes vjs-control vjs-play-button vjs-record-button.... etc.
  */
 function loadRecorder() {
-
   let options = {
     // video.js options
     controls: false,
@@ -317,7 +358,7 @@ function loadRecorder() {
   });
   player.on("deviceReady", function() {
     playButton.disabled = false;
-    playButton.classList.replace("btn-dark", "btn-danger")
+    playButton.classList.replace("btn-dark", "btn-danger");
   });
   player.on("startConvert", function() {
     console.log("started converting!");
@@ -342,7 +383,7 @@ function stopCanvasRecording() {
         recorder.getState() === "stopped"
       ) {
         getSeekableBlob(recorder.getBlob(), function(seekableBlob) {
-          recordedAnimations[animNum - 1].blob = seekableBlob;
+          recordedAnimations[recordedAnimations.length - 1].blob = seekableBlob;
           console.log("finishied!: " + seekableBlob);
         });
       }
@@ -368,11 +409,17 @@ function upload(blob) {
   $("#uploadModal").modal("show");
   var serverUrl = "/upload";
   var formData = new FormData();
-  const blobAttrs = { name: blob.name, start_time: "main" };
+  const blobAttrs = {
+    name: blob.name,
+    start_time: "main"
+  };
   formData.append("files[]", blob, JSON.stringify(blobAttrs));
 
   recordedAnimations.forEach(function(animation) {
-    const attrs = { name: animation.canvasName, start_time: animation.time };
+    const attrs = {
+      name: animation.canvasName,
+      start_time: animation.time
+    };
     formData.append("files[]", animation.blob, JSON.stringify(attrs));
   });
 

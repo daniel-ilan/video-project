@@ -4,7 +4,7 @@ Routes and views for the flask application.
 
 import json
 import os
-import shutil
+from shutil import rmtree
 import time
 from datetime import datetime
 
@@ -203,7 +203,8 @@ def send_email():
 
 @application.route('/filming')
 def home():
-    frames_props = get_frames_from_db(70)
+    video = int(session.get('CURRENT_VIDEO'))
+    frames_props = get_frames_from_db(video)
 
     """Renders the home page."""
     return render_template(
@@ -649,11 +650,15 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
         new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
         new_path = session.get('WORKING_PATH') + new_name
         exporters.export_lottie(an, new_path)
-
         if kind_of_update_event == "submitChange":
+            if len(list_text['listContent']) > 0:
+                clicks = len(list_text['listContent']) + 2
+            else:
+                clicks = None
             os.remove(path)
             # update frame props on db
-            db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], notes)
+            # frame_id, lottie_url, selected_kind, selected_anim, clicks=None, notes=None
+            db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], clicks=clicks, notes=notes)
 
         else:
             os.remove(session.get('WORKING_PATH') + frame_prop[3])
@@ -783,7 +788,7 @@ def get_frames_from_db(video_id: int):
     frames_list = []
     for frame in frames_array:
         # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[order]
-        frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5]])
+        frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5], frame[6]])
     myArray = [frames_arrayPath, frames_list]
     return myArray
 
@@ -802,10 +807,11 @@ def change_text(an, text, color, alignment=1):
 def change_list_text(an, text: list, color, alignment=1):
     """
     :param an: animation object
-    :param text: content and num of bullet
+    :param text: content and num of bullets
     :param color: the text color
     :return: an: animation object
     """
+
     layers = an.layers
     correct_color = list(colors.to_rgba(color, float) + (1,))
     text_layers = [layer for layer in layers if layer.name.startswith(".listText")]  # only layers with text
@@ -1006,7 +1012,7 @@ def onLoad():
             if event_kind == "more_delete":
                 video_id = request.form["video_id"]
                 db.delete_video(video_id)
-                shutil.rmtree(session.get('WORKING_PATH_IMG') + str(video_id))
+                rmtree(session.get('WORKING_PATH_IMG') + str(video_id))
             videos_props = convert_row_to_list_include_childrens(
                 db.get_videos_by_project(session.get('CURRENT_PROJECT')))
             # check if it's needed to add Alert about the brand

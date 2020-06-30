@@ -221,6 +221,7 @@ def update_video_name(video_id: str, new_name: str):
     video_id = int(video_id)
     new_name = new_name.strip()
     query = f"UPDATE videos SET video_name='{new_name}' WHERE video_id={video_id};"
+    print('e')
     update_query(query)
 
 
@@ -244,7 +245,7 @@ def create_new_frame(video_id: str, url: str, num_frames: int):
 def get_all_frames(video_id: str):
     if isinstance(video_id, str):
         video_id = int(video_id)
-    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[frame_order] FROM frames WHERE video_id={video_id} ORDER BY frame_order ASC;"
+    query = f"SELECT [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[frame_order],[clicks] FROM frames WHERE video_id={video_id} ORDER BY frame_order ASC;"
     return select_all_query(query)
 
 
@@ -265,10 +266,20 @@ def get_frame_kind_by_id(id: str):
     return select_one_query(query)
 
 
-def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str, notes=None):
+def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selected_anim: str, clicks=None, notes=None):
+
+    if selected_kind == 'empty':
+        num_clicks = 1
+    elif selected_kind == 'list':
+        if clicks is not None:
+            num_clicks = clicks
+        else:
+            num_clicks = 3
+    else:
+        num_clicks = 2
     frame_id = int(frame_id)
     selected_anim = int(selected_anim)
-    query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}', frame_text= '{notes}' WHERE frame_id={frame_id};"
+    query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}', frame_text= '{notes}',clicks={num_clicks} WHERE frame_id={frame_id};"
     update_query(query)
 
 
