@@ -221,7 +221,7 @@ svg {
 
 /* --- slideNav ----*/
 .emptyNav {
-    height: 1vw;
+    height: 2vw;
 }
 
 
@@ -1643,7 +1643,7 @@ hr.solid {
 #collection_animation_area{
     overflow-y: auto;
     overflow-x: hidden;
-    height: 42.5vh;
+    /*height: 42.5vh;*/
     width: 84vw;
 }
 
@@ -1655,8 +1655,8 @@ hr.solid {
 /*                          -------------                  videos Page         -------------                  */
 
 #videos_length_page{
-    font-weight: 400;
-    font-size: 1vw;
+    /*font-weight: 400;*/
+    font-size: 0.7vw;
     color: #6515DD;
 }
 
@@ -2023,4 +2023,29 @@ img.img-thumbnail.rounded-circle{
     padding-right: 2vh;
     bottom: 2%;
     position: absolute;
+}
+
+.breadcrumb{
+    background-color:  transparent;
+}
+
+.breadcrumb a{
+    color:  #BDBDBD;
+    font-size: 0.84vw;
+    font-weight: normal;
+}
+
+.breadcrumb .breadcrumb-item::before{
+    color:  #BDBDBD;
+}
+
+#current_page_breadcrumb{
+    color: #2F1359;
+    font-size: 0.84vw;
+    font-weight: 500;
+}
+
+#current_page_breadcrumb_a:hover{
+    text-decoration-line: none;
+    cursor: default;
 }
