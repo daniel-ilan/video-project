@@ -11,7 +11,7 @@ $(document).ready(function () {
         loadPage("link_videos");
 
     }
-    $(".sidebarCol li a").on('click', function () {
+    $(".sidebarCol li a").on('click', function (event) {
         let id = event.currentTarget.id;
         loadPage(id)
     });
@@ -33,11 +33,14 @@ function roundItemsBorder() {
 
 
 function loadPage(event_kind) {
-    $.ajax({
-        method: 'POST',
-        url: '/onLoad',
-        data: {event_kind: event_kind}
-    }).done(loadPageData);
+   if (event_kind != "link_doc")
+   {
+       $.ajax({
+           method: 'POST',
+           url: '/onLoad',
+           data: {event_kind: event_kind}
+       }).done(loadPageData);
+   }
 }
 
 
@@ -47,13 +50,16 @@ function loadPageData(data) {
         changeNavItem(data.event_kind)
         buildCollection(data)
         buildPalette(data.colors)
+        build_project_area_sideNav(data.project_props)
     } else if (data.event_kind == "link_videos") {
         buildVideoPage(data)
         changeNavItem(data.event_kind)
+        build_project_area_sideNav(data.project_props)
     }
     $('#create_new_vid').on("click", openVideo_Handler)
 
 }
+
 
 function buildCollection(data) {
     let collection_nav = [];
@@ -810,4 +816,38 @@ function loadFile(event) {
     $("#modal_main_btn").off('click', disabledFunc);
     $("#modal_main_btn").on('click', openVideo_Handler);
     $("#modal_main_btn").removeClass("disabled");
+}
+
+
+function breadCrumbs() {
+
+}
+
+function build_project_area_sideNav(data) {
+    let className = ""
+    if (data[0][2] == "בהכנה") {
+        className = "status_working";
+
+    } else if (data[0][2] == "בצילום") {
+        className = "status_recording"
+    } else if (data[0][2] == "הסתיים") {
+        className = "status_done"
+    }
+    // project_props = [project_id],[project_name],[status],[last_update],[image]
+    let div = `<img src="${data[0][4]}" class="img-thumbnail " style="width: 100px; height:100px" alt="">
+        <p>${data[0][1]}</p>
+      <small class="text-muted status ${className}">${data[0][2]}</small>
+
+    <button id="create_new_vid" class="primaryBTN mt-4">+ סרטון חדש</button>`;
+
+$('#project_area_sideNav').html(div);
+let user_div =`<img src="${data[1][1]}" class="img-thumbnail rounded-circle" style="width: 2.2vw;height:2.2vw;" alt="">
+        <p>${data[1][0]}</p>
+
+<!--<svg width="10" height="6" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--<path d="M8.81084 0.815816C8.71522 0.728061 8.56836 0.728061 8.47275 0.815816L5 4.00313L1.52725 0.815816C1.43164 0.728061 1.28478 0.728061 1.18916 0.815816L0.830955 1.14458C0.779366 1.19193 0.75 1.25874 0.75 1.32877C0.75 1.39879 0.779366 1.4656 0.830955 1.51295L4.83095 5.18418C4.92657 5.27194 5.07343 5.27194 5.16905 5.18418L9.16905 1.51295C9.22063 1.4656 9.25 1.39879 9.25 1.32877C9.25 1.25874 9.22063 1.19193 9.16905 1.14458L8.81084 0.815816Z" fill="#BDBDBD" stroke="#BDBDBD" stroke-width="0.5" stroke-linejoin="round"/>-->
+<!--</svg>-->
+`;
+$('#user_area_sidenav').html(user_div);
+
 }

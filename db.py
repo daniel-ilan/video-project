@@ -108,8 +108,9 @@ def get_last_project_id(user_id: int):
 
 
 def get_project_info(user_id: str):
-    user_id = int(user_id.strip())
-    query = f"SELECT * FROM projects WHERE user_id={user_id};"
+    if isinstance(user_id, str):
+        user_id = int(user_id.strip())
+    query = f"SELECT [project_id],[project_name],[status],[last_update],[image] FROM projects WHERE user_id={user_id};"
     return select_all_query(query)
 
 
@@ -566,3 +567,10 @@ def delete_animation(animation_id: int):
         animation_id = int(animation_id)
     query = f"DELETE FROM animations WHERE animation_id =({animation_id});"
     update_query(query)
+
+
+def get_user_img_name(user_id: str):
+    if isinstance(user_id, str):
+        user_id = int(user_id)
+    query = f"SELECT [person_name],[image] FROM users WHERE user_id= {user_id};"
+    return select_one_query(query)

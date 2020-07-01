@@ -1002,12 +1002,18 @@ def projectPage():
 def onLoad():
     if request.method == 'POST':
         event_kind = request.form["event_kind"]
+        # project_props = [project_id],[project_name],[status],[last_update],[image]
+        project_props = [convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER')))[0]]
+        project_props[0][4] = f'../static/db/users/{session.get("CURRENT_USER")}/{session.get("CURRENT_PROJECT")}/' + project_props[0][4]
+       #[person_name],[image]
+        project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+        project_props[1][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[1][1]
         if event_kind == 'pageLoad' or event_kind == "link_brand":
             collections_props, animations_props, collection_id, collection_length = collectionChange()
             colors = getPalette()
             return jsonify(collections_props=collections_props, animations_props=animations_props,
                            collection_id=collection_id, collection_length=collection_length,
-                           selected_collection_id=collection_id, event_kind=event_kind, colors=colors)
+                           selected_collection_id=collection_id, event_kind=event_kind, colors=colors, project_props =project_props)
         elif event_kind == "link_videos" or event_kind == "more_delete":
             if event_kind == "more_delete":
                 video_id = request.form["video_id"]
@@ -1023,7 +1029,7 @@ def onLoad():
                 changePaletteYN = True
 
             return jsonify(event_kind=event_kind, videos_props=videos_props, showAlert=changePaletteYN,
-                           video_src=session.get('WORKING_PATH_IMG'))
+                           video_src=session.get('WORKING_PATH_IMG'), project_props =project_props)
 
 
 def convert_row_to_list_include_childrens(data):

@@ -144,7 +144,7 @@ svg {
 
 .downNavUI {
     border-top-right-radius: 1.5vw 1.5vw;
-
+    height: 6vh;
 }
 
 .activeNav {
@@ -508,6 +508,7 @@ svg {
     border-radius: 0.75rem;
     font-weight: 500;
     font-size: 1rem;
+
     line-height: 19px;
     align-items: center;
     text-align: center;
@@ -540,6 +541,11 @@ svg {
     color: white !important;
     border-color: #BDBDBD !important;
 }
+
+.disabled-nav-item , .disabled-nav-item:hover > svg , .disabled-nav-item:hover > a{
+   cursor: not-allowed !important;
+}
+
 
 .secondaryBtn {
     border: solid 0.125rem #6515DD;
@@ -1972,4 +1978,49 @@ div.card-group{
 .coverImg{
     width: 14vw;
     height: 26vh;
+}
+
+/* --- sideNAV project View --*/
+#project_area_sideNav{
+    text-align: center;
+}
+
+
+#project_area_sideNav > small {
+    display: block;
+    width: max-content;
+    margin: 0 auto;
+}
+
+#project_area_sideNav > p {
+    margin-top: 1rem;
+    margin-bottom: .75rem;
+    font-weight: 500;
+    padding: 0 1vw;
+    line-height: normal;
+}
+
+#project_area_sideNav > button {
+    padding: 0rem 1vw;
+    font-size: 0.8vw;
+}
+
+img.img-thumbnail.rounded-circle{
+    padding: 0.125rem;
+    margin-left: 0.5vw;
+    border-color: whitesmoke;
+}
+
+#user_area_sidenav > p{
+    margin: auto 0;
+    font-weight: 400;
+    line-height: normal;
+    height: auto;
+    font-size: 0.9vw;
+}
+
+#user_area_sidenav{
+    padding-right: 2vh;
+    bottom: 2%;
+    position: absolute;
 }
