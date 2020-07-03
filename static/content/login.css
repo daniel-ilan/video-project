@@ -13,19 +13,15 @@ label {
 body {
     background-color: #F9FAFB;
     font-family: 'Rubik', sans-serif;
-    margin-top: 16vh;
+    height: 100vh;
 }
 
 .login-form-wrapper {
     box-shadow: 0px 2.67431px 5.06354px rgba(8, 5, 80, 0.03), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0190142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.019);
     border-radius: 1rem;
-    border: 2px solid #F9FAFB;
     transition: border 0.2s ease-out;
-    border-right: 2px white solid;
     background: white;
     padding-bottom: 8%;
-    height: 100%;
-    min-height: 64vh;
 }
 
 
@@ -43,23 +39,15 @@ body {
     background-color: #F3EFFF;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
-    /*height: 10%;*/
-    align-items: center;
-
+    overflow: hidden;
 }
 
 .custom-nav-item{
     padding: 0;
-    border-bottom: 3px solid #F3EFFF;
 }
 
 .nav-link{
     color: gray;
-    /*color: #6515DD ;*/
-
-    /*background-color: rgba(101, 21, 221, 0.66);*/
-    /*border-top-right-radius: 1rem;*/
-    /*border-top-left-radius: 1rem;*/
 }
 
 .nav-link:hover{
@@ -67,20 +55,16 @@ body {
 }
 .nav-link.active{
     color: white;
-    /*background-color: #6515DD;*/
     font-weight: 500;
-}
-
-.custom-nav-item-active{
     background-color: #6515DD;
-    border-bottom: 3px solid #461b7a;
+    border-bottom: 3px solid white;
 }
 
 .custom-nav-item:hover{
     background-color: #E8DFFF !important;
 }
 
-.round_rignt{
+.round_right{
     border-top-right-radius: 1rem;
 }
 
@@ -169,11 +153,6 @@ body {
 
 .valid-icon {
     color: green;
-}
-
-#userForm{
-    padding-left: 0;
-    padding-right: 0;
 }
 
 .new_account_herf_div{

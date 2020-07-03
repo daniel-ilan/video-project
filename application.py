@@ -31,29 +31,28 @@ mail = Mail(application)
 
 
 def correct_text(sentence):
+    from bidi import algorithm
     """
-    Formatting Hebrew and English text so it displays right
-    on the animation
-    todo: no support for combined english and Hebrew && no support for multiple english words
     :param sentence: type str
     :return: str
     """
-
-    if " " in sentence:
-        sentence = sentence.split(" ")
-        for word in sentence:
-            if ord(word[0]) >= 1424 and ord(word[0]) <= 1514:
-                index = sentence.index(word)
-                sentence[index] = word[::-1]
-            else:
-                pass
-        sentence.reverse()
-        return ' '.join(sentence)
-    else:
-        if ord(sentence[1]) >= 1424 and ord(sentence[1]) <= 1514:
-            return sentence[::-1]
-        else:
-            return sentence
+    a = algorithm.get_display(sentence)
+    return a
+    # if " " in sentence:
+    #     sentence = sentence.strip().split(" ")
+    #     for word in sentence:
+    #         if ord(word[0]) >= 1424 and ord(word[0]) <= 1514:
+    #             index = sentence.index(word)
+    #             sentence[index] = word[::-1]
+    #         else:
+    #             pass
+    #     sentence.reverse()
+    #     return ' '.join(sentence)
+    # else:
+    #     if ord(sentence[1]) >= 1424 and ord(sentence[1]) <= 1514:
+    #         return sentence[::-1]
+    #     else:
+    #         return sentence
 
 
 def readable(path):
@@ -118,24 +117,6 @@ def get_anim_props(path, image_path=""):
                 text_content = layer.data.data.keyframes[0].start.text
                 anim_props['listItem']['text']['content'].append(correct_text(text_content))
 
-
-        ### This code is for individual layer colors we are doing only 3 colors
-        # elif layer.name.find(".primaryColorList") != -1:
-        #     primary_layer_num = int(layer.name[-1])
-        #     if primary_layer_num == 1:
-        #         color = colors.to_hex(layer.find('Fill 1').color.value.components)
-        #         prim_opacity = layer.find('Fill 1').opacity.value
-        #         color_dict = {'primary': {'color': color, 'opacity': prim_opacity}}
-        #         anim_props['listItem'].update(color_dict)
-        #
-        # elif layer.name.find(".baseColorList") != -1:
-        #     secondary_layer_num = int(layer.name[-1])
-        #     if secondary_layer_num == 1:
-        #         color = colors.to_hex(layer.find('Fill 1').color.value.components)
-        #         prim_opacity = layer.find('Fill 1').opacity.value
-        #         color_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
-        #         anim_props['listItem'].update(color_dict)
-
         elif layer.name == ".empty":
             empty_dict = {'empty': 'empty'}
             anim_props.update(empty_dict)
@@ -143,9 +124,11 @@ def get_anim_props(path, image_path=""):
             text_color = layer.data.data.keyframes[0].start.color
             text_content = layer.data.data.keyframes[0].start.text
             text_alignment = layer.data.data.keyframes[0].start.justify.value
+            font_size = layer.data.data.keyframes[0].start.font_size
             text_dict = {'color': colors.to_hex(list(text_color[0:3])),
                          'content': correct_text(text_content),
-                         'alignment': text_alignment}
+                         'alignment': text_alignment,
+                         'font_size': font_size}
             anim_props['text'] = text_dict
     return anim_props
 
@@ -526,7 +509,7 @@ def frame_change():
             anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
                                            "change_mini_lottie")
 
-        color_palettes = db.get_colors_by_palette("1")
+        color_palettes = getPalette()
         color_palettes_array = []
         for color in color_palettes:
             color_palettes_array.append([color[1], color[0]])
@@ -575,9 +558,9 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     list_text = {'listItem_color': "",
                  'listItemalignment': "",
                  'listContent': []}
-    list_color = {}
     image = False
     notes = ""
+    kind = file_name.split("_")[0]
 
     if kind_of_update_event == "submitChange" or kind_of_update_event == 'create brand':
         for item in data:
@@ -593,6 +576,8 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text.update({"textcontent": item[1]})
             elif item[0] == "text_color":
                 text.update({"textcolor": item[1]})
+            elif item[0] == "textfont_size":
+                text.update({"textfont_size": item[1]})
             elif item[0] == "side_note":
                 notes = item[1]
             elif item[0] == "f":
@@ -627,15 +612,16 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text.update({"textcontent": data[item]['content']})
                 text.update({"textcolor": data[item]['color']})
                 text.update({"textalignment": data[item]['alignment']})
+                text.update({"textfont_size": data[item]['font_size']})
 
     if len(text) > 0:
-        an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"])
+        an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"], text["textfont_size"])
     if len(color) > 0:
         an = change_color(an, color, 100)
     if image is True:
         an = save_image(data, an)
     if len(list_text['listContent']) > 0:
-        an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"])
+        an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"], text["textfont_size"])
 
     if kind_of_update_event == "create brand":
         os.remove(path)
@@ -675,18 +661,39 @@ def save_image(data, an):
         return redirect(request.url)
 
     if file and allowed_file(file.filename):
+        import PIL
+        from PIL import Image
         filename = secure_filename(file.filename)
+        background_path = 'static/content/animations/images/image_placeholder.png'
         location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-        file.save(location)
+        location = location.split(".")[0] + ".png"
+
+
+        max_width = int(an.assets[0].width)
+        max_height = int(an.assets[0].height)
+        img = Image.open(file).convert("RGBA")
+        # bg = Image.open(background_path)
+
+        final_img = Image.new('RGBA', (max_width, max_height), (0, 0, 0, 0))
+
+        wpercent = (max_width / float(img.size[0]))
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        img = img.resize((max_width, hsize), PIL.Image.ANTIALIAS)
+
+        final_img.paste(img, ((final_img.width - img.width) // 2, (final_img.height - img.height) // 2), mask=img)
+
+
+        # location = location
+        final_img.save(location)
 
         # convert image to lottie
+        # an.assets[0].height = hsize
         image = objects.assets.Image().load(location)
         image_data = image.embedded(location).image
         an.assets[0].image = image_data
 
         # remove from os
         os.remove(location)
-
         return an
 
 
@@ -742,7 +749,7 @@ def add_frame():
     db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
-def copy_animations(kind, new_path, old_path=''):
+def copy_animations(kind, new_path):
     old_path = session.get('COLLECTION_PATH')
     kind_event = ""
     if kind == 'empty new project':
@@ -793,10 +800,11 @@ def get_frames_from_db(video_id: int):
     return myArray
 
 
-def change_text(an, text, color, alignment=1):
+def change_text(an, text, color, alignment, font_size):
     anim_text = correct_text(text)
-
     correct_color = list(colors.to_rgba(color, float) + (1,))
+    # an.find('.myText').data.data.keyframes[0].start = objects.text.TextDocument(anim_text, font_size, correct_color)
+    an.find('.myText').data.data.keyframes[0].start.font_size = float(font_size)
     an.find('.myText').data.data.keyframes[0].start.color = correct_color[0:3]
     an.find('.myText').data.data.keyframes[0].start.text = anim_text
     an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
@@ -804,7 +812,7 @@ def change_text(an, text, color, alignment=1):
     return an
 
 
-def change_list_text(an, text: list, color, alignment=1):
+def change_list_text(an, text: list, color, alignment, font_size):
     """
     :param an: animation object
     :param text: content and num of bullets
@@ -839,6 +847,7 @@ def change_list_text(an, text: list, color, alignment=1):
 
                 if layer.name == f'.listText_{text_item[1]}':
                     anim_text = correct_text(text_item[0])
+                    layer.data.data.keyframes[0].start.font_size = float(font_size)
                     layer.data.data.keyframes[0].start.color = correct_color[0:3]
                     layer.data.data.keyframes[0].start.text = anim_text
                     layer.data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
@@ -959,20 +968,22 @@ def change_color(an, all_colors, opacity=1):
 
     return an
 
-
-def change_list_color(an, color, outline_color, name, opacity):
-    correct_color = colors.to_rgba(color, float)
-    correct_outline_color = colors.to_rgba(outline_color, float)
-
-    layers = an.layers
-    for layer in layers:
-        if layer.name.endswith(f"{name}") and layer.name.startswith('.primaryColor'):
-            layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
-            layer.find('Fill 1').opacity.value = float(opacity)
-        elif layer.name.endswith(f"{name}") and layer.name.startswith('.baseColor'):
-            layer.find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
-
-    return an
+"""
+check if we can delete
+"""
+# def change_list_color(an, color, outline_color, name, opacity):
+#     correct_color = colors.to_rgba(color, float)
+#     correct_outline_color = colors.to_rgba(outline_color, float)
+#
+#     layers = an.layers
+#     for layer in layers:
+#         if layer.name.endswith(f"{name}") and layer.name.startswith('.primaryColor'):
+#             layer.find('Fill 1').color.value.components = list(correct_color[0:3] + (1,))
+#             layer.find('Fill 1').opacity.value = float(opacity)
+#         elif layer.name.endswith(f"{name}") and layer.name.startswith('.baseColor'):
+#             layer.find('Fill 1').color.value.components = list(correct_outline_color[0:3] + (1,))
+#
+#     return an
 
 
 def allowed_file(filename):
@@ -1249,7 +1260,7 @@ def create_new_collection(project_id: int):
             counter += 1
         else:
             # add empty to the collection without a copy
-            db.create_new_a_t_relation(1,new_theme)
+            db.create_new_a_t_relation(1, new_theme)
 
     # restart
     db.update_change_on_collectionYN(project_id, False)

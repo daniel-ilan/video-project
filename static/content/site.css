@@ -487,7 +487,7 @@ svg {
 
 
 .text-form {
-    width: 60%;
+    width: fit-content;
     align-content: space-around;
 }
 
@@ -899,6 +899,17 @@ select:focus {
     border-radius: 1rem;
     z-index: 1;
     top: 2vh;
+
+}
+
+.page-spinner-wrapper{
+    width: 90%;
+    height: 85%;
+    background-color: #ececec;
+    position: fixed;
+    border-radius: 1rem;
+    z-index: 1;
+    left: 0%;
 }
 
 .name-of-color {
