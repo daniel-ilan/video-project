@@ -439,6 +439,7 @@ def frame_change():
     path = frames_props[0]
     general_frame = []
     frame_text = ""
+    project_props = []
 
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -451,6 +452,10 @@ def frame_change():
             current_frame = frames_props[1][0]
             kind = current_frame[3]
             frame_text = current_frame[4]
+            project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+            project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+            project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+            project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
         elif event_kind == "delete_frame":
             current_frame = delete_frame(frame_id)
@@ -555,7 +560,7 @@ def frame_change():
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
-                       frame_text=frame_text)
+                       frame_text=frame_text, project_props =project_props)
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):

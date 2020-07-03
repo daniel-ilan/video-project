@@ -2027,6 +2027,8 @@ img.img-thumbnail.rounded-circle{
 
 .breadcrumb{
     background-color:  transparent;
+    padding-right: 0;
+
 }
 
 .breadcrumb a{
@@ -2043,6 +2045,8 @@ img.img-thumbnail.rounded-circle{
     color: #2F1359;
     font-size: 0.84vw;
     font-weight: 500;
+    display: inline-block;
+    padding-right: 0.2vw;
 }
 
 #current_page_breadcrumb_a:hover{
