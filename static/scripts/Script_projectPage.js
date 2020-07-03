@@ -11,7 +11,7 @@ $(document).ready(function () {
         loadPage("link_videos");
 
     }
-    $(".sidebarCol li a").on('click', function () {
+    $(".sidebarCol li a").on('click', function (event) {
         let id = event.currentTarget.id;
         loadPage(id)
     });
@@ -33,27 +33,32 @@ function roundItemsBorder() {
 
 
 function loadPage(event_kind) {
-    $.ajax({
-        method: 'POST',
-        url: '/onLoad',
-        data: {event_kind: event_kind}
-    }).done(loadPageData);
+    if (event_kind != "link_doc") {
+        $.ajax({
+            method: 'POST',
+            url: '/onLoad',
+            data: {event_kind: event_kind}
+        }).done(loadPageData);
+    }
 }
 
 
 function loadPageData(data) {
     if (data.event_kind == "pageLoad" || data.event_kind == "link_brand") {
-        buildBrandPage(data)
+        build_project_area_sideNav(data.project_props)
         changeNavItem(data.event_kind)
+        buildBrandPage(data)
         buildCollection(data)
         buildPalette(data.colors)
     } else if (data.event_kind == "link_videos") {
-        buildVideoPage(data)
+        build_project_area_sideNav(data.project_props)
         changeNavItem(data.event_kind)
+        buildVideoPage(data)
     }
     $('#create_new_vid').on("click", openVideo_Handler)
 
 }
+
 
 function buildCollection(data) {
     let collection_nav = [];
@@ -352,8 +357,8 @@ function modael_data(data) {
 function buildBrandPage() {
     const data = `
        <div class="row h-5 container-fluid mr-4 pt-2">
-        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">מותג</h1>
-    </div>
+  ${breadCrumbs()}
+      </div>
    <div id="brandPageContainer" class="container-fluid mr-4" >
         <div class="h-60 pt-2">
 
@@ -452,6 +457,10 @@ function buildBrandPage() {
     $('#containerForData').html(data);
     $("#chooseFromReadyPalette").on('click', open_modal_handler);
     $('[data-toggle="tooltip"]').tooltip();
+    $('ol .breadcrumb').tooltip();
+
+
+
 }
 
 function buildVideoPage(data) {
@@ -577,7 +586,7 @@ function buildVideoPage(data) {
 
     const initial = `
        <div class="row h-5 container-fluid mr-4 pt-2">
-        <h1 id="pageTitleH" class="mr-auto pt-1 pb-3 ">סרטונים  <span id="videos_length_page"> ${"(" + video_length + ")"}</span></h1>
+       ${breadCrumbs()}
     </div>
    <div id="videosPageContainer" class="container-fluid mr-4  pt-2" >
    ${alertMessage}
@@ -586,6 +595,7 @@ function buildVideoPage(data) {
                     </div>
     </div>`;
     $('#containerForData').html(initial);
+    $('#current_page_breadcrumb').html(`סרטונים  <span id="videos_length_page"> ${"(" + video_length + ")"}</span>`);
     $('.card-group').html(videos_cards);
     $('#newVideoBtn').on("click", openVideo_Handler)
     $('[data-toggle="tooltip"]').tooltip();
@@ -675,8 +685,7 @@ function openVideo_Handler(event) {
     let video_id = ""
     let name = ""
 
-    if (id== "create_new_vid")
-    {
+    if (id == "create_new_vid") {
         id = "newVideoBtn"
     }
     //get video id if it's exists
@@ -810,4 +819,69 @@ function loadFile(event) {
     $("#modal_main_btn").off('click', disabledFunc);
     $("#modal_main_btn").on('click', openVideo_Handler);
     $("#modal_main_btn").removeClass("disabled");
+}
+
+
+function breadCrumbs() {
+
+    let project_name = (document.querySelector("#project_name").innerHTML)
+    let project_name_div = ""
+    if (project_name.length >= 17) {
+        project_name_div = project_name.slice(0, 16) + "..";
+    } else {
+        project_name_div = project_name;
+    }
+
+    let page_name = document.querySelector("li.activeNav  span").innerHTML;
+    let svg_icon = ""
+    // let svg_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20">
+    //                       ${`${document.querySelector("li.activeNav svg").innerHTML}`} </svg>   `;
+
+    let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 pb-3 " aria-label="breadcrumb">
+                      <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="homePage">
+                             <svg id="home_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.5 10H7V10.5V14.5H4.25V9V8.5H3.75H2.80298L9 2.92268L15.197 8.5H14.25H13.75V9V14.5H11V10.5V10H10.5H7.5Z" fill="#BDBDBD" stroke="#BDBDBD"/>
+                             </svg>
+                                דף הבית
+                        </a></li>
+                        <li class="breadcrumb-item"><a href="projectPage">
+                            <svg id="project_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M7.5 3H3C2.175 3 1.5075 3.675 1.5075 4.5L1.5 13.5C1.5 14.325 2.175 15 3 15H15C15.825 15 16.5 14.325 16.5 13.5V6C16.5 5.175 15.825 4.5 15 4.5H9L7.5 3Z" fill="#BDBDBD"/>
+                            </svg>
+                        ${project_name_div}</a></li>
+                        <li class="breadcrumb-item" aria-current="page">  
+                        <a id="current_page_breadcrumb_a" href="#"><span id="current_page_breadcrumb" class="align-middle">${page_name}</span></a>                          
+                         </li>
+                      </ol>
+                 </nav> `;
+    return div;
+}
+
+function build_project_area_sideNav(data) {
+    let className = ""
+    if (data[0][2] == "בהכנה") {
+        className = "status_working";
+
+    } else if (data[0][2] == "בצילום") {
+        className = "status_recording"
+    } else if (data[0][2] == "הסתיים") {
+        className = "status_done"
+    }
+    // project_props = [project_id],[project_name],[status],[last_update],[image]
+    let div = `<img src="${data[0][4]}" class="img-thumbnail " style="width: 100px; height:100px" alt="">
+        <p id="project_name" data-proj-id: "${data[0][0]}" > ${data[0][1]}</p>
+      <small class="text-muted status ${className}">${data[0][2]}</small>
+
+    <button id="create_new_vid" class="primaryBTN mt-4">+ סרטון חדש</button>`;
+
+    $('#project_area_sideNav').html(div);
+    let user_div = `<img src="${data[1][1]}" class="img-thumbnail rounded-circle" style="width: 2.2vw;height:2.2vw;" alt="">
+        <p>${data[1][0]}</p>
+
+<!--<svg width="10" height="6" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--<path d="M8.81084 0.815816C8.71522 0.728061 8.56836 0.728061 8.47275 0.815816L5 4.00313L1.52725 0.815816C1.43164 0.728061 1.28478 0.728061 1.18916 0.815816L0.830955 1.14458C0.779366 1.19193 0.75 1.25874 0.75 1.32877C0.75 1.39879 0.779366 1.4656 0.830955 1.51295L4.83095 5.18418C4.92657 5.27194 5.07343 5.27194 5.16905 5.18418L9.16905 1.51295C9.22063 1.4656 9.25 1.39879 9.25 1.32877C9.25 1.25874 9.22063 1.19193 9.16905 1.14458L8.81084 0.815816Z" fill="#BDBDBD" stroke="#BDBDBD" stroke-width="0.5" stroke-linejoin="round"/>-->
+<!--</svg>-->
+`;
+    $('#user_area_sidenav').html(user_div);
 }

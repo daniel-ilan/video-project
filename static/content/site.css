@@ -144,7 +144,7 @@ svg {
 
 .downNavUI {
     border-top-right-radius: 1.5vw 1.5vw;
-
+    height: 6vh;
 }
 
 .activeNav {
@@ -221,7 +221,7 @@ svg {
 
 /* --- slideNav ----*/
 .emptyNav {
-    height: 1vw;
+    height: 2vw;
 }
 
 
@@ -508,6 +508,7 @@ svg {
     border-radius: 0.75rem;
     font-weight: 500;
     font-size: 1rem;
+
     line-height: 19px;
     align-items: center;
     text-align: center;
@@ -540,6 +541,11 @@ svg {
     color: white !important;
     border-color: #BDBDBD !important;
 }
+
+.disabled-nav-item , .disabled-nav-item:hover > svg , .disabled-nav-item:hover > a{
+   cursor: not-allowed !important;
+}
+
 
 .secondaryBtn {
     border: solid 0.125rem #6515DD;
@@ -1648,7 +1654,7 @@ hr.solid {
 #collection_animation_area{
     overflow-y: auto;
     overflow-x: hidden;
-    height: 42.5vh;
+    /*height: 42.5vh;*/
     width: 84vw;
 }
 
@@ -1660,8 +1666,8 @@ hr.solid {
 /*                          -------------                  videos Page         -------------                  */
 
 #videos_length_page{
-    font-weight: 400;
-    font-size: 1vw;
+    /*font-weight: 400;*/
+    font-size: 0.7vw;
     color: #6515DD;
 }
 
@@ -1983,4 +1989,78 @@ div.card-group{
 .coverImg{
     width: 14vw;
     height: 26vh;
+}
+
+/* --- sideNAV project View --*/
+#project_area_sideNav{
+    text-align: center;
+}
+
+
+#project_area_sideNav > small {
+    display: block;
+    width: max-content;
+    margin: 0 auto;
+}
+
+#project_area_sideNav > p {
+    margin-top: 1rem;
+    margin-bottom: .75rem;
+    font-weight: 500;
+    padding: 0 1vw;
+    line-height: normal;
+}
+
+#project_area_sideNav > button {
+    padding: 0rem 1vw;
+    font-size: 0.8vw;
+}
+
+img.img-thumbnail.rounded-circle{
+    padding: 0.125rem;
+    margin-left: 0.5vw;
+    border-color: whitesmoke;
+}
+
+#user_area_sidenav > p{
+    margin: auto 0;
+    font-weight: 400;
+    line-height: normal;
+    height: auto;
+    font-size: 0.9vw;
+}
+
+#user_area_sidenav{
+    padding-right: 2vh;
+    bottom: 2%;
+    position: absolute;
+}
+
+.breadcrumb{
+    background-color:  transparent;
+    padding-right: 0;
+
+}
+
+.breadcrumb a{
+    color:  #BDBDBD;
+    font-size: 0.84vw;
+    font-weight: normal;
+}
+
+.breadcrumb .breadcrumb-item::before{
+    color:  #BDBDBD;
+}
+
+#current_page_breadcrumb{
+    color: #2F1359;
+    font-size: 0.84vw;
+    font-weight: 500;
+    display: inline-block;
+    padding-right: 0.2vw;
+}
+
+#current_page_breadcrumb_a:hover{
+    text-decoration-line: none;
+    cursor: default;
 }
