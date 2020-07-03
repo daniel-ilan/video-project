@@ -715,10 +715,15 @@ def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
     all_frames = db.get_all_frames(session.get('CURRENT_VIDEO'))
-    prev_id = all_frames[0][1]
-    for i in range(1, len(all_frames)):
+    prev_id = all_frames[0][0]
+    for i in range(0, len(all_frames)-1):
         if all_frames[i][0] == int(my_id):
-            prev_id = all_frames[i - 1][0]
+            if i == 0:
+                # it's the first frame so prev_id is the next one so add +1
+                prev_id = all_frames[i + 1][0]
+            else:
+                # any other frame - so the prev frame is -1
+                prev_id = all_frames[i - 1][0]
             break
 
     path = session.get('WORKING_PATH') + str(db.get_frame_by_id(my_id)[3])

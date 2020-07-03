@@ -12,6 +12,7 @@ $(document).ready(function () {
         boolX = true;
     }
     $(".sidebarCol li a").on('click', change_animation_handler);
+    $('#dltFrameBtn').off('click', change_animation_handler);
 });
 
 function roundItemsBorder() {
@@ -33,9 +34,16 @@ function frameChangeHandler(event) {
     if (event == null) {
         event_kind = "onLoad"
     } else if (event.currentTarget.id === "dltFrameBtn") {
-        event_kind = "delete_frame";
-        frame_id = $(".active_frame_lottie")[0].id;
-        event.preventDefault();
+        if (event.currentTarget.classList.contains("frame_lottie"))
+        {
+            return ""
+        }
+        else
+        {
+            event_kind = "delete_frame";
+            frame_id = $(".active_frame_lottie")[0].id;
+            event.preventDefault();
+        }
     } else if (event.currentTarget.id === "newFrameBtn") {
         event_kind = "new_frame"
     }
@@ -64,8 +72,16 @@ function change_animation_handler(event) {
             event_kind = "frame_click";
             frame_id = event.currentTarget.id;
         } else if (event.currentTarget.classList.contains("nav-link")) {
-            event_kind = "change_kind_click";
-            selected_kind = (event.currentTarget.id).slice(5);
+            if(event.currentTarget.id == "dltFrameBtn")
+            {
+                print("magic");
+            }
+            else
+            {
+                event_kind = "change_kind_click";
+                selected_kind = (event.currentTarget.id).slice(5);
+            }
+
 
         } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";
@@ -210,6 +226,20 @@ function buildFrames(data) {
     $('#frames_Area_container').html(numSlides);
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', change_animation_handler);
+
+    // able / disable delete button
+    if (data.frames[1].length == 1)
+    {
+        // only one frame -disable
+        $('#dltFrameBtn svg').addClass('disabled_svg');
+        $('#dltFrameBtn').addClass('disabled_svg');
+    }
+    else
+    {
+        //more than one frame - able
+        $('#dltFrameBtn svg').removeClass('disabled_svg');
+        $('#dltFrameBtn').removeClass('disabled_svg');
+    }
 
     // creates the option to drag the frames around
     let framesArea = document.querySelector('#frames_Area_container');
@@ -453,7 +483,19 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     $('#content input, #frameText, select').on('keyup change', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
     });
-    $('#dltFrameBtn').on('click', frameChangeHandler);
+
+
+
+    if ($("#dltFrameBtn").hasClass( "disabled_svg" ))
+    {
+        // only one frame - so disabled function
+        $('#dltFrameBtn').off('click', frameChangeHandler);
+    }
+    else
+    {
+        //more than one frame, so it's possible to delete
+        $('#dltFrameBtn').on('click', frameChangeHandler);
+    }
     $('#submitChange').on('click', change_animation_handler);
 
 }
