@@ -423,6 +423,10 @@ def frame_change():
     general_frame = []
     frame_text = ""
     project_props = []
+    project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+    project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+    project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -435,10 +439,7 @@ def frame_change():
             current_frame = frames_props[1][0]
             kind = current_frame[3]
             frame_text = current_frame[4]
-            project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
-            project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
-            project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
-            project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
+
 
         elif event_kind == "delete_frame":
             current_frame = delete_frame(frame_id)
@@ -722,7 +723,7 @@ def delete_frame(id: str):
 
     path = session.get('WORKING_PATH') + str(db.get_frame_by_id(my_id)[3])
     os.remove(path)
-    db.delete_frame(int(my_id))
+    db.delete_frame(int(my_id), session.get('CURRENT_VIDEO'))
     return convert_row_to_list(db.get_frame_by_id(str(prev_id)))
 
 

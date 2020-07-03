@@ -104,6 +104,7 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
 
 def get_last_project_id(user_id: int):
     query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
+    query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
     return select_one_query(query)
 
 
@@ -250,7 +251,13 @@ def get_all_frames(video_id: str):
     return select_all_query(query)
 
 
-def delete_frame(frame_id: int):
+def delete_frame(frame_id: int, video_id: int):
+    if isinstance(video_id, str):
+        video_id = int(video_id)
+    query = f"SELECT [frame_id] FROM frames WHERE frame_id >({frame_id}) AND video_id = {video_id};"
+    frames_after = select_all_query(query)
+    query_update_order = f"UPDATE frames SET frame_order = (frame_order-1) WHERE frame_id IN({query});"
+    update_query(query_update_order)
     query = f"DELETE FROM frames WHERE frame_id =({frame_id});"
     update_query(query)
 
