@@ -97,7 +97,7 @@ function formHandler(form) {
 }
 
 function getloginForm(){
-  document.querySelector("#register").innerHTML = '';
+
   document.querySelector("#login").innerHTML = 
   `
   <div class="form-header-container">
@@ -105,7 +105,7 @@ function getloginForm(){
 
   <p id="submitMessagePlaceholder"></p>
 </div>
-<form class="col-10 pt-3" id="userForm">
+<form class="col-11" id="userForm">
   <div class="form-group email-group pb-2">
       <label for="emailInput">כתובת מייל</label>
       <span class="iconify valid-icon-email hidden" data-icon="mdi:check"
@@ -141,11 +141,11 @@ function getloginForm(){
 
   `
 
-  $('#register_from_login').on("click", getregisterForm);
   const showPassword = document.querySelector("#passwordVisability");
   const hidePassword = document.querySelector("#passwordHidden");
   emailInput = document.querySelector("#emailInput");
   passwordInput = document.querySelector("#password");
+  const registerLink = document.querySelector("#register_from_login");
 
   showPassword.addEventListener("click", function() {
     this.classList.add("hidden");
@@ -177,14 +177,15 @@ function getloginForm(){
     validate(this, help, validIcon);
   });
 
-  $("#login-tab").parents('li').addClass("custom-nav-item-active round_rignt")
-  $("#register-tab").parents('li').removeClass("custom-nav-item-active round_left")
 
+  registerLink.addEventListener("click", function(){
+    getregisterForm();
+  })
 }
 
 function getregisterForm(){
   $('#register-tab').tab('show') // Select third tab
-  document.querySelector("#login").innerHTML = '';
+
   document.querySelector("#register").innerHTML = 
   `
   <div class="form-header-container">
@@ -192,7 +193,7 @@ function getregisterForm(){
 
   <p id="submitMessagePlaceholder"></p>
 </div>
-<form class="col-10" id="userForm">
+<form class="col-11" id="userForm">
   <div class="form-group name-group pb-2">
       <label for="nameInput">שם</label>
       <span class="iconify valid-icon-name hidden" data-icon="mdi:check"
@@ -275,8 +276,5 @@ function getregisterForm(){
     const validIcon = document.querySelector(".valid-icon-password");
     validate(this, help, validIcon);
   });
-
-  $("#login-tab").parents('li').removeClass("custom-nav-item-active round_rignt");
-  $("#register-tab").parents('li').addClass("custom-nav-item-active round_left");
 
 }

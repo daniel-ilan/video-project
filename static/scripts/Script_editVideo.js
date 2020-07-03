@@ -39,7 +39,8 @@ function frameChangeHandler(event) {
     } else if (event.currentTarget.id === "newFrameBtn") {
         event_kind = "new_frame"
     }
-
+    const pageSpinner = $("#pageSpinner");
+    pageSpinner.removeClass("invisible");
     $.ajax({
         method: 'POST',
         url: '/frame_change',
@@ -164,6 +165,8 @@ function contentChangeHandler(data) {
     if (event_kind === "submitChange") {
         document.querySelector("#" + frame_id + " lottie-player").load(data.anim_props.path);
     }
+    const pageSpinner = $("#pageSpinner");
+    pageSpinner.addClass("invisible");
     // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
 }
 
@@ -347,7 +350,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
                     editForm.append(a);
                     $('#listItemalignment option[value=' + data[elem].text.alignment + ']').prop('selected', true);
-                    addCustomColor('#listItem_color');
+                    addCustomColor('#listItem_color', color_palettes_json);
                     editForm.append(`<div>
                                                 <button class="primaryBTN" id="addBulletBtn" role="button" type="button">+</button>
                                                 <button type="button" role="button" id="removeBulletBtn" class="primaryBTN">-</button>
@@ -385,7 +388,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                         /**
                          *checks how many shape layers there are in the animation and building the color-picker UI
                          */
-                        createColorUi(colorListUi, colorListId)
+                        createColorUi(colorListUi, colorListId, color_palettes_json)
                     }
 
                     /**
@@ -415,8 +418,9 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                     checkNumBullets();
                 } else if (elem === "text") {
                     editForm.prepend(getText(elem, data[elem], data_kind));
-                    addCustomColor('#text_color');
+                    addCustomColor('#text_color', color_palettes_json);
 
+                    $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true)
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
                 }
             }
@@ -429,14 +433,11 @@ function buildForm(data, data_kind, color_palettes, frameText) {
         /**
          *checks how many shape layers there are in the animation and building the color-picker UI
          */
-        createColorUi(colorUi, colorId)
+        createColorUi(colorUi, colorId, color_palettes_json)
     }
 
     //disabled
-    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
-    $('#content input, textarea, select').on('keyup change', function () {
-        $('#submitChange').removeClass("secondaryBtn_disabled");
-    });
+
 
     const displayText = getFrameText(frameText);
 
@@ -448,8 +449,10 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     // $('textarea').keyup(function () {
     //     $('#submitChange').removeClass("secondaryBtn_disabled");
     // });
-
-
+    editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
+    $('#content input, #frameText, select').on('keyup change', function () {
+        $('#submitChange').removeClass("secondaryBtn_disabled");
+    });
     $('#dltFrameBtn').on('click', frameChangeHandler);
     $('#submitChange').on('click', change_animation_handler);
 
@@ -521,22 +524,29 @@ function getText(name, text, data_kind) {
     let my_color;
     let h3_name = "";
     let inputText = "";
+    let fontSize = 0;
     my_color = getColor(name + '_color', text.color);
     if (data_kind === "listItem") {
         h3_name = "סעיפי הרשימה";
         text.content.forEach(function (content, index) {
-            inputText += `<input type="text" maxlength="24" name=${name + 'content' + (index + 1)} id=${name + 'content_' + (index + 1)} value="${content}" class="form-control">`
+            inputText += `<input type="text" lang="he" maxlength="24" name=${name + 'content' + (index + 1)} id=${name + 'content_' + (index + 1)} value="${content}" class="form-control">`
+            
         });
+        fontSize = [38, 58, 72]
     } else {
         my_color = getColor(name + '_color', text.color);
         if (data_kind === "intro") {
             h3_name = "תוכן פתיח";
+            fontSize = [72, 92, 112]
         } else if (data_kind === "ending") {
             h3_name = "תוכן סיום";
+            fontSize = [72, 92, 112]
         } else if (data_kind === "text") {
             h3_name = "תוכן ";
+            fontSize = [38, 58, 72]
         } else if (data_kind === "list") {
             h3_name = "כותרת הרשימה";
+            fontSize = [38, 58, 72]
         }
 
         inputText = `<input type="text" maxlength="24" name=${name + 'content'} id=${name + 'content'} name="animText" value="${text.content}" class="form-control">`;
@@ -552,16 +562,15 @@ function getText(name, text, data_kind) {
                             </select>    
                     </span>
                     <span class="text-edit-line-after">
-                           <select name=${name + 'font_size'} id=${name + 'font'} class="custom-select text-edit-line" value="גודל בינוני" >
-                                <option value="0">גודל קטן</option>
-                                 <option value="1">גודל בינוני</option>
-                                 <option value="2">גודל גדול</option>
-                                 <option value="3">גודל גדול מאוד</option>
+                           <select name=${name + 'font_size'} id=${name + 'font_size'} class="custom-select text-edit-line">
+                                <option selected="selected" value=${fontSize[0]}>גודל קטן</option>
+                                 <option value=${fontSize[1]}>גודל גדול</option>
+                                 <option value=${fontSize[2]}>גודל גדול מאוד</option>
                             </select>
                     </span>
                     <span class="text-edit-line-after">
                            <select name=${name + 'alignment'} id=${name + 'alignment'} class="custom-select text-edit-line" value=${text.alignment} >
-                                <option value="0">יישור לשמאל</option>
+                                <option selected="selected" value="0">יישור לשמאל</option>
                                 <option value="1">יישור לימין</option>
                                 <option value="2">יישור למרכז</option>
                             </select>
@@ -572,7 +581,7 @@ function getText(name, text, data_kind) {
             </div>`;
 }
 
-function createColorUi(colors, colorId) {
+function createColorUi(colors, colorId, color_palettes_json) {
     /**
      * todo: this function needs to get the name of the color input ( ראשי - משני )
      * @type {string}
@@ -599,7 +608,7 @@ function createColorUi(colors, colorId) {
             myName = "רקע";
         }
         $('#name_' + colorId[i]).html(myName);
-        addCustomColor('#' + colorId[i]);
+        addCustomColor('#' + colorId[i], color_palettes_json);
     }
 }
 
@@ -778,7 +787,7 @@ function select_from_general(event) {
 }
 
 
-function addCustomColor(id) {
+function addCustomColor(id, palette) {
     $(id).colorpicker({
         customClass: 'colorpicker-2x',
         sliders: {
@@ -797,7 +806,7 @@ function addCustomColor(id) {
             {
                 name: 'swatches', // extension name to load
                 options: { // extension options
-                    colors: color_palettes_json
+                    colors: palette
                 },
 
             }
