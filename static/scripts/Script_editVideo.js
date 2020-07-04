@@ -467,9 +467,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     }
 
     //disabled
-
-
-    const displayText = getFrameText(frameText);
+    let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
     //

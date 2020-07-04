@@ -495,12 +495,8 @@ def frame_change():
 
             anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
                                            "submitChange")
-
-            # form_data = json.loads(request.form["form_data"])
-            # anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
-            #                                "submitChange")
-
-            # current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            # get latest notes text
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frame_text = current_frame[6]
 
 

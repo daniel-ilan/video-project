@@ -287,6 +287,8 @@ def update_frame_props(frame_id: str, lottie_url: str, selected_kind: str, selec
         num_clicks = 2
     frame_id = int(frame_id)
     selected_anim = int(selected_anim)
+    if notes is None:
+        notes = ""
     query = f"UPDATE frames SET lottie_url='{lottie_url}',selected_animation_kind='{selected_kind}',selected_animation_id='{selected_anim}', frame_text= '{notes}',clicks={num_clicks} WHERE frame_id={frame_id};"
     update_query(query)
 
