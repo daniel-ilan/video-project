@@ -99,6 +99,7 @@ def get_anim_props(path, image_path=""):
         elif layer.name == '.image':
             # image_dict = {'image': "name"}
             anim_props['image'] = "true"
+            anim_props['image_path'] = anim.assets[0].image_path
 
         elif layer.name.startswith(".listText") and list_changed is False:
             text_layer_num = int(layer.name[-1])
@@ -423,7 +424,10 @@ def frame_change():
     general_frame = []
     frame_text = ""
     project_props = []
-
+    project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+    project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+    project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
@@ -435,10 +439,7 @@ def frame_change():
             current_frame = frames_props[1][0]
             kind = current_frame[3]
             frame_text = current_frame[4]
-            project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
-            project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
-            project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
-            project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
+
 
         elif event_kind == "delete_frame":
             current_frame = delete_frame(frame_id)
@@ -488,9 +489,8 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
             if kind == "image":
-                form_data = request.files
-            else:
                 form_data = json.loads(request.form["form_data"])
+                form_data.append(request.files)
 
             anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
                                            "submitChange")
@@ -511,7 +511,8 @@ def frame_change():
 
             new_anim_id = request.form["selected_kind"][request.form["selected_kind"].find('_') + 1:]
             data_to_db = [frame_id, kind, new_anim_id, str(db.get_frame_by_id(frame_id)[3])]
-            anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
+            file_name = db.get_animations_url_by_id(new_anim_id)[0]
+            anim_props = update_anim_props(file_name, anim_props_original, data_to_db,
                                            "change_mini_lottie")
 
         color_palettes = getPalette()
@@ -543,7 +544,7 @@ def frame_change():
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
-                       frame_text=frame_text, project_props =project_props)
+                       frame_text=frame_text, project_props=project_props)
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
@@ -569,44 +570,46 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
 
     if kind_of_update_event == "submitChange" or kind_of_update_event == 'create brand':
         for item in data:
-            if item[0] == "primary":
-                color.update({"primary": item[1]})
-            elif item[0] == "secondary":
-                color.update({"base": item[1]})
-            elif item[0] == "third":
-                color.update({"third": item[1]})
-            elif item[0] == "textalignment":
-                text.update({"textalignment": item[1]})
-            elif item[0] == "textcontent":
-                text.update({"textcontent": item[1]})
-            elif item[0] == "text_color":
-                text.update({"textcolor": item[1]})
-            elif item[0] == "textfont_size":
-                text.update({"textfont_size": item[1]})
-            elif item[0] == "side_note":
-                notes = item[1]
-            elif item[0] == "f":
-                image = True
+            if type(item) is list:
+                if item[0] is not None:
+                    if item[0] == "primary":
+                        color.update({"primary": item[1]})
+                    elif item[0] == "secondary":
+                        color.update({"base": item[1]})
+                    elif item[0] == "third":
+                        color.update({"third": item[1]})
+                    elif item[0] == "textalignment":
+                        text.update({"textalignment": item[1]})
+                    elif item[0] == "textcontent":
+                        text.update({"textcontent": item[1]})
+                    elif item[0] == "text_color":
+                        text.update({"textcolor": item[1]})
+                    elif item[0] == "textfont_size":
+                        text.update({"textfont_size": item[1]})
+                    elif item[0] == "side_note":
+                        notes = item[1]
+                    elif item[0] == 'imageUpload_file':
+                        image = True
 
-            # bullets text
-            elif item[0].startswith('listItemcontent'):
-                list_num = item[0][-1]
-                list_text['listContent'].append([item[1], list_num])
+                    # bullets text
+                    elif item[0].startswith('listItemcontent'):
+                        list_num = item[0][-1]
+                        list_text['listContent'].append([item[1], list_num])
 
-            # bullets color
-            elif item[0] == "listItem_color":
-                list_text.update({"listItem_color": item[1]})
-            # bullets alignment
-            elif item[0] == 'listItemalignment':
-                list_text.update({"listItemalignment": item[1]})
+                    # bullets color
+                    elif item[0] == "listItem_color":
+                        list_text.update({"listItem_color": item[1]})
+                    # bullets alignment
+                    elif item[0] == 'listItemalignment':
+                        list_text.update({"listItemalignment": item[1]})
 
-            ### This code is for individual bullet color - we are doing three colors alltogether
-            # # bullets color 1
-            # elif item[0] == 'listItem_primary':
-            #     list_color.update({"primary": item[1]})
-            # # bullets color 2
-            # elif item[0] == 'listItem_secondary':
-            #     list_color.update({"secondary": item[1]})
+                    ### This code is for individual bullet color - we are doing three colors alltogether
+                    # # bullets color 1
+                    # elif item[0] == 'listItem_primary':
+                    #     list_color.update({"primary": item[1]})
+                    # # bullets color 2
+                    # elif item[0] == 'listItem_secondary':
+                    #     list_color.update({"secondary": item[1]})
     else:
         for item in data:
             if item == "primary":
@@ -618,9 +621,17 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text.update({"textcolor": data[item]['color']})
                 text.update({"textalignment": data[item]['alignment']})
                 text.update({"textfont_size": data[item]['font_size']})
+            elif item == 'image':
+                image = True
+
 
     if len(text) > 0:
-        an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"], text["textfont_size"])
+        if kind_of_update_event == "create brand" and (kind != "empty" and kind != "image"):
+            # change only the text color without taking any other props. I guess this would probably need to change in
+            # the future for more flexibility
+            an = change_text_color(an, text["textcolor"])
+        elif kind != "empty" and kind != "image":
+            an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"], text["textfont_size"])
     if len(color) > 0:
         an = change_color(an, color, 100)
     if image is True:
@@ -659,47 +670,65 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
 
 
 def save_image(data, an):
-    if 'file' not in data:
-        return jsonify(result="Not good!")
-    file = data['file']
-    if file.filename == '':
-        return redirect(request.url)
+    file = ''
+    filename = ''
+    location = ''
+    if type(data) is list:
+        if 'file' in data[-1]:
+            file = data[-1]['file']
+            if file.filename == '':
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                # file is ok and ready to use
+                # change the file name to not have duplicates
+                filename = f"{time.time()}{secure_filename(file.filename)}"
 
-    if file and allowed_file(file.filename):
-        import PIL
-        from PIL import Image
-        filename = secure_filename(file.filename)
-        background_path = 'static/content/animations/images/image_placeholder.png'
-        location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-        location = location.split(".")[0] + ".png"
+                # submit change event - saves the image before inserting it into the animation
+                location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
+                location = location.split(".")[0] + ".png"
+        else:
+            # changing colors only - file is not in uploaded files and needs to take the path from the animation prop
+            file = an.assets[0].image_path
+            location = file
+    elif 'image' in data:
+        # mini lottie change event - takes the file info from the original animation
+        file = data['image_path']
+        location = file
+    else:
+        return jsonify("{result: Not good!}")
+
+    import PIL
+
+    background_path = 'static/content/animations/images/image_placeholder.png'
 
 
-        max_width = int(an.assets[0].width)
-        max_height = int(an.assets[0].height)
-        img = Image.open(file).convert("RGBA")
-        # bg = Image.open(background_path)
 
-        final_img = Image.new('RGBA', (max_width, max_height), (0, 0, 0, 0))
+    max_width = int(an.assets[0].width)
+    max_height = int(an.assets[0].height)
+    img = PIL.Image.open(file).convert("RGBA")
+    # bg = Image.open(background_path)
 
-        wpercent = (max_width / float(img.size[0]))
-        hsize = int((float(img.size[1]) * float(wpercent)))
-        img = img.resize((max_width, hsize), PIL.Image.ANTIALIAS)
+    final_img = PIL.Image.new('RGBA', (max_width, max_height), (0, 0, 0, 0))
 
-        final_img.paste(img, ((final_img.width - img.width) // 2, (final_img.height - img.height) // 2), mask=img)
+    wpercent = (max_width / float(img.size[0]))
+    hsize = int((float(img.size[1]) * float(wpercent)))
+    img = img.resize((max_width, hsize), PIL.Image.ANTIALIAS)
+
+    final_img.paste(img, ((final_img.width - img.width) // 2, (final_img.height - img.height) // 2), mask=img)
 
 
-        # location = location
-        final_img.save(location)
+    # location = location
+    final_img.save(location)
 
-        # convert image to lottie
-        # an.assets[0].height = hsize
-        image = objects.assets.Image().load(location)
-        image_data = image.embedded(location).image
-        an.assets[0].image = image_data
-
-        # remove from os
-        os.remove(location)
-        return an
+    # convert image to lottie
+    # an.assets[0].height = hsize
+    image = objects.assets.Image().load(location)
+    image_data = image.embedded(location).image
+    an.assets[0].image = image_data
+    an.assets[0].image_path = location
+    # remove from os
+    # os.remove(location)
+    return an
 
 
 def convert_row_to_list(row_data):
@@ -803,6 +832,12 @@ def get_frames_from_db(video_id: int):
         frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5], frame[6]])
     myArray = [frames_arrayPath, frames_list]
     return myArray
+
+def change_text_color(an, color):
+    correct_color = list(colors.to_rgba(color, float) + (1,))
+    an.find('.myText').data.data.keyframes[0].start.color = correct_color[0:3]
+
+    return an
 
 
 def change_text(an, text, color, alignment, font_size):
@@ -1247,7 +1282,7 @@ def create_new_collection(project_id: int):
     new_theme = db.create_new_theme(project_id)
     original_animations = db.get_animations_by_theme(last_theme)
     counter = 0
-    # check if the last collection is from general or not, if it's delete it
+    # check if the last collection is from general or not, if it is then deletes it
     check = db.check_theme_generalYN(initial_theme)[0]
 
     # get current colors palette by the currect template: [type,hex color]
