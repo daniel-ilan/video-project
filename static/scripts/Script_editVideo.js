@@ -187,6 +187,20 @@ function contentChangeHandler(data) {
     const pageSpinner = $("#pageSpinner");
     pageSpinner.addClass("invisible");
     // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
+
+
+
+    if ($("#dltFrameBtn").hasClass( "disabled_svg" ))
+    {
+        // only one frame - so disabled function
+        $('#dltFrameBtn').off('click', frameChangeHandler);
+    }
+    else
+    {
+        //more than one frame, so it's possible to delete
+        $('#dltFrameBtn').off('click', frameChangeHandler);
+        $('#dltFrameBtn').on('click', frameChangeHandler);
+    }
 }
 
 
@@ -477,30 +491,12 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
-    //
-    // $('textarea').change(function () {
-    //     $('#submitChange').removeClass("secondaryBtn_disabled");
-    // });
-    // $('textarea').keyup(function () {
-    //     $('#submitChange').removeClass("secondaryBtn_disabled");
-    // });
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#content input, #frameText, select').on('keyup change', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
     });
 
 
-
-    if ($("#dltFrameBtn").hasClass( "disabled_svg" ))
-    {
-        // only one frame - so disabled function
-        $('#dltFrameBtn').off('click', frameChangeHandler);
-    }
-    else
-    {
-        //more than one frame, so it's possible to delete
-        $('#dltFrameBtn').on('click', frameChangeHandler);
-    }
     $('#submitChange').on('click', change_animation_handler);
 
 }
