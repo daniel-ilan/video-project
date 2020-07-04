@@ -510,6 +510,7 @@ def frame_change():
             data_to_db = [frame_id, kind, new_anim_id, str(db.get_frame_by_id(frame_id)[3])]
             anim_props = update_anim_props(db.get_animations_url_by_id(new_anim_id)[0], anim_props_original, data_to_db,
                                            "change_mini_lottie")
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
         color_palettes = getPalette()
         color_palettes_array = []
