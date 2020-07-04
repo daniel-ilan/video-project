@@ -270,12 +270,16 @@ function buildFrames(data) {
 function getDraggedWidth(eve) {
     let width_cont = $('#frames_Area_container').width();
     $('#frames_Area_container').width(width_cont);
+    let current_id = eve.detail[1].getElementsByTagName("div")[0].getAttribute("id");
+    $('#'+current_id).addClass('more_Shadow_drag');
 }
 
 function getDraggedInfo(eve){
     let currentMove = eve.detail[1].dataset.order;
     let indexes = [];
     let db_order = [];
+    let current_id = eve.detail[1].getElementsByTagName("div")[0].getAttribute("id");
+    $('#'+current_id).removeClass('more_Shadow_drag');
     $(this).find('.frame_container_class').each(function() {
         indexes.push($(this).attr("data-order"));
     });
