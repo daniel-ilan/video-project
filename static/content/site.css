@@ -2120,3 +2120,19 @@ display: none;
     border-color: #6515DD;
     border-width: 1.5px ;
 }
+
+/* ----         change_notication_window        ---- */
+#change_notification_window
+{
+    background: rgba(34, 215, 255, 0.2);
+    opacity: 0.8;    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    border-radius: 1.5vw;
+    padding: 0.5vw 1vw;
+    height: fit-content;
+    top:7%;
+    position: absolute;
+    left: 5%;
+    font-weight: 500;
+}
+
+

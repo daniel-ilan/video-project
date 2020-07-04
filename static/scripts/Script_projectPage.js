@@ -143,7 +143,7 @@ function change_collection_handler(event) {
             'event_kind': event_kind,
             'col_id': col_id
         }
-    }).done(buildCollection);
+    }).done(buildCollection, saveChangePopup);
 }
 
 
@@ -168,8 +168,9 @@ function change_palette_handler(event) {
             'pal_id': pal_id,
             'colorId': colorId
         }
-    }).done(buildPalette);
+    }).done(buildPalette, saveChangePopup);
 }
+
 
 function disabledFunc(event) {
     if (event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled") || event.currentTarget.classList.contains("disabled_svg")) {
@@ -358,10 +359,11 @@ function buildBrandPage() {
     const data = `
        <div class="row h-5 container-fluid mr-4 pt-2">
   ${breadCrumbs()}
-      </div>
+            <div id="change_notification_window"  style="display: none">
+                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em"  viewBox="0 0 24 24"><path d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7z" fill="black"/></svg>    השינויים נשמרו בהצלחה </div>
+          </div>
    <div id="brandPageContainer" class="container-fluid mr-4" >
         <div class="h-60 pt-2">
-
             <div class="d-flex flex-row h2_projectPage">
                 <svg viewBox="0 0 32 32" fill="svgFill" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.22222 12.2222H8.55556C9.22778 12.2222 9.77778 11.6722 9.77778 11V1.22222C9.77778 0.55 9.22778 0 8.55556 0H1.22222C0.55 0 0 0.55 0 1.22222V11C0 11.6722 0.55 12.2222 1.22222 12.2222ZM1.22222 22H8.55556C9.22778 22 9.77778 21.45 9.77778 20.7778V15.8889C9.77778 15.2167 9.22778 14.6667 8.55556 14.6667H1.22222C0.55 14.6667 0 15.2167 0 15.8889V20.7778C0 21.45 0.55 22 1.22222 22ZM13.4444 22H20.7778C21.45 22 22 21.45 22 20.7778V11C22 10.3278 21.45 9.77778 20.7778 9.77778H13.4444C12.7722 9.77778 12.2222 10.3278 12.2222 11V20.7778C12.2222 21.45 12.7722 22 13.4444 22ZM12.2222 1.22222V6.11111C12.2222 6.78333 12.7722 7.33333 13.4444 7.33333H20.7778C21.45 7.33333 22 6.78333 22 6.11111V1.22222C22 0.55 21.45 0 20.7778 0H13.4444C12.7722 0 12.2222 0.55 12.2222 1.22222Z"
@@ -373,7 +375,9 @@ function buildBrandPage() {
                                אך אין מה לדאוג, ניתן לשנות את האנימציות בכל שלב בפרויקט">
                     ?
                 </button>
+
             </div>
+  
             <div style="display: none">
                 <div class="d-flex flex-row alert" >
                     <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -881,4 +885,14 @@ function build_project_area_sideNav(data) {
 <!--</svg>-->
 `;
     $('#user_area_sidenav').html(user_div);
+}
+
+function saveChangePopup() {
+    // $('#change_notification_window').css("display", "block");
+    $("#change_notification_window").fadeIn();
+
+     setTimeout(function(){   $('#change_notification_window').fadeOut("slow"); }, 2200);
+    // setTimeout(function(){ $('#change_notification_window').css("display", "none");
+    //    }, 3000);
+
 }
