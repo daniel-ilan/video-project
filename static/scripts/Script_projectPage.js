@@ -458,9 +458,6 @@ function buildBrandPage() {
     $("#chooseFromReadyPalette").on('click', open_modal_handler);
     $('[data-toggle="tooltip"]').tooltip();
     $('ol .breadcrumb').tooltip();
-
-
-
 }
 
 function buildVideoPage(data) {
@@ -845,7 +842,8 @@ function breadCrumbs() {
                              </svg>
                                 דף הבית
                         </a></li>
-                        <li class="breadcrumb-item"><a href="projectPage">
+                        <li class="breadcrumb-item"><a href="projectPage" data-toggle="tooltip" data-placement="bottom"
+                                    title="${project_name}">
                             <svg id="project_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M7.5 3H3C2.175 3 1.5075 3.675 1.5075 4.5L1.5 13.5C1.5 14.325 2.175 15 3 15H15C15.825 15 16.5 14.325 16.5 13.5V6C16.5 5.175 15.825 4.5 15 4.5H9L7.5 3Z" fill="#BDBDBD"/>
                             </svg>
@@ -862,16 +860,15 @@ function build_project_area_sideNav(data) {
     let className = ""
     if (data[0][2] == "בהכנה") {
         className = "status_working";
-
     } else if (data[0][2] == "בצילום") {
         className = "status_recording"
     } else if (data[0][2] == "הסתיים") {
         className = "status_done"
     }
     // project_props = [project_id],[project_name],[status],[last_update],[image]
-    let div = `<img src="${data[0][4]}" class="img-thumbnail " style="width: 100px; height:100px" alt="">
+    let div = `<img id="sidenav_img" src="${data[0][4]}" class="img-thumbnail sidenav_img "  alt="">
         <p id="project_name" data-proj-id: "${data[0][0]}" > ${data[0][1]}</p>
-      <small class="text-muted status ${className}">${data[0][2]}</small>
+      <small id="small_status" class="text-muted status ${className}">${data[0][2]}</small>
 
     <button id="create_new_vid" class="primaryBTN mt-4">+ סרטון חדש</button>`;
 

@@ -24,8 +24,19 @@ function roundItemsBorder() {
             indexActive = counter;
         }
     });
-    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
-    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+    if( $('#minMenu').attr("data-state") == "false")
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").removeClass('activeNav_mini');
+    }
+    else
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").addClass('activeNav_mini');
+    }
+
 }
 
 function frameChangeHandler(event) {
@@ -72,16 +83,8 @@ function change_animation_handler(event) {
             event_kind = "frame_click";
             frame_id = event.currentTarget.id;
         } else if (event.currentTarget.classList.contains("nav-link")) {
-            if(event.currentTarget.id == "dltFrameBtn")
-            {
-                print("magic");
-            }
-            else
-            {
                 event_kind = "change_kind_click";
                 selected_kind = (event.currentTarget.id).slice(5);
-            }
-
 
         } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";

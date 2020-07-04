@@ -147,6 +147,15 @@ svg {
     height: 6vh;
 }
 
+.upNavUI_mini {
+    border-bottom-right-radius: 1vw 1vw;
+}
+
+.downNavUI_mini {
+    border-top-right-radius: 1vw 1vw;
+    height: 6vh;
+}
+
 .activeNav {
     background-image: url("../images/UnionBG2.svg");
     background-size: cover;
@@ -154,7 +163,10 @@ svg {
     background-repeat: no-repeat;
     background-color: transparent;
     margin-left: -1%;
+}
 
+.activeNav_mini{
+    background-image: url("../images/UnionBG2_mini.svg");
 }
 
 .svgFillNone {
@@ -250,8 +262,15 @@ svg {
 }
 
 .minMenu_mini {
-    margin-right: 0.7%;
+    margin-right: 0.8%;
+    bottom: 10% !important;
 }
+
+.minMenu_mini_EditPage{
+    bottom: 24% !important;
+    padding-bottom: 0;
+}
+
 
 
 #minMenu:hover path {
@@ -2016,10 +2035,26 @@ div.card-group{
     font-size: 0.8vw;
 }
 
+.button_new_mini{
+    padding: 0rem 0.8vw !important;
+}
+
 img.img-thumbnail.rounded-circle{
     padding: 0.125rem;
     margin-left: 0.5vw;
     border-color: whitesmoke;
+}
+
+.sidenav_img
+{
+    width: 6vw;
+    height:6vw;
+}
+
+.sidenav_img_mini{
+    width: 2.5vw;
+    height:2.5vw;
+    margin-top: -4.5vh;
 }
 
 #user_area_sidenav > p{
@@ -2030,10 +2065,23 @@ img.img-thumbnail.rounded-circle{
     font-size: 0.9vw;
 }
 
-#user_area_sidenav{
+.user_area_sidenav{
     padding-right: 2vh;
     bottom: 2%;
     position: absolute;
+}
+
+.user_area_sidenav_mini{
+    padding-right: 1.3vh;
+}
+
+.user_area_sidenav_mini_videoPage{
+    bottom: 17%;
+}
+
+
+#user_area_sidenav.user_area_sidenav_mini > p {
+display: none;
 }
 
 .breadcrumb{
