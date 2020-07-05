@@ -307,7 +307,6 @@ function modael_data(data) {
                 let colorDesc = `<div id=${"colorDiv_" + data.colors[i][0][0]} class="ml-2 colorBranModalDiv ">
                                         <div class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"></div>
                                       <div> ${names[z]} </div>
-<!--                       $ {  data.colors[i][1][z][1]}           -->
                                  </div>`
                 colorPalette += colorPaletteZ;
                 colorDesc_all += colorDesc;
