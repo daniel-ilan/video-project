@@ -1521,7 +1521,7 @@ select:focus {
     border-radius: 24px;
     display: block;
     padding: 0.25rem 0.75rem;
-    /*max-width: fit-content;*/
+    max-width: fit-content;
     margin-top: 1rem;
 }
 
@@ -2114,6 +2114,10 @@ display: none;
     cursor: default;
 }
 
+#page_breadcrumb{
+    max-height: 8vh;
+
+}
 
 .more_Shadow_drag{
     /*box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 12px rgba(8, 5, 80, 0.049), 0px 8px 20px rgba(8, 5, 80, 0.00699759), 0px 0px 24px rgba(8, 5, 80, 0.1348);*/

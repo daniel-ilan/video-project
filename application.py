@@ -251,7 +251,6 @@ def newProject():
             userID = request.form['userID']
             db.update_project_last_update("2")
             data = db.get_project_info(userID)
-            print(data)
         elif request.form['submit_button'] == 'submit_newVid':
             project_id = request.form['project_id']
             video_name = request.form['video_name']
@@ -354,7 +353,6 @@ def homePage():
         else:
             if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
                 dataFromDB = db.check_log_in(str(request.form['existUserEmail']), str(request.form['existUserPass']))
-                print(dataFromDB)
                 if dataFromDB[0] is True and dataFromDB[1] is False:
                     alertM = "סיסמא שגויה"
                 elif dataFromDB[0] is True and dataFromDB[1] is True:

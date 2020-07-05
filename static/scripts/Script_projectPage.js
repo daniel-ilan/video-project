@@ -26,14 +26,11 @@ function roundItemsBorder() {
             indexActive = counter;
         }
     });
-    if( $('#minMenu').attr("data-state") == "false")
-    {
+    if ($('#minMenu').attr("data-state") == "false") {
         $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
         $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
         $(".sidebar li:nth-child(" + (indexActive).toString() + ")").removeClass('activeNav_mini');
-    }
-    else
-    {
+    } else {
         $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI_mini');
         $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI_mini');
         $(".sidebar li:nth-child(" + (indexActive).toString() + ")").addClass('activeNav_mini');
@@ -133,8 +130,7 @@ function buildCollection(data) {
             player.seek("50%");
         });
     });
-    if(data.event_kind== "ChooseCollection")
-    {
+    if (data.event_kind == "ChooseCollection") {
         saveChangePopup();
     }
 }
@@ -711,16 +707,20 @@ function openVideo_Handler(event) {
             video_id = $(event.currentTarget).attr("data-vid")
         }
     }
-
     if (id == "more_delete") {
-        //delete video
-        $.ajax({
-            method: 'POST',
-            url: '/onLoad',
-            data: {
-                'event_kind': id, 'video_id': video_id
-            }
-        }).done(buildVideoPage);
+        $('#modal').modal('show')
+        let vid_name = $("#h5_" + video_id).text();
+        $('.modal-title').text("האם ברצונך למחוק את סרטון  -" + vid_name);
+        let warning_content = `<div id="editImage" enctype="multipart/form-data">
+            <p>במחיקת פרויקט זה, כלל הקבצים של הסרטון ימחקו ולא יהיה ניתן לשחזר אותם </p>
+            </div>`
+        $('.modal-body').html(warning_content);
+        $("#modal_main_btn").html("מחיקת פרויקט");
+        $("#modal_main_btn").attr("data-vid", video_id);
+        $("#modal_main_btn").attr("data-event", "delete");
+        $("#modal_main_btn").off('click', openVideo_Handler);
+        $("#modal_main_btn").on('click', openVideo_Handler);
+
     } else if (id == "more_changeName") {
         //change name - show name input
         $("#h5_" + video_id).css("display", "none");
@@ -755,6 +755,7 @@ function openVideo_Handler(event) {
         $('.modal-body').html(img_content);
         $("#modal_main_btn").html("החלפת תמונה");
         $("#modal_main_btn").attr("data-vid", video_id);
+        $("#modal_main_btn").attr("data-event", "changePic");
 
         $("#modal_main_btn").on('click', disabledFunc);
         $("#modal_main_btn").off('click', openVideo_Handler);
@@ -763,23 +764,35 @@ function openVideo_Handler(event) {
     } else if (id == "moreOption_icon" || id == "more_close") {
         //do noting - don't send to server
     } else if (id === "modal_main_btn") {
-        // send new img to server
-        let event_kind = "changeCoverPic";
-        $('#modal').modal('hide')
+        if ($("#modal_main_btn").attr("data-event") == "delete") {
+            //delete video
+            $('#modal').modal('hide')
+            $.ajax({
+                method: 'POST',
+                url: '/onLoad',
+                data: {
+                    'event_kind': "more_delete", 'video_id': video_id
+                }
+            }).done(buildVideoPage);
+        } else {
+            // send new img to server
+            let event_kind = "changeCoverPic";
+            $('#modal').modal('hide')
 
-        const file_data = $('#imageUpload_file').prop('files')[0];
-        const form_data_image = new FormData();
-        form_data_image.append('file', file_data);
-        event.preventDefault();
-        form_data_image.append('event_kind', event_kind);
-        form_data_image.append('video_id', video_id);
-        $.ajax({
-            processData: false,
-            contentType: false,
-            method: 'POST',
-            url: '/video_handler',
-            data: form_data_image
-        }).done(options_on_video_Handler);
+            const file_data = $('#imageUpload_file').prop('files')[0];
+            const form_data_image = new FormData();
+            form_data_image.append('file', file_data);
+            event.preventDefault();
+            form_data_image.append('event_kind', event_kind);
+            form_data_image.append('video_id', video_id);
+            $.ajax({
+                processData: false,
+                contentType: false,
+                method: 'POST',
+                url: '/video_handler',
+                data: form_data_image
+            }).done(options_on_video_Handler);
+        }
     } else {
 
         // new video  / open video / change name
@@ -852,7 +865,7 @@ function breadCrumbs() {
     // let svg_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20">
     //                       ${`${document.querySelector("li.activeNav svg").innerHTML}`} </svg>   `;
 
-    let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 pb-3 " aria-label="breadcrumb">
+    let div = `<nav id="page_breadcrumb" class="mr-auto pt-1" aria-label="breadcrumb">
                       <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="#" class="" style="cursor: not-allowed">
                              <svg id="home_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -905,7 +918,9 @@ function saveChangePopup() {
     // $('#change_notification_window').css("display", "block");
     $("#change_notification_window").fadeIn();
 
-     setTimeout(function(){   $('#change_notification_window').fadeOut("slow"); }, 2200);
+    setTimeout(function () {
+        $('#change_notification_window').fadeOut("slow");
+    }, 2200);
     // setTimeout(function(){ $('#change_notification_window').css("display", "none");
     //    }, 3000);
 
