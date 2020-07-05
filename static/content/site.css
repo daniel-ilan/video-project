@@ -147,6 +147,15 @@ svg {
     height: 6vh;
 }
 
+.upNavUI_mini {
+    border-bottom-right-radius: 1vw 1vw;
+}
+
+.downNavUI_mini {
+    border-top-right-radius: 1vw 1vw;
+    height: 6vh;
+}
+
 .activeNav {
     background-image: url("../images/UnionBG2.svg");
     background-size: cover;
@@ -154,7 +163,11 @@ svg {
     background-repeat: no-repeat;
     background-color: transparent;
     margin-left: -1%;
+    padding-bottom: 1%;
+}
 
+.activeNav_mini{
+    background-image: url("../images/UnionBG2_mini.svg");
 }
 
 .svgFillNone {
@@ -174,7 +187,7 @@ svg {
 
 .svgFillActive {
     fill: white;
-    margin-top: 10%;
+    margin-top: 6%;
 
 }
 
@@ -250,8 +263,15 @@ svg {
 }
 
 .minMenu_mini {
-    margin-right: 0.7%;
+    margin-right: 0.8%;
+    bottom: 10% !important;
 }
+
+.minMenu_mini_EditPage{
+    bottom: 24% !important;
+    padding-bottom: 0;
+}
+
 
 
 #minMenu:hover path {
@@ -837,7 +857,7 @@ select:focus {
 
 .colorpicker-input-addon i {
     border: 2px solid white;
-    margin-top: -2px;
+    margin-top: -2.5px;
     /*box-shadow: 0px 0x  rgba(128, 128, 128, 0.95);*/
 }
 
@@ -2016,10 +2036,26 @@ div.card-group{
     font-size: 0.8vw;
 }
 
+.button_new_mini{
+    padding: 0rem 0.8vw !important;
+}
+
 img.img-thumbnail.rounded-circle{
     padding: 0.125rem;
     margin-left: 0.5vw;
     border-color: whitesmoke;
+}
+
+.sidenav_img
+{
+    width: 6vw;
+    height:6vw;
+}
+
+.sidenav_img_mini{
+    width: 2.5vw;
+    height:2.5vw;
+    margin-top: -4.5vh;
 }
 
 #user_area_sidenav > p{
@@ -2030,10 +2066,23 @@ img.img-thumbnail.rounded-circle{
     font-size: 0.9vw;
 }
 
-#user_area_sidenav{
+.user_area_sidenav{
     padding-right: 2vh;
     bottom: 2%;
     position: absolute;
+}
+
+.user_area_sidenav_mini{
+    padding-right: 1.3vh;
+}
+
+.user_area_sidenav_mini_videoPage{
+    bottom: 17%;
+}
+
+
+#user_area_sidenav.user_area_sidenav_mini > p {
+display: none;
 }
 
 .breadcrumb{
@@ -2064,3 +2113,27 @@ img.img-thumbnail.rounded-circle{
     text-decoration-line: none;
     cursor: default;
 }
+
+
+.more_Shadow_drag{
+    /*box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 12px rgba(8, 5, 80, 0.049), 0px 8px 20px rgba(8, 5, 80, 0.00699759), 0px 0px 24px rgba(8, 5, 80, 0.1348);*/
+    box-shadow: 0px 4.67px 12px rgba(101, 21, 221, 0.12), 0px 4.6279px 16.8565px rgba(101, 21, 221, 0.037), 0px 8.79937px 12px rgba(101, 21, 221, 0.049), 0px 8px 20px rgba(101, 21, 221, 0.00699759), 0px 10px 16px rgba(101, 21, 221, 0.1);    color:#6515DD;
+    border-color: #6515DD;
+    border-width: 1.5px ;
+}
+
+/* ----         change_notication_window        ---- */
+#change_notification_window
+{
+    background: rgba(34, 215, 255, 0.2);
+    opacity: 0.8;    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    border-radius: 1.5vw;
+    padding: 0.5vw 1vw;
+    height: fit-content;
+    top:7%;
+    position: absolute;
+    left: 5%;
+    font-weight: 500;
+}
+
+

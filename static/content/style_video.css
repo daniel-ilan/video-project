@@ -210,3 +210,53 @@ h1 {
 #uploadModal {
     top: 5%;
 }
+
+
+/* ---  breadcrumb  --*/
+
+
+.breadcrumb{
+    background-color:  transparent;
+    padding: 0;
+    margin: auto auto;
+}
+
+.breadcrumb svg{
+    width: 3vh;
+    fill: rgba(189, 189, 189, 0.3);
+}
+.breadcrumb a{
+    color: rgba(189, 189, 189, 0.3);
+    font-size: 0.84vw;
+    font-weight: normal;
+}
+
+
+.breadcrumb .breadcrumb-item::before{
+    color:   rgba(189, 189, 189, 0.2);
+}
+
+.breadcrumb-item:hover a{
+    color: rgba(189, 189, 189, 0.8);
+}
+
+.breadcrumb-item:hover svg{
+    fill: rgba(189, 189, 189, 0.8);
+}
+
+#current_page_breadcrumb{
+    color: #aeaeae;
+    font-size: 0.84vw;
+    font-weight: 500;
+    display: inline-block;
+    padding-right: 0.2vw;
+}
+
+#current_page_breadcrumb_a:hover{
+    text-decoration-line: none;
+    cursor: default;
+}
+
+#current_page_breadcrumb_a  svg{
+    margin-left: -0.35vw;
+}

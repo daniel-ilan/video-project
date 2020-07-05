@@ -187,13 +187,22 @@ def send_email():
 
 @application.route('/filming')
 def home():
+    # data to page
     video = int(session.get('CURRENT_VIDEO'))
     frames_props = get_frames_from_db(video)
+
+    # data to breadcrumbs
+    project_props = []
+    project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+    project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+    project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
     """Renders the home page."""
     return render_template(
         'filming.html',
         frames=frames_props,
+        project_props = project_props,
         title='אודות',
         year=datetime.now().year
     )
@@ -500,12 +509,8 @@ def frame_change():
 
             anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
                                            "submitChange")
-
-            # form_data = json.loads(request.form["form_data"])
-            # anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
-            #                                "submitChange")
-
-            # current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
+            # get latest notes text
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             frame_text = current_frame[6]
 
 
@@ -520,6 +525,7 @@ def frame_change():
             file_name = db.get_animations_url_by_id(new_anim_id)[0]
             anim_props = update_anim_props(file_name, anim_props_original, data_to_db,
                                            "change_mini_lottie")
+            current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
         color_palettes = getPalette()
         color_palettes_array = []
@@ -749,15 +755,20 @@ def delete_frame(id: str):
     my_id = id
     # my_id = data[data.find('_') + 1:]
     all_frames = db.get_all_frames(session.get('CURRENT_VIDEO'))
-    prev_id = all_frames[0][1]
-    for i in range(1, len(all_frames)):
+    prev_id = all_frames[0][0]
+    for i in range(0, len(all_frames)-1):
         if all_frames[i][0] == int(my_id):
-            prev_id = all_frames[i - 1][0]
+            if i == 0:
+                # it's the first frame so prev_id is the next one so add +1
+                prev_id = all_frames[i + 1][0]
+            else:
+                # any other frame - so the prev frame is -1
+                prev_id = all_frames[i - 1][0]
             break
 
     path = session.get('WORKING_PATH') + str(db.get_frame_by_id(my_id)[3])
     os.remove(path)
-    db.delete_frame(int(my_id))
+    db.delete_frame(int(my_id), session.get('CURRENT_VIDEO'))
     return convert_row_to_list(db.get_frame_by_id(str(prev_id)))
 
 
@@ -1138,10 +1149,10 @@ def collectionChange():
     elif event_kind == 'switch_event':
         return jsonify(collections_props=collections_props, animations_props=animations_props,
                        collection_id=collection_id, selected_collection_id=selected_collection_id,
-                       collection_length=collection_length)
+                       collection_length=collection_length,event_kind = event_kind)
     elif event_kind == 'ChooseCollection':
         return jsonify(collections_props=collections_props, collection_id=collection_id,
-                       selected_collection_id=selected_collection_id, collection_length=collection_length)
+                       selected_collection_id=selected_collection_id, collection_length=collection_length,event_kind =event_kind)
 
     return ""
 

@@ -42,6 +42,7 @@
                 <div class="container h-100">
                     <div class="row text-container">
                         <div class="col">
+                            <div id="pageTitleH"></div>
                             <h1>הערות להצגה</h1>
                             <p id="slides_Notes" class="slide-text"></p>
                         </div>
@@ -101,6 +102,7 @@
     <script src="//unpkg.com/videojs-record/dist/videojs.record.min.js"></script> -->
     <script type="text/javascript">
         var myFrames = {{frames | tojson}};
+        var project_props =  {{project_props | tojson}};
     </script>
     <script src="static/scripts/script_video.js"></script>
 

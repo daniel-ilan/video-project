@@ -12,6 +12,7 @@ $(document).ready(function () {
         boolX = true;
     }
     $(".sidebarCol li a").on('click', change_animation_handler);
+    $('#dltFrameBtn').off('click', change_animation_handler);
 });
 
 function roundItemsBorder() {
@@ -23,8 +24,19 @@ function roundItemsBorder() {
             indexActive = counter;
         }
     });
-    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
-    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+    if( $('#minMenu').attr("data-state") == "false")
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").removeClass('activeNav_mini');
+    }
+    else
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").addClass('activeNav_mini');
+    }
+
 }
 
 function frameChangeHandler(event) {
@@ -33,9 +45,16 @@ function frameChangeHandler(event) {
     if (event == null) {
         event_kind = "onLoad"
     } else if (event.currentTarget.id === "dltFrameBtn") {
-        event_kind = "delete_frame";
-        frame_id = $(".active_frame_lottie")[0].id;
-        event.preventDefault();
+        if (event.currentTarget.classList.contains("frame_lottie"))
+        {
+            return ""
+        }
+        else
+        {
+            event_kind = "delete_frame";
+            frame_id = $(".active_frame_lottie")[0].id;
+            event.preventDefault();
+        }
     } else if (event.currentTarget.id === "newFrameBtn") {
         event_kind = "new_frame"
     }
@@ -64,8 +83,8 @@ function change_animation_handler(event) {
             event_kind = "frame_click";
             frame_id = event.currentTarget.id;
         } else if (event.currentTarget.classList.contains("nav-link")) {
-            event_kind = "change_kind_click";
-            selected_kind = (event.currentTarget.id).slice(5);
+                event_kind = "change_kind_click";
+                selected_kind = (event.currentTarget.id).slice(5);
 
         } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";
@@ -168,6 +187,20 @@ function contentChangeHandler(data) {
     const pageSpinner = $("#pageSpinner");
     pageSpinner.addClass("invisible");
     // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
+
+
+
+    if ($("#dltFrameBtn").hasClass( "disabled_svg" ))
+    {
+        // only one frame - so disabled function
+        $('#dltFrameBtn').off('click', frameChangeHandler);
+    }
+    else
+    {
+        //more than one frame, so it's possible to delete
+        $('#dltFrameBtn').off('click', frameChangeHandler);
+        $('#dltFrameBtn').on('click', frameChangeHandler);
+    }
 }
 
 
@@ -211,6 +244,20 @@ function buildFrames(data) {
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', change_animation_handler);
 
+    // able / disable delete button
+    if (data.frames[1].length == 1)
+    {
+        // only one frame -disable
+        $('#dltFrameBtn svg').addClass('disabled_svg');
+        $('#dltFrameBtn').addClass('disabled_svg');
+    }
+    else
+    {
+        //more than one frame - able
+        $('#dltFrameBtn svg').removeClass('disabled_svg');
+        $('#dltFrameBtn').removeClass('disabled_svg');
+    }
+
     // creates the option to drag the frames around
     let framesArea = document.querySelector('#frames_Area_container');
     UIkit.sortable(framesArea, {
@@ -240,12 +287,16 @@ function buildFrames(data) {
 function getDraggedWidth(eve) {
     let width_cont = $('#frames_Area_container').width();
     $('#frames_Area_container').width(width_cont);
+    let current_id = eve.detail[1].getElementsByTagName("div")[0].getAttribute("id");
+    $('#'+current_id).addClass('more_Shadow_drag');
 }
 
 function getDraggedInfo(eve){
     let currentMove = eve.detail[1].dataset.order;
     let indexes = [];
     let db_order = [];
+    let current_id = eve.detail[1].getElementsByTagName("div")[0].getAttribute("id");
+    $('#'+current_id).removeClass('more_Shadow_drag');
     $(this).find('.frame_container_class').each(function() {
         indexes.push($(this).attr("data-order"));
     });
@@ -437,23 +488,15 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     }
 
     //disabled
-
-
-    const displayText = getFrameText(frameText);
+    let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
-    //
-    // $('textarea').change(function () {
-    //     $('#submitChange').removeClass("secondaryBtn_disabled");
-    // });
-    // $('textarea').keyup(function () {
-    //     $('#submitChange').removeClass("secondaryBtn_disabled");
-    // });
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#content input, #frameText, select').on('keyup change', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
     });
-    $('#dltFrameBtn').on('click', frameChangeHandler);
+
+
     $('#submitChange').on('click', change_animation_handler);
 
 }
@@ -827,7 +870,7 @@ function breadCrumbs(data) {
 
     let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 pb-3 " aria-label="breadcrumb">
                       <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="homePage">
+                        <li class="breadcrumb-item"><a href="#" class="" style="cursor: not-allowed">
                              <svg id="home_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.5 10H7V10.5V14.5H4.25V9V8.5H3.75H2.80298L9 2.92268L15.197 8.5H14.25H13.75V9V14.5H11V10.5V10H10.5H7.5Z" fill="#BDBDBD" stroke="#BDBDBD"/>
                              </svg>

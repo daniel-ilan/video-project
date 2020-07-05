@@ -26,8 +26,18 @@ function roundItemsBorder() {
             indexActive = counter;
         }
     });
-    $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
-    $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+    if( $('#minMenu').attr("data-state") == "false")
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").removeClass('activeNav_mini');
+    }
+    else
+    {
+        $(".sidebar li:nth-child(" + (indexActive - 1).toString() + ")").addClass('upNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive + 1).toString() + ")").addClass('downNavUI_mini');
+        $(".sidebar li:nth-child(" + (indexActive).toString() + ")").addClass('activeNav_mini');
+    }
 }
 
 
@@ -123,6 +133,10 @@ function buildCollection(data) {
             player.seek("50%");
         });
     });
+    if(data.event_kind== "ChooseCollection")
+    {
+        saveChangePopup();
+    }
 }
 
 function change_collection_handler(event) {
@@ -167,8 +181,9 @@ function change_palette_handler(event) {
             'pal_id': pal_id,
             'colorId': colorId
         }
-    }).done(buildPalette);
+    }).done(buildPalette, saveChangePopup);
 }
+
 
 function disabledFunc(event) {
     if (event.currentTarget.classList.contains("disabled") || event.currentTarget.classList.contains("secondaryBtn_disabled") || event.currentTarget.classList.contains("disabled_svg")) {
@@ -267,6 +282,7 @@ function open_modal_handler(event) {
 function modael_data(data) {
     let colors = [];
     let source;
+    let names = ["צבע ראשי", "צבע משני ", "צבע רקע", "צבע טקסט"]
 
     if (data.event_kind == "chooseFromReadyPalette") {
         //reset and set modal_main_btn listeners and class shake animation will play from disabledFunc
@@ -289,7 +305,7 @@ function modael_data(data) {
                 let colorPaletteZ = `<div id="color_${data.colors[i][1][z][1]}" class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"> </div>`;
                 let colorDesc = `<div id=${"colorDiv_" + data.colors[i][0][0]} class="ml-2 colorBranModalDiv ">
                                         <div class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"></div>
-                                        <div>${data.colors[i][1][z][1]}</div>
+                                      <div> ${names[z]} </div>
                                  </div>`
                 colorPalette += colorPaletteZ;
                 colorDesc_all += colorDesc;
@@ -357,10 +373,11 @@ function buildBrandPage() {
     const data = `
        <div class="row h-5 container-fluid mr-4 pt-2">
   ${breadCrumbs()}
-      </div>
+            <div id="change_notification_window"  style="display: none">
+                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em"  viewBox="0 0 24 24"><path d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7z" fill="black"/></svg>    השינויים נשמרו בהצלחה </div>
+          </div>
    <div id="brandPageContainer" class="container-fluid mr-4" >
         <div class="h-60 pt-2">
-
             <div class="d-flex flex-row h2_projectPage">
                 <svg viewBox="0 0 32 32" fill="svgFill" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1.22222 12.2222H8.55556C9.22778 12.2222 9.77778 11.6722 9.77778 11V1.22222C9.77778 0.55 9.22778 0 8.55556 0H1.22222C0.55 0 0 0.55 0 1.22222V11C0 11.6722 0.55 12.2222 1.22222 12.2222ZM1.22222 22H8.55556C9.22778 22 9.77778 21.45 9.77778 20.7778V15.8889C9.77778 15.2167 9.22778 14.6667 8.55556 14.6667H1.22222C0.55 14.6667 0 15.2167 0 15.8889V20.7778C0 21.45 0.55 22 1.22222 22ZM13.4444 22H20.7778C21.45 22 22 21.45 22 20.7778V11C22 10.3278 21.45 9.77778 20.7778 9.77778H13.4444C12.7722 9.77778 12.2222 10.3278 12.2222 11V20.7778C12.2222 21.45 12.7722 22 13.4444 22ZM12.2222 1.22222V6.11111C12.2222 6.78333 12.7722 7.33333 13.4444 7.33333H20.7778C21.45 7.33333 22 6.78333 22 6.11111V1.22222C22 0.55 21.45 0 20.7778 0H13.4444C12.7722 0 12.2222 0.55 12.2222 1.22222Z"
@@ -372,7 +389,9 @@ function buildBrandPage() {
                                אך אין מה לדאוג, ניתן לשנות את האנימציות בכל שלב בפרויקט">
                     ?
                 </button>
+
             </div>
+  
             <div style="display: none">
                 <div class="d-flex flex-row alert" >
                     <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -457,9 +476,6 @@ function buildBrandPage() {
     $("#chooseFromReadyPalette").on('click', open_modal_handler);
     $('[data-toggle="tooltip"]').tooltip();
     $('ol .breadcrumb').tooltip();
-
-
-
 }
 
 function buildVideoPage(data) {
@@ -838,13 +854,14 @@ function breadCrumbs() {
 
     let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 pb-3 " aria-label="breadcrumb">
                       <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="homePage">
+                        <li class="breadcrumb-item"><a href="#" class="" style="cursor: not-allowed">
                              <svg id="home_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.5 10H7V10.5V14.5H4.25V9V8.5H3.75H2.80298L9 2.92268L15.197 8.5H14.25H13.75V9V14.5H11V10.5V10H10.5H7.5Z" fill="#BDBDBD" stroke="#BDBDBD"/>
                              </svg>
                                 דף הבית
                         </a></li>
-                        <li class="breadcrumb-item"><a href="projectPage">
+                        <li class="breadcrumb-item"><a href="projectPage" data-toggle="tooltip" data-placement="bottom"
+                                    title="${project_name}">
                             <svg id="project_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M7.5 3H3C2.175 3 1.5075 3.675 1.5075 4.5L1.5 13.5C1.5 14.325 2.175 15 3 15H15C15.825 15 16.5 14.325 16.5 13.5V6C16.5 5.175 15.825 4.5 15 4.5H9L7.5 3Z" fill="#BDBDBD"/>
                             </svg>
@@ -861,16 +878,15 @@ function build_project_area_sideNav(data) {
     let className = ""
     if (data[0][2] == "בהכנה") {
         className = "status_working";
-
     } else if (data[0][2] == "בצילום") {
         className = "status_recording"
     } else if (data[0][2] == "הסתיים") {
         className = "status_done"
     }
     // project_props = [project_id],[project_name],[status],[last_update],[image]
-    let div = `<img src="${data[0][4]}" class="img-thumbnail " style="width: 100px; height:100px" alt="">
+    let div = `<img id="sidenav_img" src="${data[0][4]}" class="img-thumbnail sidenav_img "  alt="">
         <p id="project_name" data-proj-id: "${data[0][0]}" > ${data[0][1]}</p>
-      <small class="text-muted status ${className}">${data[0][2]}</small>
+      <small id="small_status" class="text-muted status ${className}">${data[0][2]}</small>
 
     <button id="create_new_vid" class="primaryBTN mt-4">+ סרטון חדש</button>`;
 
@@ -883,4 +899,14 @@ function build_project_area_sideNav(data) {
 <!--</svg>-->
 `;
     $('#user_area_sidenav').html(user_div);
+}
+
+function saveChangePopup() {
+    // $('#change_notification_window').css("display", "block");
+    $("#change_notification_window").fadeIn();
+
+     setTimeout(function(){   $('#change_notification_window').fadeOut("slow"); }, 2200);
+    // setTimeout(function(){ $('#change_notification_window').css("display", "none");
+    //    }, 3000);
+
 }
