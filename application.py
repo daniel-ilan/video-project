@@ -428,6 +428,8 @@ def frame_change():
     project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
     project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
     project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
+    project_props = []
+
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
@@ -439,6 +441,10 @@ def frame_change():
             current_frame = frames_props[1][0]
             kind = current_frame[3]
             frame_text = current_frame[4]
+            project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+            project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+            project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+            project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
 
         elif event_kind == "delete_frame":
@@ -544,7 +550,7 @@ def frame_change():
 
         return jsonify(anim_props=anim_props, frames=frames_props, event_kind=event_kind, current_frame=current_frame,
                        animation_by_kind=lit_anim, kind=kind, color_palettes=color_palettes_array,
-                       frame_text=frame_text, project_props=project_props)
+                       frame_text=frame_text, project_props =project_props)
 
 
 def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
@@ -1064,7 +1070,7 @@ def onLoad():
             colors = getPalette()
             return jsonify(collections_props=collections_props, animations_props=animations_props,
                            collection_id=collection_id, collection_length=collection_length,
-                           selected_collection_id=collection_id, event_kind=event_kind, colors=colors, project_props =project_props)
+                           selected_collection_id=collection_id, event_kind=event_kind, colors=colors)
         elif event_kind == "link_videos" or event_kind == "more_delete":
             if event_kind == "more_delete":
                 video_id = request.form["video_id"]

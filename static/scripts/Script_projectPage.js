@@ -9,7 +9,6 @@ $(document).ready(function () {
         boolX = true;
         // loadPage("pageLoad");
         loadPage("link_videos");
-
     }
     $(".sidebarCol li a").on('click', function (event) {
         let id = event.currentTarget.id;
