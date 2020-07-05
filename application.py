@@ -186,13 +186,22 @@ def send_email():
 
 @application.route('/filming')
 def home():
+    # data to page
     video = int(session.get('CURRENT_VIDEO'))
     frames_props = get_frames_from_db(video)
+
+    # data to breadcrumbs
+    project_props = []
+    project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
+    project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
+    project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
+    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
     """Renders the home page."""
     return render_template(
         'filming.html',
         frames=frames_props,
+        project_props = project_props,
         title='אודות',
         year=datetime.now().year
     )
@@ -1100,10 +1109,10 @@ def collectionChange():
     elif event_kind == 'switch_event':
         return jsonify(collections_props=collections_props, animations_props=animations_props,
                        collection_id=collection_id, selected_collection_id=selected_collection_id,
-                       collection_length=collection_length)
+                       collection_length=collection_length,event_kind = event_kind)
     elif event_kind == 'ChooseCollection':
         return jsonify(collections_props=collections_props, collection_id=collection_id,
-                       selected_collection_id=selected_collection_id, collection_length=collection_length)
+                       selected_collection_id=selected_collection_id, collection_length=collection_length,event_kind =event_kind)
 
     return ""
 

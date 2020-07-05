@@ -870,7 +870,7 @@ function breadCrumbs(data) {
 
     let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 pb-3 " aria-label="breadcrumb">
                       <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="homePage">
+                        <li class="breadcrumb-item"><a href="#" class="" style="cursor: not-allowed">
                              <svg id="home_icon" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.5 10H7V10.5V14.5H4.25V9V8.5H3.75H2.80298L9 2.92268L15.197 8.5H14.25H13.75V9V14.5H11V10.5V10H10.5H7.5Z" fill="#BDBDBD" stroke="#BDBDBD"/>
                              </svg>

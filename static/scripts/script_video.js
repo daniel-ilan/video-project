@@ -18,6 +18,7 @@ let clicksToPlay = 0;
 
 document.addEventListener("DOMContentLoaded", function(event) {
   getStartingControls();
+  breadCrumbs();
   createMainSlide();
   loadNextAnim(animNum);
   createSmallSlide(animNum);
@@ -528,4 +529,54 @@ function completeMessage() {
   `;
 
   modalBody.innerHTML = msg;
+}
+
+
+
+function breadCrumbs() {
+  let video_name = project_props[1]
+  let project_name = project_props[0][0][1]
+  let project_name_div= ""
+  if (project_name.length >= 17) {
+    project_name_div = project_name.slice(0, 16) + "..";
+  } else {
+    project_name_div = project_name;
+  }
+
+  let div = `<nav id="page_breadcrumb" class="mr-auto pt-1 " aria-label="breadcrumb" dir="rtl">
+                      <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" class="" style="cursor: not-allowed">
+                             <svg id="home_icon" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.5 10H7V10.5V14.5H4.25V9V8.5H3.75H2.80298L9 2.92268L15.197 8.5H14.25H13.75V9V14.5H11V10.5V10H10.5H7.5Z"/>
+                             </svg>
+                                דף הבית
+                        </a></li>
+                        <li class="breadcrumb-item"><a id="project_${project_props[0][0][0]}" href="projectPage" data-toggle="tooltip" data-placement="bottom"
+                                    title="${project_name}">
+                            <svg id="project_icon" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M7.5 3H3C2.175 3 1.5075 3.675 1.5075 4.5L1.5 13.5C1.5 14.325 2.175 15 3 15H15C15.825 15 16.5 14.325 16.5 13.5V6C16.5 5.175 15.825 4.5 15 4.5H9L7.5 3Z" />
+                            </svg>
+                        ${project_name_div}</a></li>
+                        <li class="breadcrumb-item" aria-current="page">  
+                        <a id="current_page_breadcrumb_a" href="#">
+                        <svg width="18" height="18" viewBox="0 0 24 24"  fill="none" xmlns="http://www.w3.org/2000/svg">
+<!--                            <path d="M12.5 5A7.5 7.5 0 0 0 5 12.5a7.5 7.5 0 0 0 7.5 7.5a7.5 7.5 0 0 0 7.5-7.5A7.5 7.5 0 0 0 12.5 5M7 10h2a1 1 0 0 1 1 1v1c0 .5-.38.9-.86.97L10.31 15H9.15L8 13v2H7m5-5h2v1h-2v1h2v1h-2v1h2v1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m4 0h2v1h-2v3h2v1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m-8 1v1h1v-1" fill="#aeaeae"/>-->
+                      <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z" fill="#aeaeae"/>
+                        </svg>
+
+                        <div id="current_page_breadcrumb" class="align-middle">${video_name}</div></a>                          
+                         </li>
+                      </ol>
+                 </nav> `;
+  $('#pageTitleH').html(div);
+  $('[data-toggle="tooltip"]').tooltip();
+
+  let user_div = `<img src="${project_props[2][1]}" class="img-thumbnail rounded-circle" style="width: 2.2vw;height:2.2vw;" alt="">
+        <p>${project_props[2][0]}</p>
+
+<!--<svg width="10" height="6" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--<path d="M8.81084 0.815816C8.71522 0.728061 8.56836 0.728061 8.47275 0.815816L5 4.00313L1.52725 0.815816C1.43164 0.728061 1.28478 0.728061 1.18916 0.815816L0.830955 1.14458C0.779366 1.19193 0.75 1.25874 0.75 1.32877C0.75 1.39879 0.779366 1.4656 0.830955 1.51295L4.83095 5.18418C4.92657 5.27194 5.07343 5.27194 5.16905 5.18418L9.16905 1.51295C9.22063 1.4656 9.25 1.39879 9.25 1.32877C9.25 1.25874 9.22063 1.19193 9.16905 1.14458L8.81084 0.815816Z" fill="#BDBDBD" stroke="#BDBDBD" stroke-width="0.5" stroke-linejoin="round"/>-->
+<!--</svg>-->
+`;
+  $('#user_area_sidenav').html(user_div);
 }
