@@ -283,6 +283,7 @@ function open_modal_handler(event) {
 function modael_data(data) {
     let colors = [];
     let source;
+    let names = ["צבע ראשי", "צבע משני ", "צבע רקע", "צבע טקסט"]
 
     if (data.event_kind == "chooseFromReadyPalette") {
         //reset and set modal_main_btn listeners and class shake animation will play from disabledFunc
@@ -305,7 +306,8 @@ function modael_data(data) {
                 let colorPaletteZ = `<div id="color_${data.colors[i][1][z][1]}" class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"> </div>`;
                 let colorDesc = `<div id=${"colorDiv_" + data.colors[i][0][0]} class="ml-2 colorBranModalDiv ">
                                         <div class="colorBranModal" style="background-color: ${data.colors[i][1][z][0]}"></div>
-                                        <div>${data.colors[i][1][z][1]}</div>
+                                      <div> ${names[z]} </div>
+<!--                       $ {  data.colors[i][1][z][1]}           -->
                                  </div>`
                 colorPalette += colorPaletteZ;
                 colorDesc_all += colorDesc;
