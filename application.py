@@ -251,7 +251,6 @@ def newProject():
             userID = request.form['userID']
             db.update_project_last_update("2")
             data = db.get_project_info(userID)
-            print(data)
         elif request.form['submit_button'] == 'submit_newVid':
             project_id = request.form['project_id']
             video_name = request.form['video_name']
@@ -354,7 +353,6 @@ def homePage():
         else:
             if request.form['existUserEmail'] != '' and request.form['existUserPass'] != '':
                 dataFromDB = db.check_log_in(str(request.form['existUserEmail']), str(request.form['existUserPass']))
-                print(dataFromDB)
                 if dataFromDB[0] is True and dataFromDB[1] is False:
                     alertM = "סיסמא שגויה"
                 elif dataFromDB[0] is True and dataFromDB[1] is True:
@@ -437,7 +435,7 @@ def frame_change():
     project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
     project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
     project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
-
+    project_props.append(session.get('CURRENT_VIDEO'))
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
         event_kind = request.form["event_kind"]
@@ -498,8 +496,8 @@ def frame_change():
         elif event_kind == "submitChange":
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
+            form_data = json.loads(request.form["form_data"])
             if kind == "image":
-                form_data = json.loads(request.form["form_data"])
                 form_data.append(request.files)
 
             anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
@@ -1336,6 +1334,16 @@ def check_change_on_collectionYN():
         if db.get_project_initial_theme(project_id) == 0:
             db.update_initial_theme(project_id, current_theme)
         db.update_change_on_collectionYN(project_id, True)
+
+
+
+@application.route('/publish_video', methods=['POST', 'GET'])
+def publish_video():
+    if request.method == 'POST':
+        event_kind = request.form['event_kind']
+        video_id = request.form['video_id']
+        db.update_video_status(video_id,"בצילום")
+        return jsonify(event_kind= event_kind)
 
 
 if __name__ == '__main__':

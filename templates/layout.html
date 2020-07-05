@@ -119,7 +119,9 @@
                 </div>
 
                 <div class="col-6 animation-container">
-                    <div  class="mr-auto pt-1 pb-4 "></div>
+                    <div  class="mr-auto pt-1 pb-4 ">
+                        <input type="submit" name="saveVideo" id="saveVideo"  class=" btn secondaryBtn justify-content-center" value="פרסום" />
+                    </div>
                     <div class="spinner-wrapper invisible align-items-center d-flex justify-content-center" id="animSpinner">
                         <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
                             <span class="sr-only">Loading...</span>
@@ -128,11 +130,9 @@
                     <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
                                    class="lottiePlayer mainAnimation" id="mainAnimation" style="width: 94%">
                     </lottie-player>
-                    <!--                    <div class="lottie lottiePlayer" id="mainAnimation" data-animation-path="../static/content/animations/temp1_anim3.json" data-anim-loop="true"></div>-->
                     <div id="h3_kindAnim">
                         <div>
                             <h4>בחירה מאנימציות המותג</h4>
-                            <!--  data-toggle="modal" data-target="#modal" -->
                               <button id="button_switch" type="button" class="btn secondaryBtn lit_sec"  >בחירה מכלל התבניות</button>
                           </div>
                       </div>
