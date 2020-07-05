@@ -13,6 +13,7 @@ $(document).ready(function () {
     }
     $(".sidebarCol li a").on('click', change_animation_handler);
     $('#dltFrameBtn').off('click', change_animation_handler);
+    $('#saveVideo').on('click', publish_video);
 });
 
 function roundItemsBorder() {
@@ -114,7 +115,6 @@ function change_animation_handler(event) {
             $('#modal').modal('hide')
         }
 
-
         // check if there is image upload input
         var is_imageUpload_file = false;
         for (var i = 0; i < form_data.length; i++) {
@@ -125,7 +125,6 @@ function change_animation_handler(event) {
 
         if (is_imageUpload_file) {
             //submit imageUpload_file
-
             /**
              * @param {event} eve
              * @fires   loadImageProps
@@ -904,11 +903,20 @@ function breadCrumbs(data) {
     $('[data-toggle="tooltip"]').tooltip();
 
     let user_div = `<img src="${data[2][1]}" class="img-thumbnail rounded-circle" style="width: 2.2vw;height:2.2vw;" alt="">
-        <p>${data[2][0]}</p>
-
-<!--<svg width="10" height="6" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">-->
-<!--<path d="M8.81084 0.815816C8.71522 0.728061 8.56836 0.728061 8.47275 0.815816L5 4.00313L1.52725 0.815816C1.43164 0.728061 1.28478 0.728061 1.18916 0.815816L0.830955 1.14458C0.779366 1.19193 0.75 1.25874 0.75 1.32877C0.75 1.39879 0.779366 1.4656 0.830955 1.51295L4.83095 5.18418C4.92657 5.27194 5.07343 5.27194 5.16905 5.18418L9.16905 1.51295C9.22063 1.4656 9.25 1.39879 9.25 1.32877C9.25 1.25874 9.22063 1.19193 9.16905 1.14458L8.81084 0.815816Z" fill="#BDBDBD" stroke="#BDBDBD" stroke-width="0.5" stroke-linejoin="round"/>-->
-<!--</svg>-->
-`;
+        <p>${data[2][0]}</p> `;
     $('#user_area_sidenav').html(user_div);
+    $('#saveVideo').attr("data-video",data[3] )
+}
+
+function publish_video() {
+const video_id = $('#saveVideo').attr("data-video")
+    $.ajax({
+        method: 'POST',
+        url: '/publish_video',
+        data: {'event_kind': "publish_video", 'video_id': video_id}
+    }).done(pageNavigation);
+}
+
+function pageNavigation() {
+    window.location.href = "projectPage";
 }

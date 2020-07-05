@@ -851,7 +851,6 @@ function loadFile(event) {
 
 
 function breadCrumbs() {
-
     let project_name = (document.querySelector("#project_name").innerHTML)
     let project_name_div = ""
     if (project_name.length >= 17) {
@@ -861,9 +860,6 @@ function breadCrumbs() {
     }
 
     let page_name = document.querySelector("li.activeNav  span").innerHTML;
-    let svg_icon = ""
-    // let svg_icon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20">
-    //                       ${`${document.querySelector("li.activeNav svg").innerHTML}`} </svg>   `;
 
     let div = `<nav id="page_breadcrumb" class="mr-auto pt-1" aria-label="breadcrumb">
                       <ol class="breadcrumb">
@@ -905,23 +901,15 @@ function build_project_area_sideNav(data) {
 
     $('#project_area_sideNav').html(div);
     let user_div = `<img src="${data[1][1]}" class="img-thumbnail rounded-circle" style="width: 2.2vw;height:2.2vw;" alt="">
-        <p>${data[1][0]}</p>
-
-<!--<svg width="10" height="6" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">-->
-<!--<path d="M8.81084 0.815816C8.71522 0.728061 8.56836 0.728061 8.47275 0.815816L5 4.00313L1.52725 0.815816C1.43164 0.728061 1.28478 0.728061 1.18916 0.815816L0.830955 1.14458C0.779366 1.19193 0.75 1.25874 0.75 1.32877C0.75 1.39879 0.779366 1.4656 0.830955 1.51295L4.83095 5.18418C4.92657 5.27194 5.07343 5.27194 5.16905 5.18418L9.16905 1.51295C9.22063 1.4656 9.25 1.39879 9.25 1.32877C9.25 1.25874 9.22063 1.19193 9.16905 1.14458L8.81084 0.815816Z" fill="#BDBDBD" stroke="#BDBDBD" stroke-width="0.5" stroke-linejoin="round"/>-->
-<!--</svg>-->
-`;
+        <p>${data[1][0]}</p>`;
     $('#user_area_sidenav').html(user_div);
 }
 
 function saveChangePopup() {
-    // $('#change_notification_window').css("display", "block");
     $("#change_notification_window").fadeIn();
 
     setTimeout(function () {
         $('#change_notification_window').fadeOut("slow");
     }, 2200);
-    // setTimeout(function(){ $('#change_notification_window').css("display", "none");
-    //    }, 3000);
 
 }
