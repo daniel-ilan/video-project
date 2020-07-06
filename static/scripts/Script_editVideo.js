@@ -378,6 +378,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     let colorUi = [];
     let colorId = [];
     let path = "";
+    let imageControls = '';
     let color_palettes_json = create_color_pelettes_json(color_palettes);
     if (data != null) {
         // const content = $('#content');
@@ -393,10 +394,8 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                 } else if (elem.includes("secondary") || elem.includes("base")) {
                     colorUi.push(getColor(elem, data[elem]));
                     colorId.push(elem)
-                } else if (elem === 'image') {
-                    editForm.append(getImage());
                 } else if (elem.includes('listItem')) {
-                    let a = getText(elem, data[elem].text, "listItem");
+                    let a = getText(elem, data[elem].text, "listItem", data.sizes);
 
                     editForm.append(a);
                     $('#listItemalignment option[value=' + data[elem].text.alignment + ']').prop('selected', true);
@@ -466,12 +465,24 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                     }
 
                     checkNumBullets();
-                } else if (elem === "text") {
-                    editForm.prepend(getText(elem, data[elem], data_kind));
+                } 
+                else if (elem === "text") {
+                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
                     addCustomColor('#text_color', color_palettes_json);
 
                     $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true)
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
+                }
+                else if ( elem === "text_2"){
+                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
+                    addCustomColor('#text_2_color', color_palettes_json);
+
+                    $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true)
+                    $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true)
+                }  
+                else if (elem === 'image') {
+                    imageControls = getImage();
+                    
                 }
             }
         });
@@ -486,7 +497,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
         createColorUi(colorUi, colorId, color_palettes_json)
     }
 
-    //disabled
+    editForm.prepend(imageControls);
     let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
@@ -557,7 +568,7 @@ function getColor(name, color) {
 }
 
 
-function getText(name, text, data_kind) {
+function getText(name, text, data_kind, sizes) {
     /**
      * @param {string}  name    name of the animation attribute to use for HTML names
      * @param {list}    color   the color of the layer
@@ -566,32 +577,31 @@ function getText(name, text, data_kind) {
     let my_color;
     let h3_name = "";
     let inputText = "";
-    let fontSize = 0;
+    let fontSize = [];
+    let allowedChars = [];
+    Object.keys(sizes).forEach(function (elem){
+        fontSize.push(elem);
+        allowedChars.push(sizes[elem]);
+        });
     my_color = getColor(name + '_color', text.color);
     if (data_kind === "listItem") {
         h3_name = "סעיפי הרשימה";
         text.content.forEach(function (content, index) {
-            inputText += `<input type="text" lang="he" maxlength="24" name=${name + 'content' + (index + 1)} id=${name + 'content_' + (index + 1)} value="${content}" class="form-control">`
-            
+            inputText += `<input type="text" name=${name + 'content' + (index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});">`
         });
-        fontSize = [38, 58, 72]
     } else {
         my_color = getColor(name + '_color', text.color);
         if (data_kind === "intro") {
             h3_name = "תוכן פתיח";
-            fontSize = [72, 92, 112]
         } else if (data_kind === "ending") {
             h3_name = "תוכן סיום";
-            fontSize = [72, 92, 112]
-        } else if (data_kind === "text") {
+        } else if (data_kind === "text" || data_kind === "image") {
             h3_name = "תוכן ";
-            fontSize = [38, 58, 72]
         } else if (data_kind === "list") {
             h3_name = "כותרת הרשימה";
-            fontSize = [38, 58, 72]
         }
 
-        inputText = `<input type="text" maxlength="24" name=${name + 'content'} id=${name + 'content'} name="animText" value="${text.content}" class="form-control">`;
+        inputText = `<input type="text" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]}); onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});" name=${name + 'content'} id=${name + 'content'} name="animText" value="${text.content}" class="form-control">`;
     }
 
 
@@ -620,7 +630,27 @@ function getText(name, text, data_kind) {
                              ${my_color}
                     </div>
                     ${inputText}
+                    <span class="badge badge-pill badge-custom invisible" id="${name}_counter">12/24</span>
             </div>`;
+}
+
+function textCounter(field,counter,maxlimit)
+{
+    counter.classList.remove("invisible")
+ if ( field.value.length > maxlimit ) {
+  field.value = field.value.substring( 0, maxlimit );
+  counter.classList.add("text-limit-reached")
+  return false;
+ } else {
+    counter.innerHTML = `${field.value.length} / ${maxlimit}`;
+    if (counter.classList.contains("text-limit-reached")){
+        counter.classList.remove('text-limit-reached')
+    }
+ }
+}
+
+function displayCounter(counter) {
+    counter.classList.add("invisible")
 }
 
 function createColorUi(colors, colorId, color_palettes_json) {

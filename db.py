@@ -273,6 +273,12 @@ def get_frame_by_id(id: str):
     return select_one_query(query)
 
 
+def get_text_props(selected_animation_id):
+    if type(selected_animation_id) is str:
+        id = int(selected_animation_id)
+    query = f"SELECT [num_chars] FROM animations WHERE animation_id={selected_animation_id};"
+    return select_one_query(query)
+
 def get_frame_kind_by_id(id: str):
     id = int(id)
     query = f"SELECT [selected_animation_kind] FROM frames WHERE frame_id={id};"
@@ -535,13 +541,13 @@ def get_animations_by_theme(theme_id):
     if isinstance(theme_id, str):
         theme_id = int(theme_id)
     query = f"SELECT [animation_id] FROM a_t_relation WHERE theme_id={theme_id};"
-    new_query = f"SELECT [animation_kind],[animation_url],[animation_id] FROM animations WHERE animation_id IN({query});"
+    new_query = f"SELECT [animation_kind],[animation_url],[animation_id],[num_chars] FROM animations WHERE animation_id IN({query});"
     return select_all_query(new_query)
 
 
-def create_new_anim(animation_name,animation_kind,animation_url, theme_id):
+def create_new_anim(animation_name,animation_kind,animation_url, theme_id, num_chars):
     # create new anim
-    query = f"INSERT INTO animations ([animation_name],[animation_kind],[animation_url]) VALUES('{animation_name}','{animation_kind}','{animation_url}');"
+    query = f"INSERT INTO animations ([animation_name],[animation_kind],[animation_url],[num_chars]) VALUES('{animation_name}','{animation_kind}','{animation_url}','{num_chars}');"
     update_query(query)
 
     # get the animation id

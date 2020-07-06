@@ -509,6 +509,19 @@ svg {
 .text-form {
     width: fit-content;
     align-content: space-around;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-limit-reached {
+    background-color: #00b6de1a;
+}
+
+.badge-custom{
+    color: #00B6DE;
+    align-self: flex-end;
+    font-weight: 400;
+    margin: 1% 1% 0 0;
 }
 
 #submitChange {
@@ -927,13 +940,12 @@ select:focus {
 
 .spinner-wrapper {
     width: 87vh;
-    height: 25vw;
+    height: 26vw;
     background-color: #ececec;
     position: absolute;
     border-radius: 1rem;
     z-index: 1;
-    top: 2vh;
-
+    top: 7vh;
 }
 
 .page-spinner-wrapper{
@@ -1780,7 +1792,7 @@ h5.card-title{
     max-height:100%;
     margin: auto;
     border-radius: 1rem !important;
-
+    object-fit: contain;
     -webkit-transition: max-height 0.2s ease-out;
     -moz-transition: max-height 0.2s ease-out;
     -o-transition: max-height 0.2s ease-out;
