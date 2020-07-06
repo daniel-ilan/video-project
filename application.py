@@ -131,6 +131,16 @@ def get_anim_props(path, image_path=""):
                          'alignment': text_alignment,
                          'font_size': font_size}
             anim_props['text'] = text_dict
+        elif layer.name == '.myText_2':
+            text_color = layer.data.data.keyframes[0].start.color
+            text_content = layer.data.data.keyframes[0].start.text
+            text_alignment = layer.data.data.keyframes[0].start.justify.value
+            font_size = layer.data.data.keyframes[0].start.font_size
+            text_dict = {'color': colors.to_hex(list(text_color[0:3])),
+                         'content': correct_text(text_content),
+                         'alignment': text_alignment,
+                         'font_size': font_size}
+            anim_props['text_2'] = text_dict
     return anim_props
 
 
@@ -526,6 +536,16 @@ def frame_change():
             color_palettes_array.append([color[1], color[0]])
         lit_anim = get_animations_by_kind(kind)
 
+
+        # if kind != 'empty' and kind != 'image':
+        if event_kind == 'onLoad':
+            text_props = db.get_text_props(current_frame[2])
+            anim_props.update({"sizes": json.loads(text_props[0])})
+        else:
+            text_props = db.get_text_props(current_frame[5])
+            if not text_props[0] == 'None':
+                anim_props.update({"sizes": json.loads(text_props[0])})
+
         if event_kind == "select_from_general":
             general_frame = db.get_genral_anim_props_by_id(new_anim_id)  # array structure [animation_name], [animation_url], [animation_id]
 
@@ -565,6 +585,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
 
     an = readable(path)
     text = {}
+    text_2 = {}
     color = {}
     list_text = {'listItem_color': "",
                  'listItemalignment': "",
@@ -591,6 +612,14 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                         text.update({"textcolor": item[1]})
                     elif item[0] == "textfont_size":
                         text.update({"textfont_size": item[1]})
+                    elif item[0] == "text_2alignment":
+                        text_2.update({"textalignment": item[1]})
+                    elif item[0] == "text_2content":
+                        text_2.update({"textcontent": item[1]})
+                    elif item[0] == "text_2_color":
+                        text_2.update({"textcolor": item[1]})
+                    elif item[0] == "text_2font_size":
+                        text_2.update({"textfont_size": item[1]})
                     elif item[0] == "side_note":
                         notes = item[1]
                     elif item[0] == 'imageUpload_file':
@@ -626,6 +655,11 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text.update({"textcolor": data[item]['color']})
                 text.update({"textalignment": data[item]['alignment']})
                 text.update({"textfont_size": data[item]['font_size']})
+            elif item == "text_2":
+                text_2.update({"textcontent": data[item]['content']})
+                text_2.update({"textcolor": data[item]['color']})
+                text_2.update({"textalignment": data[item]['alignment']})
+                text_2.update({"textfont_size": data[item]['font_size']})
             elif item == 'image':
                 image = True
 
@@ -635,8 +669,12 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
             # change only the text color without taking any other props. I guess this would probably need to change in
             # the future for more flexibility
             an = change_text_color(an, text["textcolor"])
-        elif kind != "empty" and kind != "image":
-            an = change_text(an, text["textcontent"], text["textcolor"], text["textalignment"], text["textfont_size"])
+            if len(text_2) > 0:
+                an = change_text_color(an, text_2["textcolor"])
+        elif kind != "empty":
+            an = change_text(an, '.myText', text["textcontent"], text["textcolor"], text["textalignment"], text["textfont_size"])
+            if len(text_2) > 0:
+                an = change_text(an, '.myText_2', text_2["textcontent"], text_2["textcolor"], text_2["textalignment"], text_2["textfont_size"])
     if len(color) > 0:
         an = change_color(an, color, 100)
     if image is True:
@@ -651,7 +689,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
         exporters.export_lottie(an, new_path)
 
         # update frame props on db
-        db.create_new_anim(frame_prop[0], frame_prop[3], name_for_new_name, frame_prop[5])
+        db.create_new_anim(frame_prop[0], frame_prop[3], name_for_new_name, frame_prop[5], frame_prop[6])
     else:
         # create new name & file
         new_name = name_for_new_name + "_" + str(int(time.time())) + ".json"
@@ -833,13 +871,13 @@ def copy_animations(kind, new_path):
 def get_frames_from_db(video_id: int):
     frames_array = db.get_all_frames(video_id)
 
-    "need to change frames_arrayPath"
     # line velow should come out of a functions called get_frames_path
     frames_arrayPath = session.get('WORKING_PATH')
     frames_list = []
-    for frame in frames_array:
+    for i, frame in enumerate(frames_array):
         # [frame_id],[lottie_url],[selected_animation_id],[selected_animation_kind],[frame_text],[order]
         frames_list.append([frame[0], frame[1], frame[2], frame[3], frame[4], frame[5], frame[6]])
+
     myArray = [frames_arrayPath, frames_list]
     return myArray
 
@@ -850,14 +888,16 @@ def change_text_color(an, color):
     return an
 
 
-def change_text(an, text, color, alignment, font_size):
+def change_text(an, layer_to_change, text, color, alignment, font_size):
     anim_text = correct_text(text)
     correct_color = list(colors.to_rgba(color, float) + (1,))
-    # an.find('.myText').data.data.keyframes[0].start = objects.text.TextDocument(anim_text, font_size, correct_color)
-    an.find('.myText').data.data.keyframes[0].start.font_size = float(font_size)
-    an.find('.myText').data.data.keyframes[0].start.color = correct_color[0:3]
-    an.find('.myText').data.data.keyframes[0].start.text = anim_text
-    an.find('.myText').data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
+    for layer in an.layers:
+        # an.find('.myText').data.data.keyframes[0].start = objects.text.TextDocument(anim_text, font_size, correct_color)
+        if layer_to_change in layer.name:
+            layer.data.data.keyframes[0].start.font_size = float(font_size)
+            layer.data.data.keyframes[0].start.color = correct_color[0:3]
+            layer.data.data.keyframes[0].start.text = anim_text
+            layer.data.data.keyframes[0].start.justify = objects.text.TextJustify(int(alignment))
 
     return an
 
@@ -1311,6 +1351,7 @@ def create_new_collection(project_id: int):
             anim_props.append(anim[0])
             anim_props.append(props[0])
             anim_props.append(new_theme)
+            anim_props.append(anim[3])
 
             update_anim_props(props[0], data, anim_props, "create brand")
             counter += 1
