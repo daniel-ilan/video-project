@@ -541,12 +541,12 @@ def frame_change():
         if event_kind == 'onLoad':
             text_props = db.get_text_props(current_frame[2])
             if text_props is not None:
-                if text_props[0] is not None:
+                if text_props[0] is not None and text_props[0] != 'None':
                     anim_props.update({"sizes": json.loads(text_props[0])})
         else:
             text_props = db.get_text_props(current_frame[5])
             if text_props is not None:
-                if text_props[0] is not None:
+                if text_props[0] is not None and text_props[0] != 'None':
                     anim_props.update({"sizes": json.loads(text_props[0])})
 
         if event_kind == "select_from_general":
