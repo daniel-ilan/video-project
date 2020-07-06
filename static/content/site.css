@@ -329,8 +329,8 @@ svg {
 /*          ----------            edit Template Page          ----------          */
 .frame_container_class {
     display: inline-block;
-    margin-top: 1.5vh;
-    padding: 0 1.5vh;
+    margin-top: 1rem;
+    padding: 0 1rem;
 }
 
 .tinyLottie_continer {
@@ -509,6 +509,19 @@ svg {
 .text-form {
     width: fit-content;
     align-content: space-around;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-limit-reached {
+    background-color: #00b6de1a;
+}
+
+.badge-custom{
+    color: #00B6DE;
+    align-self: flex-end;
+    font-weight: 400;
+    margin: 1% 1% 0 0;
 }
 
 #submitChange {
@@ -577,11 +590,11 @@ svg {
     border: solid 0.125rem #6515DD;
     background-color: #F9FAFB;
     color: #6515DD;
-    /*padding: 0.5rem 1rem;*/
+    padding: 0.5rem 1rem;
     border-radius: 10px;
     font-weight: 500;
     font-size: 1rem;
-    line-height: 1vh;
+    line-height: 19px;
     display: flex;
     align-items: center;
     text-align: center;
@@ -927,13 +940,12 @@ select:focus {
 
 .spinner-wrapper {
     width: 87vh;
-    height: 25vw;
+    height: 26vw;
     background-color: #ececec;
     position: absolute;
     border-radius: 1rem;
     z-index: 1;
-    top: 2vh;
-
+    top: 7vh;
 }
 
 .page-spinner-wrapper{
@@ -1780,7 +1792,7 @@ h5.card-title{
     max-height:100%;
     margin: auto;
     border-radius: 1rem !important;
-
+    object-fit: contain;
     -webkit-transition: max-height 0.2s ease-out;
     -moz-transition: max-height 0.2s ease-out;
     -o-transition: max-height 0.2s ease-out;
@@ -2138,16 +2150,14 @@ display: none;
 #change_notification_window
 {
     background: rgba(34, 215, 255, 0.2);
-    opacity: 0.9;
-    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    opacity: 0.8;    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
     border-radius: 1.5vw;
     padding: 0.5vw 1vw;
     height: fit-content;
-    top:6%;
+    top:7%;
     position: absolute;
     left: 5%;
     font-weight: 500;
-    z-index: 20;
 }
 
 
