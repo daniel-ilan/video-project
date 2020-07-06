@@ -515,6 +515,13 @@ svg {
 
 .text-limit-reached {
     background-color: #00b6de1a;
+    padding: 0 2vh;
+}
+
+ #saveVideo {
+    position: absolute;
+     left: 2.8vw;
+    padding: 0 2vh;
 }
 
 .badge-custom{
@@ -579,6 +586,8 @@ svg {
     background: #BDBDBD !important;
     color: white !important;
     border-color: #BDBDBD !important;
+    height: 4vh;
+    cursor: pointer;
 }
 
 .disabled-nav-item , .disabled-nav-item:hover > svg , .disabled-nav-item:hover > a{
@@ -702,6 +711,7 @@ svg {
     height: 2.5rem;
     line-height: 18px;
     box-shadow: 0px 6px 10px rgba(112, 32, 188, 0.15);
+    padding: 2vh 1vh;
 }
 
 .xxx {
@@ -1520,6 +1530,7 @@ select:focus {
 
 .h2_projectPage h2 {
     margin-right: 0.5vw;
+    max-width: fit-content;
 }
 
 .helpBtn {
@@ -2136,7 +2147,7 @@ display: none;
 
 #page_breadcrumb{
     max-height: 8vh;
-
+max-height: 8vh;
 }
 
 .more_Shadow_drag{

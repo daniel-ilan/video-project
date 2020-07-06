@@ -275,7 +275,7 @@ def get_frame_by_id(id: str):
 
 def get_text_props(selected_animation_id):
     if type(selected_animation_id) is str:
-        id = int(selected_animation_id)
+        selected_animation_id = int(selected_animation_id)
     query = f"SELECT [num_chars] FROM animations WHERE animation_id={selected_animation_id};"
     return select_one_query(query)
 
