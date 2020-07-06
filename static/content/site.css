@@ -329,8 +329,8 @@ svg {
 /*          ----------            edit Template Page          ----------          */
 .frame_container_class {
     display: inline-block;
-    margin-top: 1rem;
-    padding: 0 1rem;
+    margin-top: 1.5vh;
+    padding: 0 1.5vh;
 }
 
 .tinyLottie_continer {
@@ -577,11 +577,11 @@ svg {
     border: solid 0.125rem #6515DD;
     background-color: #F9FAFB;
     color: #6515DD;
-    padding: 0.5rem 1rem;
+    /*padding: 0.5rem 1rem;*/
     border-radius: 10px;
     font-weight: 500;
     font-size: 1rem;
-    line-height: 19px;
+    line-height: 1vh;
     display: flex;
     align-items: center;
     text-align: center;
@@ -2138,14 +2138,16 @@ display: none;
 #change_notification_window
 {
     background: rgba(34, 215, 255, 0.2);
-    opacity: 0.8;    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
+    opacity: 0.9;
+    box-shadow: 0px 4.67px 12px rgba(8, 5, 80, 0.12), 0px 4.6279px 16.8565px rgba(8, 5, 80, 0.0170142), 0px 8.79937px 44.8316px rgba(8, 5, 80, 0.0090356), 0px 26.5442px 113.972px rgba(8, 5, 80, 0.00699759), 0px 202px 100px rgba(8, 5, 80, 0.0148);
     border-radius: 1.5vw;
     padding: 0.5vw 1vw;
     height: fit-content;
-    top:7%;
+    top:6%;
     position: absolute;
     left: 5%;
     font-weight: 500;
+    z-index: 20;
 }
 
 

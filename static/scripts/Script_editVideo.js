@@ -203,20 +203,6 @@ function contentChangeHandler(data) {
 }
 
 
-function submitChange_function(event) {
-    event.preventDefault();
-    const event_kind = "submitChange";
-    const form_data = new FormData(editForm[0]);
-    form_data.append('event_kind', event_kind);
-    $.ajax({
-        processData: false,
-        contentType: false,
-        method: 'POST',
-        url: '/frame_change',
-        data: form_data
-    }).done(contentChangeHandler);
-}
-
 function buildFrames(data) {
     let numSlides = [];
 
@@ -491,12 +477,18 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
     editForm.append(displayText);
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
+
+    $('#submitChange').on('click', disabledFunc);
     $('#content input, #frameText, select').on('keyup change', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
+        // remove older listeners
+        $('#submitChange').off('click', change_animation_handler);
+        $('#submitChange').off('click', disabledFunc);
+        //create new one that call the server
+        $('#submitChange').on('click', change_animation_handler);
     });
 
 
-    $('#submitChange').on('click', change_animation_handler);
 
 }
 
