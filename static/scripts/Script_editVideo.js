@@ -89,7 +89,7 @@ function change_animation_handler(event) {
 
         } else if (event.currentTarget.id === "submitChange") {
             event_kind = "submitChange";
-            event.preventDefault();
+//            event.preventDefault();
             form_data = [];
             $('#content input').each(function () {
                 form_data.push([$(this).attr('name'), $(this).val()])

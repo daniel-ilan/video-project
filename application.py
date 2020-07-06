@@ -38,21 +38,6 @@ def correct_text(sentence):
     """
     a = algorithm.get_display(sentence)
     return a
-    # if " " in sentence:
-    #     sentence = sentence.strip().split(" ")
-    #     for word in sentence:
-    #         if ord(word[0]) >= 1424 and ord(word[0]) <= 1514:
-    #             index = sentence.index(word)
-    #             sentence[index] = word[::-1]
-    #         else:
-    #             pass
-    #     sentence.reverse()
-    #     return ' '.join(sentence)
-    # else:
-    #     if ord(sentence[1]) >= 1424 and ord(sentence[1]) <= 1514:
-    #         return sentence[::-1]
-    #     else:
-    #         return sentence
 
 
 def readable(path):
@@ -131,6 +116,20 @@ def get_anim_props(path, image_path=""):
                          'alignment': text_alignment,
                          'font_size': font_size}
             anim_props['text'] = text_dict
+
+            # text_layer_num = int(layer.name[-1])
+            # text_color = layer.data.data.keyframes[0].start.color
+            # text_content = layer.data.data.keyframes[0].start.text
+            # text_alignment = layer.data.data.keyframes[0].start.justify.value
+            # font_size = layer.data.data.keyframes[0].start.font_size
+            # text_dict = {'color': colors.to_hex(list(text_color[0:3])),
+            #              'content': correct_text(text_content),
+            #              'alignment': text_alignment,
+            #              'font_size': font_size}
+            # if text_layer_num == 1:
+            #     anim_props['text'] = text_dict
+            # else:
+            #     anim_props['listItem']['text'].append(text_dict)
     return anim_props
 
 
