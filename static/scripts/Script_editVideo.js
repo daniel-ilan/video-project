@@ -202,21 +202,6 @@ function contentChangeHandler(data) {
     }
 }
 
-
-function submitChange_function(event) {
-    event.preventDefault();
-    const event_kind = "submitChange";
-    const form_data = new FormData(editForm[0]);
-    form_data.append('event_kind', event_kind);
-    $.ajax({
-        processData: false,
-        contentType: false,
-        method: 'POST',
-        url: '/frame_change',
-        data: form_data
-    }).done(contentChangeHandler);
-}
-
 function buildFrames(data) {
     let numSlides = [];
 
@@ -502,12 +487,14 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
     editForm.append(displayText);
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
+    $('#submitChange').on('click', disabledFunc);
     $('#content input, #frameText, select').on('keyup change', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
+        $('#submitChange').off('click', change_animation_handler);
+        $('#submitChange').off('click', disabledFunc);
+        //create new one that call the server
+        $('#submitChange').on('click', change_animation_handler);
     });
-
-
-    $('#submitChange').on('click', change_animation_handler);
 
 }
 
@@ -587,7 +574,7 @@ function getText(name, text, data_kind, sizes) {
     if (data_kind === "listItem") {
         h3_name = "סעיפי הרשימה";
         text.content.forEach(function (content, index) {
-            inputText += `<input type="text" name=${name + 'content' + (index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});">`
+            inputText += `<input type="text" name=${name + 'content' + (index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});">`
         });
     } else {
         my_color = getColor(name + '_color', text.color);
@@ -601,7 +588,7 @@ function getText(name, text, data_kind, sizes) {
             h3_name = "כותרת הרשימה";
         }
 
-        inputText = `<input type="text" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]}); onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});" name=${name + 'content'} id=${name + 'content'} name="animText" value="${text.content}" class="form-control">`;
+        inputText = `<input type="text" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});" name=${name + 'content'} id=${name + 'content'} value="${text.content}" class="form-control">`;
     }
 
 
@@ -652,6 +639,7 @@ function textCounter(field,counter,maxlimit)
 function displayCounter(counter) {
     counter.classList.add("invisible")
 }
+
 
 function createColorUi(colors, colorId, color_palettes_json) {
     /**
