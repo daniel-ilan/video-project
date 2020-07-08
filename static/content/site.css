@@ -519,6 +519,16 @@ svg {
     padding: 0 2vh;
 }
 
+#Textmodal{
+    width: 60%;
+    margin: 0 20%;
+}
+
+#textModalPlaceholder{
+    color: #007994;
+}
+
+
  #saveVideo {
     position: absolute;
      left: 2.8vw;
@@ -535,7 +545,6 @@ svg {
 #submitChange {
     position: absolute;
     left: 4rem;
-    /*bottom: 1rem;*/
     padding: 0 2vh;
     top: 5rem;
 }
@@ -559,8 +568,6 @@ svg {
     line-height: 19px;
     align-items: center;
     text-align: center;
-    /*letter-spacing: 0.03em;*/
-    /*margin: 3rem 0;*/
     height: 2.5rem;
     width: fit-content;
 
@@ -570,7 +577,6 @@ svg {
     transition: background-color 0.3s ease-out;
 }
 
-/*input[type=button]:hover,*/
 .primaryBTN:hover {
     background-color: #00B6DE;
     border: solid 0.125rem #00A7CC;
@@ -794,6 +800,11 @@ svg {
 }
 
 /*          ----------            -text edit options-          ----------          */
+
+.custom-form-control:focus {
+    border-color: #6515DD;
+    box-shadow: none;
+}
 
 .text-edit-line {
     width: 104px;
