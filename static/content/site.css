@@ -560,7 +560,7 @@ svg {
     background-color: #6515DD;
     border: solid 0.125rem #6515DD;
     color: white;
-    padding: 0.5rem 1.75rem;
+    /*padding: 0.5rem 1.75rem;*/
     border-radius: 0.75rem;
     font-weight: 500;
     font-size: 1rem;
@@ -606,7 +606,7 @@ svg {
     border: solid 0.125rem #6515DD;
     background-color: #F9FAFB;
     color: #6515DD;
-    padding: 0.5rem 1rem;
+    /*padding: 0.5rem 1rem;*/
     border-radius: 10px;
     font-weight: 500;
     font-size: 1rem;
@@ -680,9 +680,7 @@ svg {
     color: #6515DD;
 }
 
-#newFrameBtn {
-    padding: 0.4rem 0.75rem;
-}
+
 
 .collection_svg_icon svg {
     fill: rgba(101, 21, 221, 0.1);
@@ -718,7 +716,7 @@ svg {
     height: 2.5rem;
     line-height: 18px;
     box-shadow: 0px 6px 10px rgba(112, 32, 188, 0.15);
-    padding: 2vh 1vh;
+    /*padding: 2vh 1vh;*/
 }
 
 .xxx {
