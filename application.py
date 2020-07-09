@@ -507,7 +507,7 @@ def frame_change():
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
             kind = current_frame[4]
             form_data = json.loads(request.form["form_data"])
-            if kind == "image":
+            if len(request.files) > 0:
                 form_data.append(request.files)
 
             anim_props = update_anim_props(str(db.get_frame_by_id(frame_id)[3]), form_data, current_frame,
