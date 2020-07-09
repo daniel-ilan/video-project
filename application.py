@@ -87,13 +87,13 @@ def get_anim_props(path, image_path=""):
         elif 'base' in layer.name:
             out_color = colors.to_hex(layer.find('Fill 1').color.value.components)
             sec_opacity = layer.find('Fill 1').opacity.value
-            secondary_dict = {'secondary': {'color': out_color, 'opacity': sec_opacity}}
+            secondary_dict = {'base': {'color': out_color, 'opacity': sec_opacity}}
             anim_props.update(secondary_dict)
 
-        elif 'third' in layer.name:
+        elif 'secondary' in layer.name:
             color = colors.to_hex(layer.find('Fill 1').color.value.components)
             prim_opacity = layer.find('Fill 1').opacity.value
-            primary_dict = {'third': {'color': color, 'opacity': prim_opacity}}
+            primary_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
             anim_props.update(primary_dict)
 
         elif layer.name == '.image':
@@ -604,9 +604,9 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                     if item[0] == "primary":
                         color.update({"primary": item[1]})
                     elif item[0] == "secondary":
+                        color.update({"secondary": item[1]})
+                    elif item[0] == "base":
                         color.update({"base": item[1]})
-                    elif item[0] == "third":
-                        color.update({"third": item[1]})
                     elif item[0] == "textalignment":
                         text.update({"textalignment": item[1]})
                     elif item[0] == "textcontent":
@@ -652,6 +652,8 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
             if item == "primary":
                 color.update({"primary": data[item]['color']})
             elif item == "secondary":
+                color.update({"secondary": data[item]['color']})
+            elif item == "base":
                 color.update({"base": data[item]['color']})
             elif item == "text":
                 text.update({"textcontent": data[item]['content']})
@@ -663,8 +665,14 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                 text_2.update({"textcolor": data[item]['color']})
                 text_2.update({"textalignment": data[item]['alignment']})
                 text_2.update({"textfont_size": data[item]['font_size']})
+            elif item == "listItem":
+                list_text.update({"listItem_color": data[item]["text"]["color"]})
+                list_text.update({"listItemalignment": data[item]["text"]["alignment"]})
+                for num, list_item in enumerate(data[item]["text"]["content"]):
+                    list_text["listContent"].append([list_item, num])
             elif item == 'image':
                 image = True
+
 
 
     if len(text) > 0:
@@ -709,9 +717,13 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
             db.update_frame_props(frame_prop[0], new_name, frame_prop[4], frame_prop[5], clicks=clicks, notes=notes)
 
         else:
+            if len(list_text['listContent']) > 0:
+                clicks = len(list_text['listContent']) + 2
+            else:
+                clicks = None
             os.remove(session.get('WORKING_PATH') + frame_prop[3])
             # update frame props on db
-            db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], notes)
+            db.update_frame_props(frame_prop[0], new_name, frame_prop[1], frame_prop[2], clicks=clicks, notes=notes)
     return get_anim_props(new_path)
 
 
@@ -812,7 +824,7 @@ def get_animations_by_kind(kind):
     :return:
     """
     myArray = []
-    animations = db.get_animations_by_project_and_kind('19', kind)
+    animations = db.get_animations_by_project_and_kind('25', kind)
     #  0 - animation_name ; 1 - path ; 2 -animation_id
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])

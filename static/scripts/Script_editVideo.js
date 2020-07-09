@@ -14,6 +14,8 @@ $(document).ready(function () {
     $(".sidebarCol li a").on('click', change_animation_handler);
     $('#dltFrameBtn').off('click', change_animation_handler);
     $('#saveVideo').on('click', publish_video);
+    const modal = getModalHtml();
+    $('body').append(modal);
 });
 
 function roundItemsBorder() {
@@ -376,7 +378,11 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                 } else if (elem.includes("primary")) {
                     colorUi.push(getColor(elem, data[elem]));
                     colorId.push(elem)
-                } else if (elem.includes("secondary") || elem.includes("base")) {
+                } else if (elem.includes("secondary")) {
+                    colorUi.push(getColor(elem, data[elem]));
+                    colorId.push(elem)
+                }
+                else if (elem.includes("base")) {
                     colorUi.push(getColor(elem, data[elem]));
                     colorId.push(elem)
                 } else if (elem.includes('listItem')) {
@@ -392,7 +398,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
                     let numBullets = $("input[name*='listItemcontent']").length;
                     $('#addBulletBtn').on('click', function (event) {
-                        const bulletTextBox = `<input type="text" maxlength="24" name=${'listItemcontent' + (numBullets + 1)} id=${'listItemcontent_' + (numBullets + 1)} value="הטקסט שלך" class="form-control">`;
+                        const bulletTextBox = `<input type="text" maxlength="24" name=${'listItemcontent' + (numBullets + 1)} id=${'listItemcontent_' + (numBullets + 1)} value="הטקסט שלך" class="form-control custom-form-control">`;
                         $('#editText_listItem').append(bulletTextBox);
                         numBullets++;
                         checkNumBullets();
@@ -451,19 +457,24 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
                     checkNumBullets();
                 } 
+                
+                
                 else if (elem === "text") {
-                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
+                    const controls = getText(elem, data[elem], data_kind, data.sizes);
+                    editForm.prepend(controls);
+                    addListeners(elem, data[elem], data.sizes);
                     addCustomColor('#text_color', color_palettes_json);
-
-                    $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true)
-                    $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true)
+                    $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true);
+                    $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true);
+                    
                 }
                 else if ( elem === "text_2"){
-                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
+                    const controls = getText(elem, data[elem], data_kind, data.sizes);
+                    editForm.prepend(controls);
+                    addListeners(elem, data[elem], data.sizes);
                     addCustomColor('#text_2_color', color_palettes_json);
-
-                    $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true)
-                    $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true)
+                    $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true);
+                    $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true);
                 }  
                 else if (elem === 'image') {
                     imageControls = getImage();
@@ -483,12 +494,13 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     }
 
     editForm.prepend(imageControls);
+
     let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#submitChange').on('click', disabledFunc);
-    $('#content input, #frameText, select').on('keyup change', function () {
+    $('#content input, #frameText, select, #addBulletBtn, #removeBulletBtn').on('keyup change click', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
         $('#submitChange').off('click', change_animation_handler);
         $('#submitChange').off('click', disabledFunc);
@@ -505,7 +517,7 @@ function getFrameText(text) {
     }
     return `<div class="form-group frame-text-wrapper mr-3"> 
   <h3>הערות לצילום: </h3>
-<textarea id="frameText" name="side_note" class="form-control" placeholder="ניתן להקליד פה הערות למצולם אשר יופיעו מולו בזמן הצילום">${text}</textarea></div>`
+<textarea id="frameText" name="side_note" class="form-control custom-form-control" placeholder="ניתן להקליד פה הערות למצולם אשר יופיעו מולו בזמן הצילום">${text}</textarea></div>`
 }
 
 function getImage() {
@@ -566,6 +578,7 @@ function getText(name, text, data_kind, sizes) {
     let inputText = "";
     let fontSize = [];
     let allowedChars = [];
+
     Object.keys(sizes).forEach(function (elem){
         fontSize.push(elem);
         allowedChars.push(sizes[elem]);
@@ -574,7 +587,7 @@ function getText(name, text, data_kind, sizes) {
     if (data_kind === "listItem") {
         h3_name = "סעיפי הרשימה";
         text.content.forEach(function (content, index) {
-            inputText += `<input type="text" name=${name + 'content' + (index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});">`
+            inputText += `<input data-sizes='${JSON.stringify(sizes)}' type="text" name=${name}content${(index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control custom-form-control">`
         });
     } else {
         my_color = getColor(name + '_color', text.color);
@@ -588,7 +601,7 @@ function getText(name, text, data_kind, sizes) {
             h3_name = "כותרת הרשימה";
         }
 
-        inputText = `<input type="text" onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" onfocusout="displayCounter(${name}_counter);" onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});" name=${name + 'content'} id=${name + 'content'} value="${text.content}" class="form-control">`;
+        inputText = `<input data-sizes='${JSON.stringify(sizes)}' data-span="${name}_counter" type="text" name=${name}content id=${name + 'content'} value="${text.content}" class="form-control custom-form-control">`;
     }
 
 
@@ -602,9 +615,9 @@ function getText(name, text, data_kind, sizes) {
                     </span>
                     <span class="text-edit-line-after">
                            <select name=${name + 'font_size'} id=${name + 'font_size'} class="custom-select text-edit-line">
-                                <option selected="selected" value=${fontSize[0]}>גודל קטן</option>
-                                 <option value=${fontSize[1]}>גודל גדול</option>
-                                 <option value=${fontSize[2]}>גודל גדול מאוד</option>
+                                <option data-last="true" selected="selected" value=${fontSize[0]}>גודל קטן</option>
+                                 <option data-last="false" value=${fontSize[1]}>גודל גדול</option>
+                                 <option data-last="false" value=${fontSize[2]}>גודל גדול מאוד</option>
                             </select>
                     </span>
                     <span class="text-edit-line-after">
@@ -617,27 +630,117 @@ function getText(name, text, data_kind, sizes) {
                              ${my_color}
                     </div>
                     ${inputText}
-                    <span class="badge badge-pill badge-custom invisible" id="${name}_counter">12/24</span>
+                    <span class="badge badge-pill badge-custom invisible" id="${name}_counter"></span>
             </div>`;
 }
 
-function textCounter(field,counter,maxlimit)
-{
-    counter.classList.remove("invisible")
- if ( field.value.length > maxlimit ) {
-  field.value = field.value.substring( 0, maxlimit );
-  counter.classList.add("text-limit-reached")
-  return false;
- } else {
+let textFocusout = '';
+
+let textFocus = "";
+let selectChange = "";
+
+function addListeners(name, text, sizes) {
+  const textInput = document.querySelector(`#${name}content`);
+  const select = document.querySelector(`#${name}font_size`);
+  const counter = document.querySelector(`#${name}_counter`);
+  textFocusout = displayCounter.bind(this, counter);
+  textFocus = textCounter.bind(this, textInput, counter, sizes[text.font_size]);
+  selectChange = sizeChange.bind(this, select, sizes, textInput, counter);
+
+  textInput.addEventListener("focus", textFocus, true);
+  textInput.addEventListener("keydown", textFocus, true);
+  textInput.addEventListener("focusout", textFocusout, true);
+  select.addEventListener("change", selectChange, true);
+    return true
+}
+
+
+// onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" 
+// onfocusout="displayCounter(${name}_counter);" 
+// onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});"
+// onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});"
+//  onfocusout="displayCounter(${name}_counter);" 
+// onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});"
+
+
+function textCounter(field, counter, maxlimit) {
+  counter.classList.remove("invisible");
+  if (field.value.length > maxlimit) {
+    field.value = field.value.substring(0, maxlimit);
+    counter.classList.add("text-limit-reached");
     counter.innerHTML = `${field.value.length} / ${maxlimit}`;
-    if (counter.classList.contains("text-limit-reached")){
-        counter.classList.remove('text-limit-reached')
+    return false;
+  } else {
+    counter.innerHTML = `${field.value.length} / ${maxlimit}`;
+    if (counter.classList.contains("text-limit-reached")) {
+      counter.classList.remove("text-limit-reached");
     }
- }
+  }
 }
 
 function displayCounter(counter) {
-    counter.classList.add("invisible")
+  counter.classList.add("invisible");
+}
+
+function sizeChange(elem, sizes, field, counter) {
+    const textLength = field.value.length;
+    const slectedIndex = elem.options[elem.options.selectedIndex]
+    const allowedChars = sizes[slectedIndex.value];
+    const nameReference = field.id.replace('content',"");
+    animProps[nameReference].font_size = slectedIndex.value;
+    field.removeEventListener("keydown", textFocus, true);
+    field.removeEventListener("focus", textFocus, true);
+    field.removeEventListener("focusout", textFocusout, true);
+    elem.removeEventListener("change", selectChange, true);
+    
+
+    if (textLength > allowedChars) {
+        const title = document.querySelector("#TextmodalLabel");
+        const correctedText = field.value.substring(0, allowedChars);
+        const placeholder = document.querySelector("#textModalPlaceholder");
+        const msg = document.querySelector(".textModal-alert");
+        const lastSize = elem.querySelector("[data-last=true]");
+
+        const saveSize = document.querySelector("#saveSize");
+        const previousSize = document.querySelector("#previousSize");
+
+
+        title.innerHTML = `בגודל טקסט זה ניתן לכתוב ${allowedChars} תווים בלבד`;
+        placeholder.innerHTML = correctedText;
+        const alert  = "האם לשמור את השינויים?";
+        msg.innerHTML = alert;
+        $('#Textmodal').modal('show');
+
+        saveSize.addEventListener('click', function chooseSize (){
+            $('#Textmodal').modal('hide');
+            saveSize.removeEventListener('click', chooseSize);
+              elem.querySelector('[data-last=true]').dataset['last'] = "false";
+              slectedIndex.dataset["last"] = "true";
+              addListeners(nameReference, animProps[nameReference], sizes);
+              field.focus();
+              
+        });
+
+        previousSize.addEventListener('click', function revertSize (){
+            previousSize.removeEventListener('click', revertSize);
+            $('#Textmodal').modal('hide');
+            elem.selectedIndex = lastSize.index;
+            animProps[nameReference].font_size = elem[elem.selectedIndex].value;
+            addListeners(nameReference, animProps[nameReference], sizes);
+            field.focus();
+
+        });
+
+
+    }
+    else {
+        elem.querySelector('[data-last=true]').dataset['last'] = "false";
+        slectedIndex.dataset["last"] = "true";
+        addListeners(nameReference, animProps[nameReference], sizes);
+    }
+
+
+
 }
 
 
@@ -664,7 +767,7 @@ function createColorUi(colors, colorId, color_palettes_json) {
             myName = "ראשי";
         } else if (colorId[i].includes("secondary")) {
             myName = "משני";
-        } else if (colorId[i].includes("third")) {
+        } else if (colorId[i].includes("base")) {
             myName = "רקע";
         }
         $('#name_' + colorId[i]).html(myName);
@@ -937,4 +1040,28 @@ const video_id = $('#saveVideo').attr("data-video")
 
 function pageNavigation() {
     window.location.href = "projectPage";
+}
+
+
+function getModalHtml() {
+    return `
+    <div class="modal fade" data-backdrop="static" id="Textmodal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                 <h2 class="modal-title" id="TextmodalLabel"></h2>
+                </div>
+             <div class="modal-body" id="TextModalBody">
+                <p> לאחר השמירה נקצר את הטקסט כך: </p>
+                <p id="textModalPlaceholder"> <p/>
+                <p class="textModal-alert"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="previousSize" type="button" class="btn secondaryBtn">לגודל הקודם</button>
+                <button id="saveSize" type="button" class="btn primaryBTN">בגודל החדש</button>
+            </div>
+        </div>
+    </div>
+
+</div>`
 }
