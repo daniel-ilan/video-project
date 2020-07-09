@@ -437,8 +437,6 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                      * called on build form initial load and after adding new bullet
                      */
                     function checkNumBullets() {
-
-
                         const removeBullet = $('#removeBulletBtn');
                         const addBulletBtn = $("#addBulletBtn");
                         if (numBullets >= 3) {
@@ -457,8 +455,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
                     checkNumBullets();
                 } 
-                
-                
+
                 else if (elem === "text") {
                     const controls = getText(elem, data[elem], data_kind, data.sizes);
                     editForm.prepend(controls);
@@ -522,7 +519,7 @@ function getFrameText(text) {
 
 function getImage() {
     return `<div id="editImage" enctype="multipart/form-data">
-                <h3>העלאת תמונה</h3>
+                <h3>תמונה</h3>
                 <div class="imageUpload_file_div">
                    <input type="file" id="imageUpload_file" name="imageUpload_file" style="display:none;"  onchange="loadFile(event)" value="+">
                   <input type="button" id="imageUpload_file_btn" value="החלפת תמונה" class="btn secondaryBtn justify-content-center"  onclick="document.getElementById('imageUpload_file').click();" />
