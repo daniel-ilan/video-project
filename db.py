@@ -549,7 +549,7 @@ def create_new_anim(animation_name,animation_kind,animation_url, theme_id, num_c
     query = f"INSERT INTO animations ([animation_name],[animation_kind],[animation_url],[num_chars]) VALUES('{animation_name}','{animation_kind}','{animation_url}','{num_chars}');"
     update_query(query)
 
-    # get the animation id
+    # get the animation id #
     query = f"SELECT TOP 1 animation_id FROM animations WHERE animation_name='{animation_name}' AND  animation_url='{animation_url}'ORDER BY animation_id DESC;"
     animation_id = int(select_one_query(query)[0])
 
