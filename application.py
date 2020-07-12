@@ -826,7 +826,7 @@ def get_animations_by_kind(kind):
     :return:
     """
     myArray = []
-    animations = db.get_animations_by_project_and_kind('25', kind)
+    animations = db.get_animations_by_project_and_kind('26', kind)
     #  0 - animation_name ; 1 - path ; 2 -animation_id
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])

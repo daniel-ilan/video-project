@@ -104,7 +104,6 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
 
 def get_last_project_id(user_id: int):
     query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
-    query = f"SELECT TOP 1 project_id FROM projects WHERE user_id={user_id} ORDER BY project_id DESC;"
     return select_one_query(query)
 
 
