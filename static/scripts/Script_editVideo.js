@@ -63,6 +63,7 @@ function frameChangeHandler(event) {
     }
     const pageSpinner = $("#pageSpinner");
     pageSpinner.removeClass("invisible");
+    console.log("xxx")
     $.ajax({
         method: 'POST',
         url: '/frame_change',
@@ -187,7 +188,7 @@ function contentChangeHandler(data) {
     }
     const pageSpinner = $("#pageSpinner");
     pageSpinner.addClass("invisible");
-    // document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
+    document.querySelector("#"+ frame_id+ " lottie-player").seek("20%");
 
 
 
@@ -367,6 +368,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     let path = "";
     let imageControls = '';
     let color_palettes_json = create_color_pelettes_json(color_palettes);
+    let isList
     if (data != null) {
         // const content = $('#content');
         Object.keys(data).forEach(function (elem) {
@@ -387,8 +389,18 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                     colorId.push(elem)
                 } else if (elem.includes('listItem')) {
                     let a = getText(elem, data[elem].text, "listItem", data.sizes);
-
+                    
+                      
                     editForm.append(a);
+                    const textInputs = document.querySelectorAll(`.list-item`);
+                    const controls = {
+                        textInput: textInputs,
+                        select: document.querySelector(`#${elem}font_size`),
+                        counter: document.querySelector(`#${elem}_counter`)
+                    }
+                    addTextListeners(controls, data[elem].text, data.sizes);
+
+                    $('#listItemfont_size option[value=' + data[elem].text.font_size + ']').prop('selected', true);
                     $('#listItemalignment option[value=' + data[elem].text.alignment + ']').prop('selected', true);
                     addCustomColor('#listItem_color', color_palettes_json);
                     editForm.append(`<div>
@@ -398,17 +410,31 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
                     let numBullets = $("input[name*='listItemcontent']").length;
                     $('#addBulletBtn').on('click', function (event) {
-                        const bulletTextBox = `<input type="text" maxlength="24" name=${'listItemcontent' + (numBullets + 1)} id=${'listItemcontent_' + (numBullets + 1)} value="הטקסט שלך" class="form-control custom-form-control">`;
-                        $('#editText_listItem').append(bulletTextBox);
+                        const bulletTextBox = `<input type="text" maxlength="24" name=${'listItemcontent' + (numBullets + 1)} id=${'listItemcontent_' + (numBullets + 1)} value="הטקסט שלך" class="form-control custom-form-control list-item">`;
+                        $('#editText_listItem input[type="text"]').last().after(bulletTextBox);
                         numBullets++;
                         checkNumBullets();
                         $('#submitChange').removeClass("secondaryBtn_disabled");
+                        const textInputs = document.querySelectorAll(`.list-item`);
+                        const controls = {
+                            textInput: textInputs,
+                            select: document.querySelector(`#${elem}font_size`),
+                            counter: document.querySelector(`#${elem}_counter`)
+                        }
+                        addTextListeners(controls, data[elem].text, data.sizes);
                     });
                     $('#removeBulletBtn').on('click', function (event) {
                         $('#editText_listItem input[type="text"]').last().remove();
                         numBullets--;
                         $('#submitChange').removeClass("secondaryBtn_disabled");
                         checkNumBullets();
+                        const textInputs = document.querySelectorAll(`.list-item`);
+                        const controls = {
+                            textInput: textInputs,
+                            select: document.querySelector(`#${elem}font_size`),
+                            counter: document.querySelector(`#${elem}_counter`)
+                        }
+                        addTextListeners(controls, data[elem].text, data.sizes);
                     });
 
 
@@ -456,22 +482,31 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                     }
 
                     checkNumBullets();
+
                 } 
                 
                 
                 else if (elem === "text") {
-                    const controls = getText(elem, data[elem], data_kind, data.sizes);
-                    editForm.prepend(controls);
-                    addListeners(elem, data[elem], data.sizes);
+                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
+                    const controls = {
+                        textInput: [document.querySelector(`#${elem}content`)],
+                        select: document.querySelector(`#${elem}font_size`),
+                        counter: document.querySelector(`#${elem}_counter`)
+                    }
+                    addTextListeners(controls, data[elem], data.sizes);
                     addCustomColor('#text_color', color_palettes_json);
                     $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true);
                     $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true);
                     
                 }
                 else if ( elem === "text_2"){
-                    const controls = getText(elem, data[elem], data_kind, data.sizes);
-                    editForm.prepend(controls);
-                    addListeners(elem, data[elem], data.sizes);
+                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
+                    const controls = {
+                        textInput: [document.querySelector(`#${elem}content`)],
+                        select: document.querySelector(`#${elem}font_size`),
+                        counter: document.querySelector(`#${elem}_counter`)
+                    }
+                    addTextListeners(controls, data[elem], data.sizes);
                     addCustomColor('#text_2_color', color_palettes_json);
                     $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true);
                     $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true);
@@ -492,6 +527,8 @@ function buildForm(data, data_kind, color_palettes, frameText) {
          */
         createColorUi(colorUi, colorId, color_palettes_json)
     }
+
+
 
     editForm.prepend(imageControls);
 
@@ -529,19 +566,49 @@ function getImage() {
                   <h6 id="p_preview_imageUpload" style="display:none;">תצוגה מקדימה לתמונה:</h6>
                   <img id="preview_imageUpload" src="#" class="mainAnimation" style="display:none;" alt="your upload image" />
                 </di>
-            </div>`
+            </div>
+            <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="width: 40%;" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="imageModalLabel"> לצערינו איננו תומכים בתמונה מסוג זה</h2>
+                        </div>
+                        <div class="modal-body">
+                            <p>ניתן להעלות תמונות מסוג jpeg ו png בלבד</p>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn primaryBTN">הבנתי</button>
+                    </div>
+                </div>
+            </div>
+            `
 }
 
 function loadFile(event) {
-    var reader = new FileReader();
-    reader.onload = function () {
-        document.getElementById('p_preview_imageUpload').style.display = "block";
-        var output = document.getElementById('preview_imageUpload');
-        output.style.display = "block";
-        output.src = reader.result;
+  const reader = new FileReader();
+  reader.onload = function() {
+    document.getElementById("p_preview_imageUpload").style.display = "block";
+    const output = document.getElementById("preview_imageUpload");
+    output.style.display = "block";
+    output.src = reader.result;
+  };
 
-    };
+  const ext = event.target.files[0].name.split(".").pop().toLowerCase();
+  const submitBtn = $('#submitChange');
+  let msg = $('#p_preview_imageUpload');
+  if ($.inArray(ext, ["png", "jpg", "jpeg"]) == -1) {
+      $('#imageModal').modal('show');
+      $('#imageModal').on('shown.bs.modal', function (e) {
+        submitBtn.off();
+        submitBtn.addClass("secondaryBtn_disabled");
+        submitBtn.on('click', disabledFunc);
+      });
+
+  } else {
+    msg.text('תצוגה מקדימה לתמונה:');
     reader.readAsDataURL(event.target.files[0]);
+  }
+
 }
 
 
@@ -586,8 +653,9 @@ function getText(name, text, data_kind, sizes) {
     my_color = getColor(name + '_color', text.color);
     if (data_kind === "listItem") {
         h3_name = "סעיפי הרשימה";
+        
         text.content.forEach(function (content, index) {
-            inputText += `<input data-sizes='${JSON.stringify(sizes)}' type="text" name=${name}content${(index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control custom-form-control">`
+            inputText += `<input type="text" data-textObj='${JSON.stringify(text)}' name=${name}content${(index + 1)} id=${name}'content_'${(index + 1)} value="${content}" class="form-control custom-form-control list-item">`
         });
     } else {
         my_color = getColor(name + '_color', text.color);
@@ -601,7 +669,7 @@ function getText(name, text, data_kind, sizes) {
             h3_name = "כותרת הרשימה";
         }
 
-        inputText = `<input data-sizes='${JSON.stringify(sizes)}' data-span="${name}_counter" type="text" name=${name}content id=${name + 'content'} value="${text.content}" class="form-control custom-form-control">`;
+        inputText = `<input type="text" data-textObj='${JSON.stringify(text)}' name=${name}content id=${name + 'content'} value="${text.content}" class="form-control custom-form-control">`;
     }
 
 
@@ -615,9 +683,9 @@ function getText(name, text, data_kind, sizes) {
                     </span>
                     <span class="text-edit-line-after">
                            <select name=${name + 'font_size'} id=${name + 'font_size'} class="custom-select text-edit-line">
-                                <option data-last="true" selected="selected" value=${fontSize[0]}>גודל קטן</option>
-                                 <option data-last="false" value=${fontSize[1]}>גודל גדול</option>
-                                 <option data-last="false" value=${fontSize[2]}>גודל גדול מאוד</option>
+                                <option data-last="true" selected="selected" value=${fontSize[0]}>קטן</option>
+                                 <option data-last="false" value=${fontSize[1]}>גדול</option>
+                                 <option data-last="false" value=${fontSize[2]}>גדול מאוד</option>
                             </select>
                     </span>
                     <span class="text-edit-line-after">
@@ -634,36 +702,42 @@ function getText(name, text, data_kind, sizes) {
             </div>`;
 }
 
-let textFocusout = '';
+let textFocusout = "";
 
 let textFocus = "";
 let selectChange = "";
+function addTextListeners(name, text, sizes) {
+    // const duplicates = [];
+    name.textInput.forEach(function (textItem) {
+        // elClone = textItem.cloneNode(true);
+        // textItem.parentNode.replaceChild(elClone, textItem);
 
-function addListeners(name, text, sizes) {
-  const textInput = document.querySelector(`#${name}content`);
-  const select = document.querySelector(`#${name}font_size`);
-  const counter = document.querySelector(`#${name}_counter`);
-  textFocusout = displayCounter.bind(this, counter);
-  textFocus = textCounter.bind(this, textInput, counter, sizes[text.font_size]);
-  selectChange = sizeChange.bind(this, select, sizes, textInput, counter);
+        $(textItem).off();
+        $(textItem).on("focus", {textItem, name: name.counter, sizes: sizes[text.font_size]}, textCounter);
+        $(textItem).on("keydown", {textItem: textItem, name: name.counter, sizes: sizes[text.font_size]}, textCounter);
+        $(textItem).on("focusout", {name: name.counter}, displayCounter);
 
-  textInput.addEventListener("focus", textFocus, true);
-  textInput.addEventListener("keydown", textFocus, true);
-  textInput.addEventListener("focusout", textFocusout, true);
-  select.addEventListener("change", selectChange, true);
-    return true
+        // textFocusout = displayCounter.bind(this, name.counter);
+        // textFocus = textCounter.bind(this, elClone, name.counter, sizes[text.font_size]);
+
+        // elClone.addEventListener("focus", textFocus, false);
+        // elClone.addEventListener("keydown", textFocus, false);
+        // elClone.addEventListener("focusout", textFocusout, false);
+        // duplicates.push(elClone);
+    });
+
+    // name.textInput = duplicates;
+
+
+    // selectChange = sizeChange.bind(this, name.select, sizes, name.textInput, name.counter);
+    $(name.select).on("change", {name: name.select, sizes: sizes, textInput: name.textInput, counter: name.counter}, sizeChange);
+    return name;
 }
 
-
-// onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});" 
-// onfocusout="displayCounter(${name}_counter);" 
-// onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});"
-// onfocus="textCounter(this,${name}_counter,${sizes[text.font_size]});"
-//  onfocusout="displayCounter(${name}_counter);" 
-// onkeydown="textCounter(this,${name}_counter,${sizes[text.font_size]});"
-
-
-function textCounter(field, counter, maxlimit) {
+function textCounter(eve) {
+    const counter = eve.data.name;
+    const field = eve.data.textItem;
+    const maxlimit = eve.data.sizes;
   counter.classList.remove("invisible");
   if (field.value.length > maxlimit) {
     field.value = field.value.substring(0, maxlimit);
@@ -678,69 +752,87 @@ function textCounter(field, counter, maxlimit) {
   }
 }
 
-function displayCounter(counter) {
+function displayCounter(eve) {
+    counter = eve.data.name;
   counter.classList.add("invisible");
 }
 
-function sizeChange(elem, sizes, field, counter) {
-    const textLength = field.value.length;
-    const slectedIndex = elem.options[elem.options.selectedIndex]
-    const allowedChars = sizes[slectedIndex.value];
-    const nameReference = field.id.replace('content',"");
-    animProps[nameReference].font_size = slectedIndex.value;
-    field.removeEventListener("keydown", textFocus, true);
-    field.removeEventListener("focus", textFocus, true);
-    field.removeEventListener("focusout", textFocusout, true);
-    elem.removeEventListener("change", selectChange, true);
-    
+
+function sizeChange(eve) {
+    const counter = eve.data.counter;
+    const sizes = eve.data.sizes;
+    const fields = eve.data.textInput;
+    const elem = eve.data.name;
+  const slectedIndex = elem.options[elem.options.selectedIndex];
+  const allowedChars = sizes[slectedIndex.value];
+  const textprops = JSON.parse(fields[0].dataset.textobj);
+  textprops.font_size = slectedIndex.value;
+  let modalOpened = false;
+  const correctedText = [];
+
+  fields.forEach(function(field, index) {
+    $(field).off();
+    textLength = field.value.length;
 
     if (textLength > allowedChars) {
-        const title = document.querySelector("#TextmodalLabel");
-        const correctedText = field.value.substring(0, allowedChars);
-        const placeholder = document.querySelector("#textModalPlaceholder");
-        const msg = document.querySelector(".textModal-alert");
-        const lastSize = elem.querySelector("[data-last=true]");
+      correctedText.push(field.value.substring(0, allowedChars));
+      modalOpened = true;
+    }
+  });
+  if (modalOpened === true) {
+    const title = document.querySelector("#TextmodalLabel");
+    const placeholder = document.querySelector("#textModalPlaceholder");
+    const msg = document.querySelector(".textModal-alert");
+    const lastSize = elem.querySelector("[data-last=true]");
+    const saveSize = document.querySelector("#saveSize");
+    const previousSize = document.querySelector("#previousSize");
+    title.innerHTML = `בגודל טקסט זה ניתן לכתוב ${allowedChars} תווים בלבד`;
+    placeholder.innerHTML = correctedText;
+    $(elem).off();
+    const alert = "האם לשמור את השינויים?";
+    msg.innerHTML = alert;
+    $("#Textmodal").modal("show");
 
-        const saveSize = document.querySelector("#saveSize");
-        const previousSize = document.querySelector("#previousSize");
+    function chooseSize() {
+      const controls = { textInput: fields, counter: counter, select: elem };
+      previousSize.removeEventListener("click", revertSize);
+      saveSize.removeEventListener("click", chooseSize);
+      $("#Textmodal").modal("hide");
+      elem.querySelector("[data-last=true]").dataset["last"] = "false";
+      slectedIndex.dataset["last"] = "true";
 
-
-        title.innerHTML = `בגודל טקסט זה ניתן לכתוב ${allowedChars} תווים בלבד`;
-        placeholder.innerHTML = correctedText;
-        const alert  = "האם לשמור את השינויים?";
-        msg.innerHTML = alert;
-        $('#Textmodal').modal('show');
-
-        saveSize.addEventListener('click', function chooseSize (){
-            $('#Textmodal').modal('hide');
-            saveSize.removeEventListener('click', chooseSize);
-              elem.querySelector('[data-last=true]').dataset['last'] = "false";
-              slectedIndex.dataset["last"] = "true";
-              addListeners(nameReference, animProps[nameReference], sizes);
-              field.focus();
-              
-        });
-
-        previousSize.addEventListener('click', function revertSize (){
-            previousSize.removeEventListener('click', revertSize);
-            $('#Textmodal').modal('hide');
-            elem.selectedIndex = lastSize.index;
-            animProps[nameReference].font_size = elem[elem.selectedIndex].value;
-            addListeners(nameReference, animProps[nameReference], sizes);
-            field.focus();
-
-        });
+      addTextListeners(controls, textprops, sizes);
+      fields.forEach(function(field) {
+        field.focus();
+      });
 
 
     }
-    else {
-        elem.querySelector('[data-last=true]').dataset['last'] = "false";
-        slectedIndex.dataset["last"] = "true";
-        addListeners(nameReference, animProps[nameReference], sizes);
+
+    function revertSize() {
+      previousSize.removeEventListener("click", revertSize);
+      saveSize.removeEventListener("click", chooseSize);
+      const controls = { textInput: fields, counter: counter, select: elem };
+      $("#Textmodal").modal("hide");
+      elem.selectedIndex = lastSize.index;
+      textprops.font_size = elem[elem.selectedIndex].value;
+      addTextListeners(controls, textprops, sizes);
     }
+    saveSize.addEventListener("click", chooseSize);
+    previousSize.addEventListener("click", revertSize);
 
 
-
+  } else {
+    elem.querySelector("[data-last=true]").dataset["last"] = "false";
+    slectedIndex.dataset["last"] = "true";
+    const controls = {
+      textInput: fields,
+      counter: counter,
+      select: elem
+    };
+    
+    addTextListeners(controls, textprops, sizes);
+  }
 }
 
 

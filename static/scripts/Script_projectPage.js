@@ -708,7 +708,11 @@ function openVideo_Handler(event) {
         }
     }
     if (id == "more_delete") {
-        $('#modal').modal('show')
+        $('#modal').modal('show');
+        $('.modal-dialog').css('width', '40%'); // shrink modal to 40% width
+        $('#modal').on('hidden.bs.modal', function(){
+            $('.modal-dialog').css('width', ''); // restore original modal's width on modal close - 100% 
+        }) 
         let vid_name = $("#h5_" + video_id).text();
         $('.modal-title').text("האם ברצונך למחוק את סרטון  -" + vid_name);
         let warning_content = `<div id="editImage" enctype="multipart/form-data">
@@ -765,8 +769,7 @@ function openVideo_Handler(event) {
         //do noting - don't send to server
     } else if (id === "modal_main_btn") {
         if ($("#modal_main_btn").attr("data-event") == "delete") {
-            //delete video
-            $('#modal').modal('hide')
+            $('#modal').modal('hide');
             $.ajax({
                 method: 'POST',
                 url: '/onLoad',

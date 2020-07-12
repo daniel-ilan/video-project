@@ -476,10 +476,21 @@ svg {
     background: white;
     /* box-shadow: 0px 0px 10px rgba(112, 32, 188, 0.08);*/
     position: relative;
+    height: 17vh;
+    flex-wrap: nowrap;
 }
 
 #frames_Area_container{
     padding:  0 1rem;
+    display: flex;
+    max-width: 90%;
+    overflow: scroll hidden !important;
+}
+
+#newFrameBtn_area{
+    height: inherit;
+    width: 4%;
+    justify-content: center;
 }
 
 
@@ -753,14 +764,18 @@ svg {
 
 /*          ----------            -webkit-scrollbar          ----------          */
 
-#content::-webkit-scrollbar, #frames_Area::-webkit-scrollbar, #kindAnimationsArea::-webkit-scrollbar,
+#content::-webkit-scrollbar, #frames_Area_container::-webkit-scrollbar, #kindAnimationsArea::-webkit-scrollbar,
 #brandPageContainer::-webkit-scrollbar, #collection_animation_area::-webkit-scrollbar, div.card-group::-webkit-scrollbar {
     width: 8px;
     padding: 1.25rem 1.25rem;
     height: 4%;
 }
 
-#content::-webkit-scrollbar-track, #frames_Area::-webkit-scrollbar-track, #kindAnimationsArea::-webkit-scrollbar-track,
+#frames_Area_container::-webkit-scrollbar {
+    height: 10%;
+}
+
+#content::-webkit-scrollbar-track, #frames_Area_container::-webkit-scrollbar-track, #kindAnimationsArea::-webkit-scrollbar-track,
 #brandPageContainer::-webkit-scrollbar-track,  #collection_animation_area::-webkit-scrollbar-track, div.card-group::-webkit-scrollbar-track  {
     background-color: #f7f8f9;
     border-radius: 10px;
@@ -768,7 +783,7 @@ svg {
 
 }
 
-#content::-webkit-scrollbar-thumb, #frames_Area::-webkit-scrollbar-thumb, #kindAnimationsArea::-webkit-scrollbar-thumb,
+#content::-webkit-scrollbar-thumb, #frames_Area_container::-webkit-scrollbar-thumb, #kindAnimationsArea::-webkit-scrollbar-thumb,
 #brandPageContainer::-webkit-scrollbar-thumb,#collection_animation_area::-webkit-scrollbar-thumb, div.card-group::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background-color: #dbdbdb;
@@ -992,7 +1007,7 @@ select:focus {
 }
 
 #preview_imageUpload {
-    width: 80%;
+    width: 50%;
     height: 80%;
 }
 

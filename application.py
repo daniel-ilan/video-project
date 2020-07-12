@@ -107,10 +107,11 @@ def get_anim_props(path, image_path=""):
                 text_color = layer.data.data.keyframes[0].start.color
                 text_content = layer.data.data.keyframes[0].start.text
                 text_alignment = layer.data.data.keyframes[0].start.justify.value
-
+                font_size = layer.data.data.keyframes[0].start.font_size
                 text_dict = {'listItem': {'text': {'color': colors.to_hex(list(text_color[0:3])),
                                                    'content': [correct_text(text_content)],
-                                                   'alignment': text_alignment}}}
+                                                   'alignment': text_alignment,
+                                                   'font_size': font_size}}}
 
                 anim_props.update(text_dict)
 
@@ -639,7 +640,8 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                     # bullets alignment
                     elif item[0] == 'listItemalignment':
                         list_text.update({"listItemalignment": item[1]})
-
+                    elif item[0] == 'listItemfont_size':
+                        list_text.update({"listItemfont_size": item[1]})
                     ### This code is for individual bullet color - we are doing three colors alltogether
                     # # bullets color 1
                     # elif item[0] == 'listItem_primary':
@@ -691,7 +693,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     if image is True:
         an = save_image(data, an)
     if len(list_text['listContent']) > 0:
-        an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"], text["textfont_size"])
+        an = change_list_text(an, list_text['listContent'], list_text["listItem_color"], list_text["listItemalignment"], list_text["listItemfont_size"])
 
     if kind_of_update_event == "create brand":
         os.remove(path)
