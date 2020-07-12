@@ -334,10 +334,11 @@ svg {
 }
 
 .tinyLottie_continer {
+    position: relative;
     display: inline-block;
     margin-top: 0.75rem;
     margin-left: 1.25rem;
-     line-height: 1vh;
+    /*line-height: 1vh;*/
 }
 
 
@@ -533,6 +534,7 @@ svg {
     position: absolute;
      left: 2.8vw;
     padding: 0 2vh;
+     top: 0.5vw;
 }
 
 .badge-custom{
@@ -549,23 +551,18 @@ svg {
     top: 5rem;
 }
 
- #saveVideo {
-    position: absolute;
-     left: 2.8vw;
-    padding: 0 2vh;
-}
 
 
 .primaryBTN {
     background-color: #6515DD;
     border: solid 0.125rem #6515DD;
     color: white;
-    padding: 0.5rem 1.75rem;
+    /*padding: 0.5rem 1.75rem;*/
     border-radius: 0.75rem;
     font-weight: 500;
     font-size: 1rem;
 
-    line-height: 19px;
+    line-height: 1vh;
     align-items: center;
     text-align: center;
     height: 2.5rem;
@@ -606,11 +603,11 @@ svg {
     border: solid 0.125rem #6515DD;
     background-color: #F9FAFB;
     color: #6515DD;
-    padding: 0.5rem 1rem;
+    /*padding: 0.5rem 1rem;*/
     border-radius: 10px;
     font-weight: 500;
     font-size: 1rem;
-    line-height: 19px;
+    line-height: 1vh;
     display: flex;
     align-items: center;
     text-align: center;
@@ -680,9 +677,7 @@ svg {
     color: #6515DD;
 }
 
-#newFrameBtn {
-    padding: 0.4rem 0.75rem;
-}
+
 
 .collection_svg_icon svg {
     fill: rgba(101, 21, 221, 0.1);
@@ -703,11 +698,11 @@ svg {
 }
 
 .not_in_collection_svg_icon {
-    display: block;
+    /*display: block;*/
     position: absolute;
     z-index: 2;
-    margin-right: 14%;
-    margin-top: 1.2%;
+    margin-right: 76%;
+    margin-top: 6%;
 }
 
 #newFrameBtn {
@@ -718,7 +713,7 @@ svg {
     height: 2.5rem;
     line-height: 18px;
     box-shadow: 0px 6px 10px rgba(112, 32, 188, 0.15);
-    padding: 2vh 1vh;
+    /*padding: 2vh 1vh;*/
 }
 
 .xxx {

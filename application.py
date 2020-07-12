@@ -625,7 +625,7 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
                         text_2.update({"textfont_size": item[1]})
                     elif item[0] == "side_note":
                         notes = item[1]
-                    elif item[0] == 'imageUpload_file':
+                    elif item[0] == 'imageUpload_file' and item[1] != '':
                         image = True
 
                     # bullets text
