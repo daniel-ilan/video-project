@@ -18,7 +18,7 @@
 <body>
 <div class="container-fluid">
 
-    <div class="row form-area" style="height:85vh">
+    <div class="row form-area" style="height:83vh">
         <div class="sidebarCol col-md-1 ml-sm-auto col-lg-1">
             <a id="logo_herf" class="whiteBG pt-3" href="about">
                 <img id="logo" src="../static/images/logo.png" style="width: 32%; margin-right: 32%; top: 2%;"/>
@@ -108,7 +108,7 @@
 
         <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pl-5 greyBG ">
             <div class="overflow-auto main-container">
-                <div class="page-spinner-wrapper invisible align-items-center d-flex justify-content-center" id="pageSpinner">
+                <div class="align-items-center d-flex flex-column justify-content-center page-spinner-wrapper" id="pageSpinner">
                     <div style="display: block;">
                         <h2>בחירת המותג החדש הייתה מעולה! ייקח לנו קצת זמן לבנות את האנימציות</h2>
                         <p>לא הרבה, אין סיבה לעזוב</p>
@@ -148,8 +148,8 @@
               </div>
           </main>
       </div>
-    <div id="frames_Area" class="row" style="height:15vh;" style="overflow-x: scroll">
-      <div id="frames_Area_container" class="row" style="overflow-x: scroll"  uk-sortable>
+    <div id="frames_Area" class="row">
+      <div id="frames_Area_container" uk-sortable>
       </div>
         <div id="newFrameBtn_area" class="d-flex align-items-center" style="height: inherit;"></div>
     </div>
@@ -165,7 +165,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn secondaryBtn " data-dismiss="modal">סגירה</button>
+                <button type="button" class="btn secondaryBtn" data-dismiss="modal">סגירה</button>
                 <button id="modal_main_btn" type="button" class="btn primaryBTN">בחירה</button>
             </div>
         </div>

@@ -8,9 +8,15 @@ $(document).ready(function() {
   const loginLink = document.querySelector("#login-tab");
   getloginForm();
   loginLink.addEventListener('click', function(){
-    getloginForm();
+    $('#login-tab').tab('show');
   });
   registerLink.addEventListener('click', function(){
+    $('#register-tab').tab('show');
+  });
+  $(loginLink).on('shown.bs.tab', function (e) {
+    getloginForm();
+  });
+  $(registerLink).on('shown.bs.tab', function (e) {
     getregisterForm();
   });
 });
@@ -98,6 +104,7 @@ function formHandler(form) {
 
 function getloginForm(){
 
+
   document.querySelector("#login").innerHTML = 
   `
   <div class="form-header-container">
@@ -141,6 +148,7 @@ function getloginForm(){
 
   `
 
+  document.querySelector("#register").innerHTML = "";
   const showPassword = document.querySelector("#passwordVisability");
   const hidePassword = document.querySelector("#passwordHidden");
   emailInput = document.querySelector("#emailInput");
@@ -184,7 +192,7 @@ function getloginForm(){
 }
 
 function getregisterForm(){
-  $('#register-tab').tab('show') // Select third tab
+
 
   document.querySelector("#register").innerHTML = 
   `
@@ -233,6 +241,9 @@ function getregisterForm(){
       </button>
 </form>
   `
+
+
+  document.querySelector("#login").innerHTML = "";
   const showPassword = document.querySelector("#passwordVisability");
   const hidePassword = document.querySelector("#passwordHidden");
   

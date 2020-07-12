@@ -341,3 +341,5 @@ healthchecksdb
 
 # ignore requirements
 venv/
+/static/db/
+/static/content/animations/
