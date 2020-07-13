@@ -317,15 +317,15 @@ def login():
                     return jsonify({"success": False, "alert": f"{alertM}"})
             else:
                 # email is valid - creates new user
-                db.create_new_user(filled_name, filled_email, filled_password)
+                project_id = db.create_new_user(filled_name, filled_email, filled_password)
+                session['COLLECTION_PATH'] = "static/content/animations/"
+                create_new_video(project_id)
                 user_id = db.get_user_id(filled_email)[0]
                 # db.create_new_project(user_id, "firstProject")
                 session['CURRENT_USER'] = user_id
-                db.create_new_project(user_id, "")
                 session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))[0]
-                project_id = session.get('CURRENT_PROJECT')
-                session['COLLECTION_PATH'] = "static/content/animations/"
-                create_new_video(project_id)
+                # project_id = session.get('CURRENT_PROJECT')
+
                 return jsonify({"success": True})
 
         else:
