@@ -420,9 +420,9 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                     $('#listItemfont_size option[value=' + data[elem].text.font_size + ']').prop('selected', true);
                     $('#listItemalignment option[value=' + data[elem].text.alignment + ']').prop('selected', true);
                     addCustomColor('#listItem_color', color_palettes_json);
-                    editForm.append(`<div>
-                                                <button class="primaryBTN" id="addBulletBtn" role="button" type="button">+</button>
-                                                <button type="button" role="button" id="removeBulletBtn" class="primaryBTN">-</button>
+                    $('#editText_listItem').append(`<div id="list_buttons">
+                                                <button class="primaryBTN" id="addBulletBtn" role="button" type="button">+ סעיף חדש</button>
+                                                <button type="button" role="button" id="removeBulletBtn" class="primaryBTN">-  מחיקת סעיף אחרון</button>
                                             </div>`);
 
                     let numBullets = $("input[name*='listItemcontent']").length;
@@ -945,6 +945,7 @@ function changeNavItem(kind) {
         $("#button_switch").off('click', open_modal_handler);
     } else {
         $('#button_switch').removeClass("secondaryBtn_disabled");
+        $('#button_switch').off('click', open_modal_handler);
         $('#button_switch').on('click', open_modal_handler);
         $("#button_switch").off('click', disabledFunc);
     }
@@ -1016,7 +1017,7 @@ function modael_data(data) {
     let source;
 
     if (data.event_kind == "button_switch") {
-        //reset and set modal_main_btn listeners and class soshake animation will play from disabledFunc
+        //reset and set modal_main_btn listeners and class so shake animation will play from disabledFunc
         $("#modal_main_btn").on('click', disabledFunc);
         $("#modal_main_btn").off('click', change_animation_handler);
         $("#modal_main_btn").removeClass("animated_shake jello");
@@ -1032,7 +1033,7 @@ function modael_data(data) {
             }
             let animKindPlayer = `<div class="tinyLottie_continer">
             <div id="generalAnim_${data.frames[i][2]}" class="tinyLottie anim_kind general_kind_anim">
-            <span class="collection_svg_icon">${collection_svg}</span>
+            <span class="collection_svg_icon" data-toggle="tooltip" data-placement="right" title="אנימציה מהמותג">${collection_svg}</span>
                 <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
                                speed="1"
                                style="" hover loop>
@@ -1045,6 +1046,7 @@ function modael_data(data) {
         let name_of_kind = $('#temp_' + data.kind).text();
         $('.modal-title').text("בחירה מתבניות כלליות-" + name_of_kind);
         $('.modal-body').html(animations);
+        $('[data-toggle="tooltip"]').tooltip();
 
         $('.general_kind_anim').on("click", select_from_general)
     }
@@ -1073,7 +1075,9 @@ function select_from_general(event) {
     $("#modal_main_btn").removeClass("animated_shake jello");
     $("#modal_main_btn").removeClass("disabled");
     $("#modal_main_btn").off('click', disabledFunc);
+    $('#modal_main_btn').off('click', change_animation_handler);
     $('#modal_main_btn').on('click', change_animation_handler);
+
 }
 
 

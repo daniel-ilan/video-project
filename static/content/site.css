@@ -484,9 +484,9 @@ svg {
 }
 
 #frames_Area_container{
-    padding:  0 1rem;
+    margin:  0 1rem;
     display: flex;
-    max-width: 90%;
+    max-width: 94%;
 }
 
 .h-scroll {
@@ -494,8 +494,8 @@ svg {
 }
 
 #newFrameBtn_area{
-    height: inherit;
-    width: 4%;
+    height: 80%;
+    width: 3%;
     justify-content: center;
 }
 
@@ -581,7 +581,7 @@ svg {
     line-height: 1vh;
     align-items: center;
     text-align: center;
-    height: 2.5rem;
+    height: 4vh;
     width: fit-content;
 
     -webkit-transition: background-color 0.3s ease-out;
@@ -712,14 +712,16 @@ svg {
     display: block;
     position: absolute;
     z-index: 2;
-    margin-right: 8.8%;
-    margin-top: 0.8%;
+    margin-right: 75%;
+    margin-top: 4.8%;
 }
 
 .not_in_collection_svg_icon {
     position: absolute;
     z-index: 2;
     margin-right: 76%;
+    margin-top: 3%;
+
 }
 
 #newFrameBtn {
@@ -747,9 +749,12 @@ svg {
     width: 100%;
 }
 
-.main-anim-wrapper {
+.main-anim-wrapper
+{
     position: relative;
-    width: 89%;
+     width: 90%;
+   /*width: 42vw;*/
+
 }
 
 .mainAnimation {
@@ -1024,6 +1029,18 @@ select:focus {
     margin-top: 4%;
     padding-bottom: 0.25rem;
 }
+
+#list_buttons{
+    padding-top: 2vh;
+    margin-right: 42%;
+}
+
+#list_buttons > button{
+    padding: 0 1vh;
+}
+
+
+
 
 
 /*          ----------            animations          ----------          */
@@ -2003,7 +2020,6 @@ div.card-group{
 
 
 /*          ---         card dropdown-menu            ---             */
-
 
 .dropdown-menu{
     border: 1px solid #F2F2F2;
