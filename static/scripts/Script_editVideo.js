@@ -47,6 +47,8 @@ function frameChangeHandler(event) {
     let frame_id = "";
     if (event == null) {
         event_kind = "onLoad"
+        const pageSpinner = $("#pageSpinner");
+        pageSpinner.removeClass("invisible");
     } else if (event.currentTarget.id === "dltFrameBtn") {
         if (event.currentTarget.classList.contains("frame_lottie"))
         {
@@ -56,14 +58,12 @@ function frameChangeHandler(event) {
         {
             event_kind = "delete_frame";
             frame_id = $(".active_frame_lottie")[0].id;
-            event.preventDefault();
+
         }
+        event.preventDefault();
     } else if (event.currentTarget.id === "newFrameBtn") {
         event_kind = "new_frame"
     }
-    const pageSpinner = $("#pageSpinner");
-    pageSpinner.removeClass("invisible");
-    console.log("xxx")
     $.ajax({
         method: 'POST',
         url: '/frame_change',

@@ -317,15 +317,15 @@ def login():
                     return jsonify({"success": False, "alert": f"{alertM}"})
             else:
                 # email is valid - creates new user
-                db.create_new_user(filled_name, filled_email, filled_password)
+                project_id = db.create_new_user(filled_name, filled_email, filled_password)
+                session['COLLECTION_PATH'] = "static/content/animations/"
+                create_new_video(project_id)
                 user_id = db.get_user_id(filled_email)[0]
                 # db.create_new_project(user_id, "firstProject")
                 session['CURRENT_USER'] = user_id
-                db.create_new_project(user_id, "")
                 session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))[0]
-                project_id = session.get('CURRENT_PROJECT')
-                session['COLLECTION_PATH'] = "static/content/animations/"
-                create_new_video(project_id)
+                # project_id = session.get('CURRENT_PROJECT')
+
                 return jsonify({"success": True})
 
         else:
@@ -809,7 +809,7 @@ def delete_frame(id: str):
     # my_id = data[data.find('_') + 1:]
     all_frames = db.get_all_frames(session.get('CURRENT_VIDEO'))
     prev_id = all_frames[0][0]
-    for i in range(0, len(all_frames)-1):
+    for i in range(0, len(all_frames)):
         if all_frames[i][0] == int(my_id):
             if i == 0:
                 # it's the first frame so prev_id is the next one so add +1
@@ -841,16 +841,16 @@ def get_animations_by_kind(kind):
 
 def add_frame():
     frame_path = session.get('WORKING_PATH')
+    num_frames = len(db.get_all_frames(session.get('CURRENT_VIDEO')))
     with open(session.get('COLLECTION_PATH') + "empty.json", 'r') as in_file:
         # Reading from json file
         json_object = json.load(in_file)
 
-    new_name = 'empty_' + str(int(time.time())) + ".json"
+    new_name = 'empty_' + str(int(time.time())) + str(num_frames+1) + ".json"
 
     with open(frame_path + new_name, "w") as out_file:
         json.dump(json_object, out_file)
 
-    num_frames = len(db.get_all_frames(session.get('CURRENT_VIDEO')))
     db.create_new_frame(session.get('CURRENT_VIDEO'), new_name, num_frames)
 
 
