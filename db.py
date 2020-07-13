@@ -272,7 +272,6 @@ def delete_frame(frame_id: int, video_id: int):
     if isinstance(video_id, str):
         video_id = int(video_id)
     query = f"SELECT [frame_id] FROM frames WHERE frame_id >({frame_id}) AND video_id = {video_id};"
-    frames_after = select_all_query(query)
     query_update_order = f"UPDATE frames SET frame_order = (frame_order-1) WHERE frame_id IN({query});"
     update_query(query_update_order)
     query = f"DELETE FROM frames WHERE frame_id =({frame_id});"
