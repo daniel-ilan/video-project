@@ -1188,8 +1188,8 @@ function getModalHtml() {
                 <p class="textModal-alert"></p>
             </div>
             <div class="modal-footer">
-                <button id="previousSize" type="button" class="btn secondaryBtn">לגודל הקודם</button>
-                <button id="saveSize" type="button" class="btn primaryBTN">בגודל החדש</button>
+                <button id="previousSize" type="button" class="btn secondaryBtn">חזרה לגודל הקודם</button>
+                <button id="saveSize" type="button" class="btn primaryBTN">שמירת הגודל החדש</button>
             </div>
         </div>
     </div>

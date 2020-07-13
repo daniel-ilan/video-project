@@ -1039,6 +1039,10 @@ select:focus {
     padding: 0 1vh;
 }
 
+#h2_loader_class{
+    font-size:2rem ;
+}
+
 
 
 
