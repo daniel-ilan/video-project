@@ -485,6 +485,9 @@ svg {
     padding:  0 1rem;
     display: flex;
     max-width: 90%;
+}
+
+.h-scroll {
     overflow: scroll hidden !important;
 }
 
@@ -602,7 +605,7 @@ svg {
     color: white !important;
     border-color: #BDBDBD !important;
     height: 4vh;
-    cursor: pointer;
+    cursor: default;
 }
 
 .disabled-nav-item , .disabled-nav-item:hover > svg , .disabled-nav-item:hover > a{
@@ -659,16 +662,19 @@ svg {
 .secondaryBtn_disabled {
     border-color: #BDBDBD;
     color: #BDBDBD !important;
+    cursor: default !important;
 }
 
 .secondaryBtn_disabled:hover, .disabled:hover {
     box-shadow: none;
     cursor: default;
     border-color: #BDBDBD;
+    cursor: default;
 
 }
 
 .disabled:hover {
+    cursor: default;
     background-color: #BDBDBD;
     border-color: #BDBDBD;
 }
@@ -741,6 +747,10 @@ svg {
     width: 100%;
 }
 
+.main-anim-wrapper {
+    position: relative;
+}
+
 .mainAnimation {
     margin-top: 3vh;
     margin-bottom: 1.5vh;
@@ -811,10 +821,15 @@ svg {
 
 /*          ----------            -text edit options-          ----------          */
 
-.custom-form-control:focus {
+
+.text-form input:focus {
     border-color: #6515DD;
     box-shadow: none;
 }
+
+/* .custom-form-control:focus {
+
+} */
 
 .text-edit-line {
     width: 104px;
@@ -838,7 +853,6 @@ svg {
 
 input[type="text"] {
     max-width: initial;
-    /*width: 87.8%;*/
     border-radius: 0px 0px 0.75rem 0.75rem;
     border-top: solid 1px rgba(226, 226, 226, 0.4);
     padding: 1.4rem 1rem;
@@ -852,7 +866,6 @@ input[type="text"] {
 .text-edit-line-control {
     background: #FCFCFC;
     border: 1px solid #ced4da;
-    /*rgba(189, 189, 189, 0.2)*/
     box-sizing: border-box;
     border-radius: 0.75rem 0.75rem 0px 0px;
     padding: 0.25rem;
@@ -970,14 +983,15 @@ select:focus {
 }
 
 
+
 .spinner-wrapper {
-    width: 87vh;
-    height: 26vw;
+    width: 94%;
+    height: 92%;
     background-color: #ececec;
     position: absolute;
     border-radius: 1rem;
-    z-index: 1;
-    top: 7vh;
+    z-index: 1000;
+    top: 5%;
 }
 
 .page-spinner-wrapper{

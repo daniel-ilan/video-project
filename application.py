@@ -87,14 +87,14 @@ def get_anim_props(path, image_path=""):
         elif 'base' in layer.name:
             out_color = colors.to_hex(layer.find('Fill 1').color.value.components)
             sec_opacity = layer.find('Fill 1').opacity.value
-            secondary_dict = {'base': {'color': out_color, 'opacity': sec_opacity}}
-            anim_props.update(secondary_dict)
+            base_dict = {'base': {'color': out_color, 'opacity': sec_opacity}}
+            anim_props.update(base_dict)
 
-        elif 'secondary' in layer.name:
+        elif 'third' in layer.name:
             color = colors.to_hex(layer.find('Fill 1').color.value.components)
             prim_opacity = layer.find('Fill 1').opacity.value
-            primary_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
-            anim_props.update(primary_dict)
+            secondary_dict = {'secondary': {'color': color, 'opacity': prim_opacity}}
+            anim_props.update(secondary_dict)
 
         elif layer.name == '.image':
             # image_dict = {'image': "name"}
@@ -307,7 +307,7 @@ def login():
                 # user is registered
                 if registered_password:
                     # checks if the user accidentally filled the registration form but entered a correct email
-                    # and password we simply log him in
+                    # and password so we simply log him in
                     user_id = db.get_user_id(filled_email)[0]
                     session['CURRENT_USER'] = user_id
                     return jsonify({"success": True})
@@ -319,8 +319,13 @@ def login():
                 # email is valid - creates new user
                 db.create_new_user(filled_name, filled_email, filled_password)
                 user_id = db.get_user_id(filled_email)[0]
-                db.create_new_project(user_id, "firstProject")
+                # db.create_new_project(user_id, "firstProject")
                 session['CURRENT_USER'] = user_id
+                db.create_new_project(user_id, "")
+                session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))[0]
+                project_id = session.get('CURRENT_PROJECT')
+                session['COLLECTION_PATH'] = "static/content/animations/"
+                create_new_video(project_id)
                 return jsonify({"success": True})
 
         else:
@@ -826,7 +831,8 @@ def get_animations_by_kind(kind):
     :return:
     """
     myArray = []
-    animations = db.get_animations_by_project_and_kind('26', kind)
+    curren_project = session.get('CURRENT_PROJECT')
+    animations = db.get_animations_by_project_and_kind(curren_project, kind)
     #  0 - animation_name ; 1 - path ; 2 -animation_id
     for anim in animations:
         myArray.append([anim[0], session.get('COLLECTION_PATH') + anim[1], anim[2]])
@@ -1321,17 +1327,10 @@ def video_handler():
         else:
             if event_kind == "newVideoBtn":
                 # create new video
+
                 project_id = session.get('CURRENT_PROJECT')
-                db.create_new_video(project_id)
+                create_new_video(project_id)
 
-                # 3 lines below this needs to be in a function called get_frames_path
-                project_owner = db.get_project_owner(str(project_id))[0]
-                video_id = db.get_last_video_id(project_id)[0]
-                frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
-
-                frame_name = copy_animations("empty new project", frame_path)
-                new_id = db.get_last_video_id(str(project_id))[0]
-                db.create_new_frame(new_id, frame_name[0], 0)
             else:
                 video_id = request.form['video_id']
 
@@ -1341,6 +1340,19 @@ def video_handler():
             session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
 
             return jsonify(event_kind=event_kind)
+
+
+def create_new_video(project_id):
+    db.create_new_video(project_id)
+
+    # 3 lines below this needs to be in a function called get_frames_path
+    project_owner = db.get_project_owner(str(project_id))[0]
+    video_id = db.get_last_video_id(project_id)[0]
+    frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+
+    frame_name = copy_animations("empty new project", frame_path)
+    new_id = db.get_last_video_id(str(project_id))[0]
+    db.create_new_frame(new_id, frame_name[0], 0)
 
 
 def create_new_collection(project_id: int):

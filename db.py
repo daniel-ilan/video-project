@@ -57,14 +57,24 @@ def get_all_animations():
 
 
 def create_new_user(person_name: str, email: str, password: str, image: str = None):
-    image = f"'{image}'" if image else 'null'
+    # from shutil import copyfile
+    image = f"'{image}'" if image else 'placeholderCardCover'
     person_name = person_name.strip()
     email = email.strip()
     password = password.strip()
     query = f"INSERT INTO users ([person_name] ,[email] ,[password] ,[image]) VALUES('{person_name}','{email}','{password}',{image});"
     update_query(query)
     get_id = get_user_id(email)[0]
+
     create_directory("", get_id)
+    # new_image_path = os.path.join(f"static/db/users/", get_id)
+    # old_image_path = f""
+    """
+    todo: need to add default project / video props when creating new User
+    """
+    # create_new_project(int(get_id),'פרויקט ללא שם')
+    # proj_id = get_project_info(get_id)[0][0]
+    # create_new_video(proj_id)
 
 
 def get_user_id(email: str):
@@ -88,11 +98,14 @@ def check_log_in(email: str, password: str):
 
 
 def create_new_project(user_id: int, project_name: str, image: str = None):
-    image = f"'{image}'" if image else 'null'
-    if project_name == "" or project_name == " ":
-        query = f"INSERT INTO projects([user_id] ,[image]) VALUES({user_id}, {image});"
+    if image:
+        image = f"'{image}'"
     else:
-        query = f"INSERT INTO projects([user_id] ,[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
+        image = 'placeholderCardCover.png'
+    if project_name == "" or project_name == " ":
+        query = f"INSERT INTO projects([user_id] ,[image]) VALUES({user_id},'{image}');"
+    else:
+        query = f"INSERT INTO projects([user_id],[project_name],[image]) VALUES({user_id},'{project_name}', {image});"
     update_query(query)
     get_id = get_last_project_id(user_id)[0]
     create_directory(user_id, get_id)

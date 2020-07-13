@@ -227,7 +227,10 @@ function buildFrames(data) {
         </div>`;
     // numSlides.push(addBtn);
     $('#newFrameBtn_area').html(addBtn);
-    $('#frames_Area_container').html(numSlides);
+    const framesContainer = $('#frames_Area_container');
+    framesContainer.html(numSlides)
+    
+
     $('#newFrameBtn').on('click', frameChangeHandler);
     $('.frame_lottie').on('click', change_animation_handler);
 
@@ -245,9 +248,11 @@ function buildFrames(data) {
         $('#dltFrameBtn').removeClass('disabled_svg');
     }
 
+    const JSframesContainer = framesContainer[0]
+    checkIfScroll(JSframesContainer); // check if ekement is wide enough to need scrolling
     // creates the option to drag the frames around
-    let framesArea = document.querySelector('#frames_Area_container');
-    UIkit.sortable(framesArea, {
+
+    UIkit.sortable(JSframesContainer, {
         clsNoDrag: "no-drag",
         animation: 200,
         clsCustom: ".dragged",
@@ -256,8 +261,8 @@ function buildFrames(data) {
         clsDrag: ".dragged",
         clsDragState: ".dragged",
         clsBase: ".dragged"});
-    UIkit.util.on(framesArea, 'moved', getDraggedInfo);
-    UIkit.util.on(framesArea, 'start', getDraggedWidth);
+    UIkit.util.on(JSframesContainer, 'moved', getDraggedInfo);
+    UIkit.util.on(JSframesContainer, 'start', getDraggedWidth);
 
 
     // plays all animations to 50%
@@ -269,6 +274,17 @@ function buildFrames(data) {
             player.seek("50%");
         });
     });
+}
+
+function checkIfScroll(elem) {
+    const scrollWidth = elem.scrollWidth;
+    const clientWidth = elem.offsetWidth;
+    if (scrollWidth > clientWidth) {
+        elem.classList.add('h-scroll');
+    }
+    else {
+        elem.classList.remove('h-scroll');
+    }
 }
 
 function getDraggedWidth(eve) {
@@ -369,6 +385,7 @@ function buildForm(data, data_kind, color_palettes, frameText) {
     let imageControls = '';
     let color_palettes_json = create_color_pelettes_json(color_palettes);
     let isList
+    const textToAdd = [];
     if (data != null) {
         // const content = $('#content');
         Object.keys(data).forEach(function (elem) {
@@ -484,38 +501,58 @@ function buildForm(data, data_kind, color_palettes, frameText) {
                 } 
 
                 else if (elem === "text") {
-                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
-                    const controls = {
-                        textInput: [document.querySelector(`#${elem}content`)],
-                        select: document.querySelector(`#${elem}font_size`),
-                        counter: document.querySelector(`#${elem}_counter`)
-                    }
-                    addTextListeners(controls, data[elem], data.sizes);
-                    addCustomColor('#text_color', color_palettes_json);
-                    $('#textfont_size option[value=' + data[elem].font_size + ']').prop('selected', true);
-                    $('#textalignment option[value=' + data[elem].alignment + ']').prop('selected', true);
-                    
+                    textToAdd.unshift([elem, data[elem], data_kind, data.sizes]);
                 }
                 else if ( elem === "text_2"){
-                    editForm.prepend(getText(elem, data[elem], data_kind, data.sizes));
-                    const controls = {
-                        textInput: [document.querySelector(`#${elem}content`)],
-                        select: document.querySelector(`#${elem}font_size`),
-                        counter: document.querySelector(`#${elem}_counter`)
-                    }
-                    addTextListeners(controls, data[elem], data.sizes);
-                    addCustomColor('#text_2_color', color_palettes_json);
-                    $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true);
-                    $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true);
+                    textToAdd.push([elem, data[elem], data_kind, data.sizes]);
+                    // const controls = {
+                    //     textInput: [document.querySelector(`#${elem}content`)],
+                    //     select: document.querySelector(`#${elem}font_size`),
+                    //     counter: document.querySelector(`#${elem}_counter`)
+                    // }
+                    // addTextListeners(controls, data[elem], data.sizes);
+                    // addCustomColor('#text_2_color', color_palettes_json);
+                    // $('#text_2font_size option[value=' + data[elem].font_size + ']').prop('selected', true);
+                    // $('#text_2alignment option[value=' + data[elem].alignment + ']').prop('selected', true);
                 }  
                 else if (elem === 'image') {
                     imageControls = getImage();
                     
                 }
             }
+            
         });
+
         const main_animation = document.querySelector('#mainAnimation');
         main_animation.load(path);
+        
+        
+        
+
+        if (textToAdd.length > 0) {
+            editForm.prepend(`<div class="text-placeholder"></div>`);
+            const textPlaceholder = $('.text-placeholder');
+            const headers = document.querySelectorAll(".text-header");
+
+            textToAdd.forEach(function(text, index){
+                const headersText = ["טקסט עליון", "טקסט תחתון"];
+                if (textToAdd.length > 1) {
+                    text[2] = headersText[index]
+                }
+                textPlaceholder.append(getText(text[0], text[1], text[2], text[3]));
+                const controls = {
+                    textInput: [document.querySelector(`#${text[0]}content`)],
+                    select: document.querySelector(`#${text[0]}font_size`),
+                    counter: document.querySelector(`#${text[0]}_counter`)
+                }
+                addTextListeners(controls, data[text[0]], data.sizes);
+                addCustomColor(`#${text[0]}_color`, color_palettes_json);
+                $(`#${text[0]}font_size option[value='${data[text[0]].font_size}']`).prop('selected', true);
+                $(`#${text[0]}alignment option[value='${data[text[0]].alignment}']`).prop('selected', true);
+                // header.innerHTML = headersText[index]
+            });
+        }
+        editForm.prepend(imageControls);
     }
 
     if (colorUi.length > 0) {
@@ -527,18 +564,15 @@ function buildForm(data, data_kind, color_palettes, frameText) {
 
 
 
-    editForm.prepend(imageControls);
 
     let displayText = getFrameText(frameText);
 
     editForm.append(displayText);
     editForm.append(`<input type="submit" name="submitChange" id="submitChange"  class="secondaryBtn_disabled btn secondaryBtn justify-content-center" value="שמירה" />`);
     $('#submitChange').on('click', disabledFunc);
-    $('#content input, #frameText, select, #addBulletBtn, #removeBulletBtn').on('keyup change click', function () {
+    $('input:not([type="submit"]), #frameText, select, #addBulletBtn, #removeBulletBtn').on('keyup change click', function () {
         $('#submitChange').removeClass("secondaryBtn_disabled");
-        $('#submitChange').off('click', change_animation_handler);
-        $('#submitChange').off('click', disabledFunc);
-        //create new one that call the server
+        $('#submitChange').off();
         $('#submitChange').on('click', change_animation_handler);
     });
 
@@ -664,6 +698,10 @@ function getText(name, text, data_kind, sizes) {
             h3_name = "תוכן ";
         } else if (data_kind === "list") {
             h3_name = "כותרת הרשימה";
+        } else if (data_kind === "טקסט עליון") {
+            h3_name = "טקסט עליון";
+        } else if (data_kind === "טקסט תחתון") {
+            h3_name = "טקסט תחתון";
         }
 
         inputText = `<input type="text" data-textObj='${JSON.stringify(text)}' name=${name}content id=${name + 'content'} value="${text.content}" class="form-control custom-form-control">`;
@@ -671,8 +709,8 @@ function getText(name, text, data_kind, sizes) {
 
 
     return `<div id="editText_${name}" class="form-group text-form">
-                <h3>${h3_name}</h3>
-                    <div class="input-group text-edit-line-control">
+                <h3 class="text-header">${h3_name}</h3>
+                    <div class="input-group text-edit-line-control text-controls">
                     <span class="text-edit-line-after">
                             <select name=${name + 'font'} id=${name + 'font'} class="custom-select text-edit-line" value="Arial" >
                                 <option value="0">Arial</option>
