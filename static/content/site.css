@@ -343,6 +343,7 @@ svg {
 
 
 .tinyLottie {
+    position: relative;
     width: 10vw;
     height: 15vh;
     border: 1px solid #E0E0E0;
@@ -715,11 +716,9 @@ svg {
 }
 
 .not_in_collection_svg_icon {
-    /*display: block;*/
     position: absolute;
     z-index: 2;
     margin-right: 76%;
-    margin-top: 6%;
 }
 
 #newFrameBtn {
@@ -985,7 +984,7 @@ select:focus {
 
 
 .spinner-wrapper {
-    width: 94%;
+    width: 90%;
     height: 92%;
     background-color: #ececec;
     position: absolute;

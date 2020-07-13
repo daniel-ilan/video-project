@@ -974,8 +974,8 @@ function buildAnim_byKind(data) {
 
             }
             let animKindPlayer = `<div class="tinyLottie_continer">
-                <span class="not_in_collection_svg_icon" data-toggle="tooltip" data-placement="right" title="אנימציה לא מהמותג">${collection_svg}</span>
                 <div id="anim_${data[i][2]}" class="tinyLottie anim_kind">
+                <span class="not_in_collection_svg_icon" data-toggle="tooltip" data-placement="right" title="אנימציה לא מהמותג">${collection_svg}</span>
                 <lottie-player class="tinyLottiePlayer" src=${source} background="transparent"
                                speed="1"
                                style="" hover loop>
