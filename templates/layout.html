@@ -105,48 +105,55 @@
 
             </div>
         </div>
-
-        <main role="main" class="col-md-11 ml-sm-auto col-lg-11 pl-5 greyBG ">
-            <div class="overflow-auto main-container">
-                <div class="align-items-center d-flex flex-column justify-content-center page-spinner-wrapper" id="pageSpinner">
-                    <div style="display: block;">
-                        <h2>בחירת המותג החדש הייתה מעולה! ייקח לנו קצת זמן לבנות את האנימציות</h2>
-                        <p>לא הרבה, אין סיבה לעזוב</p>
-                    </div>
-                    <div class="spinner-border text-info" style="width: 10rem; height: 10rem; display: block;" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
+<main role="main" class="col-md-11 ml-sm-auto col-lg-11 pl-5 greyBG ">
+    <div class="overflow-auto main-container">
+        <div class="align-items-center d-flex flex-column justify-content-center page-spinner-wrapper" id="pageSpinner">
+            <div class="d-flex flex-column h-50 w-50">
+                <div class="align-self-center mb-5 spinner-border text-info"
+                    style="width: 6rem; height: 6rem; display: block;" role="status">
+                    <span class="sr-only">Loading...</span>
                 </div>
-                <div id="mainContent" class="col-6 float-left ">
-                    <div id="pageTitleH"></div>
-                    {% block content %}{% endblock %}
+                <div class="align-items-center d-flex flex-column">
+                    <h2 class="text-center">אנחנו עובדים במרץ כדי לבנות את האנימציות למותג שלך, התהליך עלול לקחת כ 30
+                        שניות</h2>
+                    <p class="text-center">אין סיבה לעזוב, מיד מסיימים</p>
                 </div>
+            </div>
+        </div>
+        <div id="mainContent" class="col-6 float-left ">
+            <div id="pageTitleH"></div>
+            {% block content %}{% endblock %}
+        </div>
 
-                <div class="col-6 animation-container">
-                    <div  class="mr-auto pt-1 pb-4 ">
-                        <input type="submit" name="saveVideo" id="saveVideo"  class=" btn secondaryBtn justify-content-center" value="פרסום" />
-                    </div>
-                    <div class="spinner-wrapper invisible align-items-center d-flex justify-content-center" id="animSpinner">
-                        <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                    <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
-                                   class="lottiePlayer mainAnimation" id="mainAnimation" style="width: 94%">
-                    </lottie-player>
-                    <div id="h3_kindAnim">
-                        <div>
-                            <h4>בחירה מאנימציות המותג</h4>
-                              <button id="button_switch" type="button" class="btn secondaryBtn lit_sec"  >בחירה מכלל התבניות</button>
-                          </div>
-                      </div>
-                      <div id="kindAnimationsArea" >
+        <div class="col-6 animation-container">
+            <div class="mr-auto pt-1 pb-4 ">
+                <input type="submit" name="saveVideo" id="saveVideo" class=" btn secondaryBtn justify-content-center"
+                    value="פרסום" />
+            </div>
+            <div class="main-anim-wrapper">
+            <div class="spinner-wrapper invisible align-items-center d-flex justify-content-center" id="animSpinner">
+                <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <lottie-player src="{{anim_path}}" background="transparent" controls speed="1" autoplay count="1"
+                class="lottiePlayer mainAnimation" id="mainAnimation" style="width: 94%">
+            </lottie-player>
+        </div>
+            <div id="h3_kindAnim">
+                <div>
+                    <h4>בחירה מאנימציות המותג</h4>
+                    <button id="button_switch" type="button" class="btn secondaryBtn lit_sec">בחירה מכלל
+                        התבניות</button>
+                </div>
+            </div>
+            <div id="kindAnimationsArea">
 
-                      </div>
-                  </div>
+            </div>
+        </div>
 
-              </div>
-          </main>
+    </div>
+</main>
       </div>
     <div id="frames_Area" class="row">
       <div id="frames_Area_container" uk-sortable>
