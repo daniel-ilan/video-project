@@ -1329,7 +1329,7 @@ def video_handler():
                 # create new video
 
                 project_id = session.get('CURRENT_PROJECT')
-                create_new_video(project_id)
+                video_id = create_new_video(project_id)
 
             else:
                 video_id = request.form['video_id']
@@ -1353,6 +1353,7 @@ def create_new_video(project_id):
     frame_name = copy_animations("empty new project", frame_path)
     new_id = db.get_last_video_id(str(project_id))[0]
     db.create_new_frame(new_id, frame_name[0], 0)
+    return video_id
 
 
 def create_new_collection(project_id: int):
