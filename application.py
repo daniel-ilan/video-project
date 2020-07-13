@@ -1390,7 +1390,7 @@ def create_new_collection(project_id: int):
             db.create_new_a_t_relation(1, new_theme)
 
     # restart
-    db.update_change_on_collectionYN(project_id, False)
+    db.update_change_on_collectionYN( project_id, False)
     db.update_initial_theme(project_id, 0)
     if check == False:
         db.delete_theme(initial_theme)
