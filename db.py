@@ -6,7 +6,7 @@ import shutil
 def create_conn():
     connStr = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
-        r"DBQ=static\db\db.accdb;"
+        r"DBQ=.\static\db\db.accdb;"
     )
     conn = pyodbc.connect(connStr)
     cursor = conn.cursor()
@@ -67,7 +67,7 @@ def create_new_user(person_name: str, email: str, password: str, image: str = No
     get_id = get_user_id(email)[0]
 
     create_directory("", get_id)
-    shutil.copy(f"static/images/{image}", f"static/db/users/{get_id}")
+    shutil.copy(f"./static/images/{image}", f"./static/db/users/{get_id}")
     create_new_project(get_id, "")
     project_id = get_last_project_id(get_id)[0]
     return project_id
@@ -109,7 +109,7 @@ def create_new_project(user_id: int, project_name: str, image: str = None):
     create_directory(user_id, path)
     path = str(get_id) + "/docs"
     create_directory(user_id, path)
-    shutil.copy(f"static/images/{image}", f"static/db/users/{user_id}/{get_id}")
+    shutil.copy(f"./static/images/{image}", f"./static/db/users/{user_id}/{get_id}")
 
 
 def get_last_project_id(user_id: int):
@@ -219,7 +219,7 @@ def create_new_video(project_id):
     path = str(project_owner) + "/" + str(project_id) + "/videos/"
     create_directory(path, get_id)
     path = path + str(get_id)
-    newPath = shutil.copy("static/images/"+image, "static/db/users/" + path)
+    newPath = shutil.copy("./static/images/"+image, "./static/db/users/" + path)
     create_directory(path, "frames")
     create_directory(path, "filmed") # meybe delete!
 
@@ -349,9 +349,9 @@ def create_directory(my_path: str, name: str):
     name = str(name)
     my_path = str(my_path)
     if my_path != "":
-        path = os.path.join(os.getcwd(), "static/db/users", my_path, name)
+        path = os.path.join(os.getcwd(), "./static/db/users", my_path, name)
     else:
-        path = os.path.join("static/db/users/", name)
+        path = os.path.join("./static/db/users/", name)
 
     if not os.path.exists(path):
         os.mkdir(path)
