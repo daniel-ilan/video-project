@@ -1134,7 +1134,7 @@ def onLoad():
         event_kind = request.form["event_kind"]
         # project_props = [project_id],[project_name],[status],[last_update],[image]
         project_props = [convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER')))[0]]
-        project_props[0][4] = f'../static/db/users/{session.get("CURRENT_USER")}/{session.get("CURRENT_PROJECT")}/' + project_props[0][4]
+        project_props[0][4] = f'./static/db/users/{session.get("CURRENT_USER")}/{session.get("CURRENT_PROJECT")}/' + project_props[0][4]
        #[person_name],[image]
         project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
         project_props[1][1] = f'./static/db/users/{session.get("CURRENT_USER")}/' + project_props[1][1]

@@ -172,7 +172,7 @@ svg {
 }
 
 .activeNav_mini {
-  background-image: url("../images/UnionBG2_mini.svg");
+  background-image: url("../images/UnionBG2_1.svg");
 }
 
 .svgFillNone {
@@ -204,7 +204,7 @@ svg {
     transition: fill 0.2s ease-out;
 } */
 
-.nav-link.side-nav-link {
+.nav-link.side-nav-link:not(.active) {
   color: #282828;
   font-weight: 500;
   font-size: 1rem;
@@ -216,7 +216,7 @@ svg {
   transition: color 0.2s ease-out;
 }
 
-.nav-link.side-nav-link:hover {
+.nav-link.side-nav-link:hover:not(.active) {
   -webkit-transition: color 0.2s ease-out;
   -moz-transition: color 0.2s ease-out;
   -o-transition: color 0.2s ease-out;
@@ -907,7 +907,7 @@ input[type="text"] {
   cursor: pointer;
 }
 
-select:hover,
+select:hover:not(.disabled-nav-item),
 option::selection {
   background-color: rgba(34, 215, 255, 0.06);
   color: black;
@@ -1044,8 +1044,8 @@ select:focus {
 }
 
 #list_buttons {
-  padding-top: 2vh;
-  margin-right: 42%;
+  margin-top: 2vh;
+  align-self: flex-end;
 }
 
 #list_buttons > button {
