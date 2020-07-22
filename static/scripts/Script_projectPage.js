@@ -693,6 +693,7 @@ function buildVideoPage(data) {
   //$('.card').on("click", openVideo_Handler)
   $(".card-item").on("click", openVideo_Handler);
   $(".dropdown-item").on("click", openVideo_Handler);
+  $(".saveNameChange").off("click", openVideo_Handler);
   $(".saveNameChange").on("click", openVideo_Handler);
 
   $(".changeName-input").on("keyup change", function(event) {
@@ -701,12 +702,14 @@ function buildVideoPage(data) {
     if ($("#" + video_id).val().length <= 1) {
       // disabled change video name when it's less then 2 charts;
       $("#addon-wrapping_" + id).addClass(" disabled");
+      $("#addon-wrapping_" + id).off("click", disabledFunc);
       $("#addon-wrapping_" + id).on("click", disabledFunc);
       $("#addon-wrapping_" + id).off("click", openVideo_Handler);
     } else {
       // able change video name when it's more then 2 charts;
       $("#addon-wrapping_" + id).removeClass("disabled");
       $("#addon-wrapping_" + id).off("click", disabledFunc);
+      $("#addon-wrapping_" + id).off("click", openVideo_Handler);
       $("#addon-wrapping_" + id).on("click", openVideo_Handler);
     }
   });
@@ -775,7 +778,8 @@ function openVideo_Handler(event) {
     id = "newVideoBtn";
   }
   //get video id if it's exists
-  if (id != "newVideoBtn" || id != "more_close") {
+
+  if ((id != "newVideoBtn" || id != "more_close") && id != "") {
     if ($("#" + id).hasClass("saveNameChange")) {
       video_id = id.slice(15);
     } else {
