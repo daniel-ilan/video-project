@@ -8,7 +8,7 @@ from shutil import rmtree
 import time
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Flask, redirect, session, make_response, url_for
+from flask import render_template, request, jsonify, Flask, redirect, session, make_response
 from flask_mail import Mail, Message
 from lottie import exporters, objects
 from lottie.parsers.tgs import parse_tgs
@@ -156,7 +156,7 @@ def tests():
         current_project = session.get('CURRENT_PROJECT')
         user_id = session.get('CURRENT_USER')
         video_id = db.get_last_video_id(current_project)[0]
-        path_to_filmed = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/filmed/'
+        path_to_filmed = f'./static/db/users/{user_id}/{current_project}/videos/{video_id}/filmed/'
         video = {}
         animations = []
         for file in files:
@@ -207,7 +207,7 @@ def home():
     project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
     project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
     project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
-    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
+    project_props[2][1] = f'./static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
 
     """Renders the home page."""
     return render_template(
@@ -270,7 +270,7 @@ def newProject():
             # 3 lines below this needs to be in a function called get_frames_path
             project_owner = db.get_project_owner(str(project_id))[0]
             video_id = db.get_last_video_id(project_id)[0]
-            frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+            frame_path = f'./static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
 
             frame_name = copy_animations("empty new project", frame_path)
             id = db.get_last_video_id(str(project_id))[0]
@@ -318,7 +318,7 @@ def login():
             else:
                 # email is valid - creates new user
                 project_id = db.create_new_user(filled_name, filled_email, filled_password)
-                session['COLLECTION_PATH'] = "static/content/animations/"
+                session['COLLECTION_PATH'] = "./static/content/animations/"
                 create_new_video(project_id)
                 user_id = db.get_user_id(filled_email)[0]
                 # db.create_new_project(user_id, "firstProject")
@@ -450,7 +450,7 @@ def frame_change():
     project_props.append(convert_row_to_list_include_childrens(db.get_project_info(session.get('CURRENT_USER'))))
     project_props.append(db.get_video_name(session.get('CURRENT_VIDEO'))[0])
     project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
-    project_props[2][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
+    project_props[2][1] = f'./static/db/users/{session.get("CURRENT_USER")}/' + project_props[2][1]
     project_props.append(session.get('CURRENT_VIDEO'))
     if request.method == 'POST':
         frame_id = request.form["frame_id"][request.form["frame_id"].find('_') + 1:]
@@ -532,8 +532,7 @@ def frame_change():
             new_anim_id = request.form["selected_kind"][request.form["selected_kind"].find('_') + 1:]
             data_to_db = [frame_id, kind, new_anim_id, str(db.get_frame_by_id(frame_id)[3])]
             file_name = db.get_animations_url_by_id(new_anim_id)[0]
-            anim_props = update_anim_props(file_name, anim_props_original, data_to_db,
-                                           "change_mini_lottie")
+            anim_props = update_anim_props(file_name, anim_props_original, data_to_db, "change_mini_lottie")
             current_frame = convert_row_to_list(db.get_frame_by_id(frame_id))
 
         color_palettes = getPalette()
@@ -591,6 +590,13 @@ def update_anim_props(file_name, data, frame_prop, kind_of_update_event):
     else:
         path = session.get('COLLECTION_PATH') + file_name
         name_for_new_name = frame_prop[1]
+        if kind_of_update_event == "change_mini_lottie":
+            props = get_anim_props(path)
+            data_copy = {**data}
+            for i, item in enumerate(data_copy):
+                if not item in props:
+                    del data[item]
+
 
     an = readable(path)
     text = {}
@@ -750,7 +756,7 @@ def save_image(data, an):
 
                 # submit change event - saves the image before inserting it into the animation
                 location = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-                location = location.split(".")[0] + ".png"
+                location = location.replace(location.split(".")[-1], "png")
         else:
             # changing colors only - file is not in uploaded files and needs to take the path from the animation prop
             file = an.assets[0].image_path
@@ -764,7 +770,7 @@ def save_image(data, an):
 
     import PIL
 
-    background_path = 'static/content/animations/images/image_placeholder.png'
+    background_path = './static/content/animations/images/image_placeholder.png'
 
 
 
@@ -1111,9 +1117,9 @@ def projectPage():
     user_id = session.get('CURRENT_USER')
     session['CURRENT_PROJECT'] = db.get_last_project_id(int(user_id))[0]
 
-    session['COLLECTION_PATH'] = "static/content/animations/"
-    session['UPLOAD_FOLDER'] = "static/content/animations/images"
-    session['WORKING_PATH_IMG'] = f'static/db/users/{user_id}/{session.get("CURRENT_PROJECT")}/videos/'
+    session['COLLECTION_PATH'] = "./static/content/animations/"
+    session['UPLOAD_FOLDER'] = "./static/content/animations/images"
+    session['WORKING_PATH_IMG'] = f'./static/db/users/{user_id}/{session.get("CURRENT_PROJECT")}/videos/'
 
     application.config['UPLOAD_FOLDER'] = session.get('UPLOAD_FOLDER')
     return render_template(
@@ -1131,7 +1137,7 @@ def onLoad():
         project_props[0][4] = f'../static/db/users/{session.get("CURRENT_USER")}/{session.get("CURRENT_PROJECT")}/' + project_props[0][4]
        #[person_name],[image]
         project_props.append(convert_row_to_list(db.get_user_img_name(session.get('CURRENT_USER'))))
-        project_props[1][1] = f'../static/db/users/{session.get("CURRENT_USER")}/' + project_props[1][1]
+        project_props[1][1] = f'./static/db/users/{session.get("CURRENT_USER")}/' + project_props[1][1]
         if event_kind == 'pageLoad' or event_kind == "link_brand":
             collections_props, animations_props, collection_id, collection_length = collectionChange()
             colors = getPalette()
@@ -1337,7 +1343,7 @@ def video_handler():
             session['CURRENT_VIDEO'] = video_id
             user_id = session.get('CURRENT_USER')
             current_project = session.get('CURRENT_PROJECT')
-            session['WORKING_PATH'] = f'static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
+            session['WORKING_PATH'] = f'./static/db/users/{user_id}/{current_project}/videos/{video_id}/frames/'
 
             return jsonify(event_kind=event_kind)
 
@@ -1348,7 +1354,7 @@ def create_new_video(project_id):
     # 3 lines below this needs to be in a function called get_frames_path
     project_owner = db.get_project_owner(str(project_id))[0]
     video_id = db.get_last_video_id(project_id)[0]
-    frame_path = f'static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
+    frame_path = f'./static/db/users/{project_owner}/{project_id}/videos/{video_id}/frames/'
 
     frame_name = copy_animations("empty new project", frame_path)
     new_id = db.get_last_video_id(str(project_id))[0]
