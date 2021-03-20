@@ -10,7 +10,7 @@ idna==2.9
 imageio==2.8.0
 imageio-ffmpeg==0.4.2
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 kiwisolver==1.2.0
 lottie==0.6.4
 MarkupSafe==1.1.1
