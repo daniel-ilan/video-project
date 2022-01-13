@@ -17,7 +17,7 @@ MarkupSafe==1.1.1
 matplotlib==3.2.1
 moviepy==1.0.3
 numpy==1.18.3
-Pillow==7.1.2
+Pillow==9.0.0
 proglog==0.1.9
 pyodbc==4.0.30
 pyparsing==2.4.7
