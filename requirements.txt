@@ -16,7 +16,7 @@ lottie==0.6.4
 MarkupSafe==1.1.1
 matplotlib==3.2.1
 moviepy==1.0.3
-numpy==1.18.3
+numpy==1.22.0
 Pillow==7.1.2
 proglog==0.1.9
 pyodbc==4.0.30
